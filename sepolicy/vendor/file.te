@@ -11,28 +11,12 @@ type sys_thermal_flash_state, fs_type, sysfs_type;
 type sys_thermal_torch_real_level, fs_type, sysfs_type;
 type sysfs_csiphy_umd_paras, fs_type, sysfs_type;
 
-# Charger
-type vendor_sysfs_xm_power, fs_type, sysfs_type;
-
 # Diag
 type minidump_data_file, data_file_type, file_type;
 type vendor_bsp_data_log_file, data_file_type, file_type;
 
-# Display
-type vendor_sysfs_displayfeature, fs_type, sysfs_type;
-
-# Fingerprint
-type sysfs_tp_fodstatus, fs_type, sysfs_type;
-
 # Info
 type vendor_sysfs_hardwareinfo, fs_type, sysfs_type;
-
-# IR
-type ir_spi_device, dev_type;
-
-# Metis/Migt
-type migt_dev, dev_type, mlstrustedobject;
-type sysfs_migt, fs_type, sysfs_type;
 
 # Memory
 type procfs_memory, fs_type, proc_type;
@@ -45,15 +29,6 @@ type sys_thermal_wifi_limit, fs_type, sysfs_type;
 type sysfs_power_save, fs_type, sysfs_type;
 type sysfs_poweraware, fs_type, sysfs_type;
 type thermal_data_file, data_file_type, file_type;
-
-# Touchfeature
-type proc_tp_file, fs_type, proc_type;
-type proc_tp_lockdown, fs_type, proc_type;
-type sysfs_touch_hostprocess, fs_type, sysfs_type;
-type sysfs_touch_suspend, fs_type, sysfs_type;
-type sysfs_tp_virtual_prox, fs_type, sysfs_type;
-type touchreport_data_file, data_file_type, file_type;
-type vendor_data_touchreport_file, data_file_type, file_type;
 
 # Walt
 type proc_walt, fs_type, proc_type;

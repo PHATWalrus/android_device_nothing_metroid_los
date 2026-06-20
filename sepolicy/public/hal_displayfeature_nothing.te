@@ -1,2 +1,0 @@
-type vendor_hal_displayfeature_nothing_default, domain;
-type vendor_hal_displayfeature_nothing_service, hal_service_type, protected_service, service_manager_type;

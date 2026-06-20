@@ -7,9 +7,4 @@
         <name>android.hardware.secure_element</name>
         <fqname>ISecureElement/eSE1</fqname>
     </hal>
-    <hal format="aidl">
-        <name>vendor.nothing.hardware.fx.tunnel</name>
-        <version>1</version>
-        <fqname>IMiFxTunnel/default</fqname>
-    </hal>
 </manifest>
