@@ -64,6 +64,7 @@ TARGET_FS_CONFIG_GEN := device/nothing/metroid/config.fs
 
 # Kernel
 BOARD_BOOTIMG_HEADER_VERSION := 4
+BOARD_RAMDISK_USE_LZ4 := true
 BOARD_KERNEL_BASE := 0x3fff8000
 BOARD_KERNEL_CMDLINE := bootopt=64S3,32N2,64N2 erofs.reserved_pages=64
 BOARD_KERNEL_PAGESIZE := 4096
