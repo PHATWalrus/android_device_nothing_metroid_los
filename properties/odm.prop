@@ -1,0 +1,125 @@
+# Order
+ro.product.property_source_order=odm,vendor,product,system_ext,system
+
+# Audio
+persist.vendor.audio.fpsop.game.effect.speaker=false
+persist.vendor.audio.fpsop.game.effect.switch=true
+persist.vendor.audio.fpsop.game.effect=true
+persist.vendor.audio.game.effect.version=2
+persist.vendor.audio.induce_crash=false
+persist.vendor.audio.induce_crash_generic=false
+persist.vendor.audio.mi.perception=9
+persist.vendor.audio.spf_restart=true
+ro.vendor.audio.algorithm.support=Fluence
+ro.vendor.audio.aw.monitor=true
+ro.vendor.audio.camera.loopback.support=true
+ro.vendor.audio.elus.gyrp.disturbance_avoidance=true
+ro.vendor.audio.elus.proximity.cqrcodesupport=true
+ro.vendor.audio.elus.proximity.fademodule=true
+ro.vendor.audio.elus.proximity.speakermode=true
+ro.vendor.audio.lea.karaoke=true
+ro.vendor.audio.lowpower.pa.para.support=false
+ro.vendor.audio.meeting.mode.type=2
+ro.vendor.audio.meeting.mode=true
+ro.vendor.audio.onetrack.xiaoai.firstevent.support=false
+ro.vendor.audio.product.sleepmonitor.config=true
+ro.vendor.audio.sixth.monitor=true
+
+vendor.audio.cpu.sched.cpus=8
+vendor.audio.cpu.sched.cpuset.af=255
+vendor.audio.cpu.sched.cpuset.at=255
+vendor.audio.cpu.sched.cpuset.hb=255
+vendor.audio.cpu.sched.cpuset.he=255
+vendor.audio.cpu.sched.cpuset.hso=255
+vendor.audio.cpu.sched.douyin=31
+vendor.audio.cpu.sched.douyin.cpus=8
+vendor.audio.cpu.sched.douyin.cpuset.af=63
+vendor.audio.cpu.sched.douyin.cpuset.at=63
+vendor.audio.cpu.sched.douyin.cpuset.hb=63
+vendor.audio.cpu.sched.douyin.cpuset.he=63
+vendor.audio.cpu.sched.douyin.cpuset.hso=63
+vendor.audio.cpu.sched.onlyfast=false
+vendor.audio.cpu.sched=31
+vendor.audio.only.douyin.powersave.support=1
+vendor.audio.rt.mode.onlyfast=false
+vendor.audio.rt.mode=55
+vendor.audio.support.16bit.record=true
+
+# Battery secret
+persist.vendor.region.charger=default
+
+# Bluetooth
+ro.bluetooth.finder.supported=true
+
+# Camera
+ro.vendor.dynamiccamera.ability_level=2
+ro.camerax.extensions.enabled=false
+ro.camera.disableJpegR=true
+ro.camera.disableHeicUltraHDR=true
+
+# CIT
+persist.vendor.debug.collision.dfx=true
+persist.vendor.sensor.mischeck=true
+ro.vendor.sensor.maxbrightness.sec=10926
+ro.vendor.sensor.maxbrightness=10926
+
+# Crypto
+vendor.wv.oemcrypto.debug.enable_prov40=true
+
+# DisplayFeature
+persist.vendor.dc_backlight.enable=false
+ro.vendor.display.adaptive_hdr.enable=true
+ro.vendor.display.adaptive_hdr2.enable=1
+ro.vendor.display.bl_lut_calib.enable=true
+ro.vendor.display.darkmode_dither.enable=true
+ro.vendor.display.dobly_dpu.enable=true
+ro.vendor.display.kernel_recoder_enable=false
+ro.vendor.display.mi_calib.enable=true
+ro.vendor.display.nature_mode.enable=true
+ro.vendor.display.standard_d75_enable=true
+ro.vendor.display.update_dbi_by_temperature=true
+ro.vendor.histogram.enable=true
+ro.vendor.localhbm.enable=true
+ro.vendor.sre.enable=true
+
+# Graphics
+debug.sf.set_idle_timer_ms=1100
+ro.surface_flinger.enable_frame_rate_override=false
+vendor.display.boost_cpu_layer_number_threshold=12
+vendor.display.disable_3d_adaptive_tm=1
+vendor.display.disable_cwb_idle_fallback=1
+vendor.display.disable_idle_scaling_layers=1
+vendor.display.disable_llcc_during_aod=1
+vendor.display.disable_sdr_dimming=0
+vendor.display.disable_stc_dimming=1
+vendor.display.enable_antiaging=0
+vendor.display.enable_cwb_notify_sensor=1
+vendor.display.enable_demura=0
+vendor.display.enable_hdr10_gpu_target=0
+vendor.display.force_tonemapping=1
+vendor.display.idle_time=0
+vendor.display.support_function_timer=1
+vendor.display.support_video_mode_30hz_aod=0
+
+# QC Value Addons
+ro.vendor.qti.va_odm.support=1
+
+# RIL
+ro.telephony.default_network=33,33
+persist.vendor.radio.dynamic_sar=1
+
+# Sensor
+persist.vendor.sensors.debug.hal_trigger_crash=true
+
+# SSR
+persist.vendor.ssr.restart_level=ALL_ENABLE
+
+# Thermal
+persist.vendor.tracking.dfs=true
+
+# Touchfeature
+persist.vendor.touchfeature.gameturbotool.version=v4
+ro.vendor.touch.touchscheduler.enable=true
+
+# SKU
+import /odm/etc/odm_${ro.boot.hwc}.prop

@@ -3073,10 +3073,6 @@ odm/etc/permissions/sku_JPN/android.hardware.nfc.ese.xml
 odm/etc/permissions/sku_JPN/android.hardware.se.omapi.ese.xml
 odm/etc/permissions/sku_JPN/android.hardware.se.omapi.uicc.xml
 odm/etc/permissions/sku_JPN/com.android.se.xml
-odm/etc/selinux/precompiled_sepolicy
-odm/etc/selinux/precompiled_sepolicy.plat_sepolicy_and_mapping.sha256
-odm/etc/selinux/precompiled_sepolicy.product_sepolicy_and_mapping.sha256
-odm/etc/selinux/precompiled_sepolicy.system_ext_sepolicy_and_mapping.sha256
 odm/etc/sysconfig/sku_EEA/eea_v2_search_chrome.xml
 odm/etc/sysconfig/sku_IND/dse_choice_screen.xml
 odm/etc/sysconfig/sku_JPN/jp_choice_screen.xml

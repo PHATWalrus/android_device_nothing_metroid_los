@@ -1,0 +1,24 @@
+# Camera
+attribute vendor_hal_misensor_camera;
+attribute vendor_hal_misensor_camera_client;
+attribute vendor_hal_misensor_camera_server;
+
+attribute hal_quickcamera;
+attribute hal_quickcamera_client;
+attribute hal_quickcamera_server;
+
+
+# Displayfeature
+attribute vendor_hal_displayfeature_nothing;
+attribute vendor_hal_displayfeature_nothing_server;
+attribute vendor_hal_displayfeature_nothing_client;
+
+# Hypsys
+attribute hal_hypsys_vendor_service_client;
+
+# Mlipay
+attribute hal_mlipay;
+attribute hal_mlipay_server;
+attribute hal_mlipay_client;
+
+

@@ -1,0 +1,24 @@
+# Camera
+vendor.nothing.hardware.aidl.intentaware.IIntentAwareService/default   u:object_r:vendor_intentaware_service:s0
+vendor.nothing.hardware.aidlbgservice.IBGService/default           u:object_r:hal_aidlbgservice_service:s0
+vendor.nothing.hardware.aon.IAlwaysOn/miaonservicehal           u:object_r:hal_camera_aon_service:s0
+vendor.nothing.hardware.camera.injection.ICameraInjectionService/default         u:object_r:hal_dynamic_camera_service:s0
+vendor.nothing.hardware.camera.synthetic.IVirtualCameraRegistrar/default         u:object_r:hal_dynamic_camera_service:s0
+vendor.nothing.hardware.quickcamera.IQuickCameraService/default u:object_r:hal_quickcamera_service:s0
+vendor.nothing.sensor.camera.IMiCam/default  u:object_r:vendor_hal_misensor_camera_service:s0
+
+# Displayfeature
+vendor.nothing.hardware.display.mihwcextension.IMiHwcExtension/default       u:object_r:vendor_hal_hwcextension_nothing_service:s0
+vendor.nothing.hardware.displayfeature_aidl.IDisplayFeature/default       u:object_r:vendor_hal_displayfeature_nothing_service:s0
+
+# Fingerprint
+vendor.nothing.hardware.fx.tunnel.IMiFxTunnel/default                    u:object_r:vendor_hal_fingerprint_service_nothing:s0
+
+# HypSys
+nothing.system.hypsys.common.IHypSysSsi/default            u:object_r:hal_hypsys_vendor_service:s0
+nothing.system.hypsys.common.IHypSysSsiIntl/default            u:object_r:hal_hypsys_vendor_service:s0
+
+# Media
+vendor.nothing.hardware.mediaeventgatherservice.IMediaGather/default                       u:object_r:hal_mediaeventgatherservice_service:s0
+
+
