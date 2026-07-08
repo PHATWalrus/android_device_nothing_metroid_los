@@ -1,0 +1,20 @@
+# CNE
+persist.vendor.cne.feature=1
+
+# HWUI
+debug.hwui.skia_atrace_enabled=false
+
+# Media
+media.stagefright.thumbnail.prefer_hw_codecs=true
+ro.media.recorder-max-base-layer-fps=60
+
+# QTI
+ro.vendor.qti.va_aosp.support=1
+
+# Radio
+persist.vendor.data.mode=concurrent
+ril.subscription.types=NV,RUIM
+telephony.lteOnCdmaDevice=1
+
+# WFD
+persist.debug.wfd.enable=1

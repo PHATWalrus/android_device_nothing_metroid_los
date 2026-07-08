@@ -1,0 +1,3 @@
+# Bring-up no_fatal blanket disabled to allow critical service crashes to reboot/panic for diagnosis
+on early-init
+    # disabled

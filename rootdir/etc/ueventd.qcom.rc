@@ -491,7 +491,7 @@ subsystem mem_buf_vm
 /sys/class/typec/port0-partner	accessory_mode	0440	system	usb
 
 # USB Dynamic Disable
-/sys/bus/platform/devices/a600000.ssusb	dynamic_disable	0220	root	usb
+/sys/bus/platform/devices/a600000.dwc3	dynamic_disable	0220	root	usb
 
 # USB autosuspend/wakeup settings
 /sys/bus/usb/devices/*      power/autosuspend          0660  system  usb
@@ -503,7 +503,7 @@ subsystem mem_buf_vm
 /sys/bus/usb/devices/usb*   authorized                 0660  system  usb
 
 #USB mode setting
-/sys/bus/platform/devices/a600000.ssusb    mode        0660  system  usb
+/sys/bus/platform/devices/a600000.dwc3    mode        0660  system  usb
 
 #Memory Offline
 /sys/devices/system/memory/memory* state    0660 system system

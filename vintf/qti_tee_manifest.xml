@@ -1,0 +1,12 @@
+<manifest version="1.0" type="device">
+    <hal format="aidl">
+        <name>vendor.qti.hardware.qseecom</name>
+        <version>1</version>
+        <fqname>IQSEECom/default</fqname>
+    </hal>
+    <hal format="aidl">
+        <name>vendor.qti.hardware.minkipcbinder</name>
+        <version>1</version>
+        <fqname>IMinkServer/default</fqname>
+    </hal>
+</manifest>

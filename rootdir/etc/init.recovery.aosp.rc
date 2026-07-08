@@ -1,0 +1,5 @@
+# AOSP stock recovery init overlay
+# Preserves original post-fs mount semantics while OF qcom.rc handles USB.
+on fs
+    wait /dev/block/platform/soc/${ro.boot.bootdevice}
+    symlink /dev/block/platform/soc/${ro.boot.bootdevice} /dev/block/bootdevice

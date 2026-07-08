@@ -4,6 +4,8 @@ aaudio.mmap_exclusive_policy=2
 aaudio.mmap_policy=2
 ro.audio.flinger_standbytime_ms=2000
 ro.audio.monitorRotation=true
+ro.audio.spatializer_enabled=true
+ro.audio.stereo_spatialization_enabled=true
 ro.vendor.audio.btsamplerate.adaptive=true
 ro.vendor.audio.dualadc.support=true
 ro.vendor.audio.gain.support=true
@@ -52,6 +54,9 @@ ro.camerax.extensions.enabled=true
 ro.crypto.metadata_init_delete_all_keys.enabled=true
 vendor.wv.oemcrypto.debug.enable_external_display_check=false
 vendor.wv.oemcrypto.debug.enable_hlos_data_path=true
+
+# Displayfeature
+ro.vendor.displayfeature.dump=true
 
 # DPM
 persist.vendor.dpm.vndr.feature=1
@@ -142,7 +147,7 @@ vendor.display.enable_rc_support=1
 vendor.display.use_smooth_motion=1
 vendor.display.vds_allow_hwc=1
 vendor.gralloc.disable_ubwc=0
-vendor.gralloc.enable_logs=0
+vendor.gralloc.enable_logs=1
 vendor.gralloc.enable_snapalloc=1
 
 # Incremental FS
@@ -218,3 +223,12 @@ vendor.usb.use_gadget_hal=1
 
 # WiFi
 wifi.aware.interface=wifi-aware0
+
+# Dalvik Heap Configurations moved to /system/build.prop via device.mk PRODUCT_PROPERTY_OVERRIDES.
+# /vendor/build.prop loads too late for zygote on this device (caused -Xmx16m OOM at class preload);
+# keeping them here also de-duped the system copy out of /system/build.prop.
+
+# OPUS bring-up: survive slow imageless first boot (Watchdog 60s*4=240s) + fix keystore boot-level key
+# (odsign Status(-8) INCOMPATIBLE_BLOCK_MODE = TEE rejects EARLY_BOOT_ONLY; use MAX_USES_PER_BOOT)
+ro.hw_timeout_multiplier=4
+ro.keystore.boot_level_key.strategy=TRUSTED_ENVIRONMENT:MAX_USES_PER_BOOT

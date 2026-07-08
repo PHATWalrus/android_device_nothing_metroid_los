@@ -7,4 +7,35 @@
         <name>android.hardware.secure_element</name>
         <fqname>ISecureElement/eSE1</fqname>
     </hal>
+    <!-- KeyMint (TEE) + RKP/secureclock/sharedsecret. keystore2 discovers keymint backends
+         via VINTF; without these it aborts constructing the mandatory TEE level -> InitFatalReboot.
+         Versions verbatim from stock svf/etc/vintf/manifest/android.hardware.security.keymint-service-qti.xml -->
+    <hal format="aidl">
+        <name>android.hardware.security.keymint</name>
+        <version>3</version>
+        <fqname>IKeyMintDevice/default</fqname>
+    </hal>
+    <hal format="aidl">
+        <name>android.hardware.security.keymint</name>
+        <version>3</version>
+        <fqname>IRemotelyProvisionedComponent/default</fqname>
+    </hal>
+    <hal format="aidl">
+        <name>android.hardware.security.secureclock</name>
+        <fqname>ISecureClock/default</fqname>
+    </hal>
+    <hal format="aidl">
+        <name>android.hardware.security.sharedsecret</name>
+        <fqname>ISharedSecret/default</fqname>
+    </hal>
+    <!-- QTEE transport HALs the keymint/gatekeeper stack registers. Missing decl ->
+         qseecom-service + minkipcbinder SIGABRT on registerAsService. -->
+    <hal format="aidl">
+        <name>vendor.qti.hardware.qseecom</name>
+        <fqname>IQSEECom/default</fqname>
+    </hal>
+    <hal format="aidl">
+        <name>vendor.qti.hardware.minkipcbinder</name>
+        <fqname>IMinkServer/default</fqname>
+    </hal>
 </manifest>

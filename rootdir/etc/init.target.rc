@@ -69,6 +69,10 @@ on early-init
     write /proc/sys/kernel/printk_devkmsg ratelimited
     export MEMTAG_OPTIONS off
     export ADSP_LIBRARY_PATH /odm/lib/rfsa/adsp;/vendor/lib/rfsa/adsp/;/system/lib/rfsa/adsp;/system/vendor/lib/rfsa/adsp;/dsp
+    # Set heap props before zygote starts to avoid AndroidRuntime defaults (-Xmx16m).
+    setprop dalvik.vm.heapstartsize 8m
+    setprop dalvik.vm.heapgrowthlimit 256m
+    setprop dalvik.vm.heapsize 512m
     # set tcp_mtu_probing to 1
     write /proc/sys/net/ipv4/tcp_mtu_probing 1
 
@@ -637,11 +641,6 @@ on property:persist.vendor.tcpdump.enable=true
 on property:persist.vendor.tcpdump.enable=false
     stop vendor.tcpdump
 
-service vendor.nv_mac /vendor/bin/nv_mac
-   class late_start
-   user system
-   group system inet net_admin wifi net_raw
-   oneshot
 
 on early-boot && property:persist.vendor.pcie.boot_option=*
     write /sys/bus/platform/devices/1c00000.qcom,pcie/debug/boot_option ${persist.vendor.pcie.boot_option}
@@ -798,7 +797,7 @@ service mi-serial-sh /odm/bin/init.mi.serial.sh
     disabled
     oneshot
 
-service vendor.sensors-hal-multihal /vendor/bin/hw/android.hardware.sensors-service.nothing-multihal
+service vendor.sensors-hal-multihal /vendor/bin/hw/android.hardware.sensors-service.multihal
     override
     class hal
     user system
@@ -821,3 +820,11 @@ service vendor.audio-hal-aidl /vendor/bin/hw/audiohalservice.qti
     writepid /dev/cpuset/foreground/tasks /dev/stune/foreground/tasks
     socket audio_us_socket_0 seqpacket 0666 system system
     onrestart restart audioserver
+
+# OPUS-USB-BRINGUP: force dwc3 into peripheral mode so the adb gadget can bind
+# (LOS boot showed 'udc a600000.dwc3: failed to start g1: -77'; recovery/onyx set this explicitly).
+on property:sys.usb.controller=*
+    write /sys/bus/platform/devices/a600000.ssusb/mode peripheral
+    write /sys/bus/platform/devices/a600000.dwc3/mode peripheral
+on early-boot
+    write /sys/bus/platform/devices/a600000.ssusb/mode peripheral

@@ -1,0 +1,4 @@
+# Bring-up: label QTI security HAL binaries that sepolicy_vndr does NOT label.
+# (gatekeeper/keymint/keymint-spu REMOVED in b19 - sepolicy_vndr provides vendor_hal_*_qti_exec for those.)
+/vendor/bin/hw/android\.hardware\.weaver-service\.nxp-qti                u:object_r:hal_weaver_default_exec:s0
+/vendor/bin/hw/android\.hardware\.secure_element-service\.qti           u:object_r:hal_secure_element_default_exec:s0

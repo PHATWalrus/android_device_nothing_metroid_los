@@ -1,0 +1,8 @@
+// gralloc mapper VINTF fragment (standalone, matches stock layout — NOT inlined into
+// manifest.xml, since AOSP libui's openDeclaredPassthroughHal only resolves standalone
+// fragments under etc/vintf/manifest/, per PLAYBOOK_FROM_OPUS_20260706_MAPPER_VINTF_FIX.md)
+vintf_fragment {
+    name: "mapper.qti.xml",
+    src: "mapper.qti.xml",
+    vendor: true,
+}
