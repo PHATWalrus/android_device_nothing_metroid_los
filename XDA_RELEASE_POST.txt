@@ -1,0 +1,146 @@
+[ROM][UNOFFICIAL][ALPHA][16] LineageOS 23 for Nothing Phone (3) [metroid]
+
+=====================================================================
+  LineageOS 23 — Nothing Phone (3) — UNOFFICIAL / ALPHA / BRING-UP
+=====================================================================
+
+  /* Disclaimer */
+  Your warranty is now void. This is an EARLY BRING-UP build, not a daily
+  driver. It BOOTS to the Setup Wizard — but audio, cellular (calls/data),
+  camera and NFC DO NOT WORK yet. Flash it only if you want to help test
+  and know how to recover with fastboot. I am not responsible for bricked
+  devices, dead SD cards, thermonuclear war, or you getting fired because
+  the alarm app failed. YOU chose to make these modifications.
+
+
+===========================
+  Introduction
+===========================
+This is an unofficial, work-in-progress port of LineageOS 23 (Android 16)
+to the Nothing Phone (3), codename "metroid" (Qualcomm SM8735).
+
+It is posted as an ALPHA / bring-up milestone: the OS boots to a usable UI
+(Setup Wizard, launcher, Settings), but several major subsystems are still
+being brought up. If you are a developer or tester, a full technical
+bring-up write-up is linked below — contributions welcome.
+
+
+===========================
+  What works
+===========================
+- Boots to the LineageOS Setup Wizard / launcher (boot_completed)
+- Display + touch
+- adb
+- Core Android framework / system services
+- Keystore / KeyMint (secure boot state)
+- Storage / /data
+
+
+===========================
+  What does NOT work (yet)
+===========================
+- AUDIO — no sound at all (ADSP audio-DSP / sound card not up)
+- CELLULAR (RIL) — no calls, SMS or mobile data (HAL link failure)
+- CAMERA — camera HAL not starting (HAL link failure)
+- NFC / Secure Element
+- Fingerprint (HAL crash-loops)
+- First boot is SLOW (~5-7 min) — runtime is currently "imageless"
+  (ART boot image not generated); this will be fixed.
+- Assorted vendor HAL noise (memtrack/lights/power.stats) — cosmetic
+
+Basically: treat this as "does it POST and show a UI", not as a phone.
+
+
+===========================
+  Installation
+===========================
+PREREQUISITES
+- Unlocked bootloader.
+- Platform-tools (adb/fastboot) on your PC.
+- A full stock backup / the ability to restore stock via fastboot. DO THIS
+  FIRST. You WILL need it.
+- Custom recovery for metroid (OrangeFox / TWRP for this device).
+
+IMPORTANT device-specific notes (please read):
+- Use slot A. Before flashing:  fastboot set_active a  and  fastboot erase misc
+- Do NOT disable verity/verification on the ROOT vbmeta.
+- This build ships a prebuilt boot chain (boot/init_boot/vendor_boot/dtbo);
+  flash the ones included with the package, not mismatched stock ones.
+
+STEPS
+1. Back up stock. Seriously.
+2. Reboot to bootloader:            adb reboot bootloader
+3. fastboot set_active a
+4. fastboot erase misc
+5. Flash the images from the package (boot, init_boot, vendor_boot, dtbo,
+   vbmeta*, super) exactly as documented in the package README.
+6. fastboot erase userdata  &&  fastboot erase metadata   (clean first boot)
+7. fastboot reboot
+8. Wait. First boot takes several minutes (it is compiling on-device).
+   If it sits on the boot animation for 5+ minutes that can be NORMAL for
+   this alpha — give it up to ~8 min before assuming it failed.
+
+If it bootloops or hangs: restore your stock backup via fastboot.
+
+
+===========================
+  How to build from source
+===========================
+Full device tree + framework patches are on GitHub (link below).
+- Sync a LineageOS 23 tree.
+- Add the metroid device tree + a local manifest (see repo README).
+- Extract proprietary blobs from your own device (extract-files.sh) — blobs
+  are NOT redistributed.
+- Apply the two frameworks/base patches in patches/.
+- lunch lineage_metroid-bp2a-userdebug  &&  m
+
+A complete "how it was brought up" guide (every fix + the debugging method)
+is in the repo: BRINGUP_GUIDE.md.
+
+
+===========================
+  Downloads
+===========================
+- ROM package:    << add your link (GitHub Releases / AndroidFileHost) >>
+- (No OTA yet — this is a manual-flash alpha.)
+
+
+===========================
+  Sources
+===========================
+- Device tree:        github.com/<your-username>/android_device_nothing_metroid
+- Kernel / prebuilts: << link >>
+- LineageOS:          github.com/LineageOS
+- Framework patches:  in the device-tree repo under patches/
+
+GPL: kernel source for this device is published by Nothing; the LineageOS
+sources and this device tree are linked above.
+
+
+===========================
+  Known bugs / reporting
+===========================
+This is bring-up — most things are "known broken" (see list above). If you
+hit something NOT on the list, post: a logcat (adb logcat -b all > log.txt),
+dmesg, and what you did. Please don't report "audio doesn't work" — it's
+known.
+
+
+===========================
+  Credits / Thanks
+===========================
+- LineageOS team & Qualcomm CAF
+- Reference trees: onyx (Xiaomi 15 / SM8750), pong (Nothing Phone 2),
+  and the SM8735 ODM trees
+- Nothing, for publishing the kernel source
+- Everyone testing this alpha
+
+
+===========================
+  XDA:DevDB / thread info
+===========================
+ROM OS Version: Android 16 (LineageOS 23)
+ROM Kernel: Linux 6.6
+Based On: LineageOS
+Status: ALPHA / Bring-up
+Created: 2026-xx-xx

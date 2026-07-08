@@ -1,0 +1,13 @@
+diff --git a/services/usb/java/com/android/server/usb/hal/gadget/UsbGadgetAidl.java b/services/usb/java/com/android/server/usb/hal/gadget/UsbGadgetAidl.java
+index b7f7c43ea..44cbe435b 100644
+--- a/services/usb/java/com/android/server/usb/hal/gadget/UsbGadgetAidl.java
++++ b/services/usb/java/com/android/server/usb/hal/gadget/UsbGadgetAidl.java
+@@ -93,7 +93,7 @@ public final class UsbGadgetAidl implements UsbGadgetHal {
+ 
+     static boolean isServicePresent(IndentingPrintWriter pw) {
+         try {
+-            return ServiceManager.isDeclared(USB_GADGET_AIDL_SERVICE);
++            return ServiceManager.checkService(USB_GADGET_AIDL_SERVICE) != null; // OPUS bring-up: was isDeclared - avoid finishBooting block on disabled gadget HAL
+         } catch (NoSuchElementException e) {
+             logAndPrintException(pw, "connectToProxy: usb gadget Aidl hal service not found.", e);
+         }
