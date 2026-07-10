@@ -40,3 +40,11 @@ vintf_fragment {
     src: "hal_batch1.metroid.xml",
     vendor: true,
 }
+
+// batch 2 (2026-07-09 night): NFC (st HAL runs, aborts undeclared) + wfdhdcp drm instance
+// (service runs, aborts undeclared). secure_element SIM1/SIM2 deferred until SIM present.
+vintf_fragment {
+    name: "hal_batch2.metroid.xml",
+    src: "hal_batch2.metroid.xml",
+    vendor: true,
+}
