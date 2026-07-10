@@ -30,3 +30,13 @@ vintf_fragment {
     src: "audio_effects.metroid.xml",
     vendor: true,
 }
+
+// batch 1 of crash-looper declarations (2026-07-09): identity, power.stats, memtrack,
+// sensorscalibrate, lights, snapdragonServices, fingerprint(+goodix daemon). Every one of
+// these services RUNS and aborts on addService -3 (not declared) — so declaring is safe
+// per the "only declare served HALs" rule. dspservice + wfdhdcp deferred (verify serve first).
+vintf_fragment {
+    name: "hal_batch1.metroid.xml",
+    src: "hal_batch1.metroid.xml",
+    vendor: true,
+}
