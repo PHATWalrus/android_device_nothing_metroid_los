@@ -214,9 +214,15 @@ PRODUCT_COPY_FILES += \
     vendor/nothing/metroid/proprietary/vendor/lib64/libwifi-hal-qcom.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libwifi-hal-qcom.so \
     vendor/nothing/metroid/proprietary/vendor/lib64/libwifi-hal-ctrl.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libwifi-hal-ctrl.so \
     vendor/nothing/metroid/proprietary/vendor/lib64/libwifi-system-iface.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libwifi-system-iface.so \
-    vendor/nothing/metroid/proprietary/vendor/lib64/libpower.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libpower.so
+    vendor/nothing/metroid/proprietary/vendor/lib64/libpower.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libpower.so \
+    vendor/nothing/metroid/proprietary/vendor/lib64/android.hardware.health-V1-ndk.so:$(TARGET_COPY_OUT_VENDOR)/lib64/android.hardware.health-V1-ndk.so
 
 # sensors: STOCK multihal rc (our packaged rc had `disabled` added during bring-up; with
 # ISensors now declared in VINTF, a non-started multihal = system_server watchdog boot-block).
 PRODUCT_COPY_FILES += \
     vendor/nothing/metroid/proprietary/vendor/etc/init/android.hardware.sensors-service-multihal.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/android.hardware.sensors-service-multihal.rc
+
+# bluetooth: STOCK BT HAL rc (packaged rc had bring-up `disabled` -> IBluetoothHci declared
+# but never served -> BT stack stuck BLE_TURNING_ON->OFF). Verified live: BT state ON w/ address.
+PRODUCT_COPY_FILES += \
+    vendor/nothing/metroid/proprietary/vendor/etc/init/android.hardware.bluetooth@aidl-service-qti.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/android.hardware.bluetooth@aidl-service-qti.rc

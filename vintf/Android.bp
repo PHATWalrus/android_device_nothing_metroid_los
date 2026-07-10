@@ -48,3 +48,13 @@ vintf_fragment {
     src: "hal_batch2.metroid.xml",
     vendor: true,
 }
+
+// batch 3 (2026-07-09): Bluetooth HCI (+audio provider, SAR) + GNSS. QTI binaries exist
+// (android.hardware.bluetooth@aidl-service-qti, android.hardware.gnss-aidl-service-qti);
+// stack asked for these and got VINTF denials. finder/socket omitted (not in stock decls
+// or unverified serve).
+vintf_fragment {
+    name: "hal_batch3.metroid.xml",
+    src: "hal_batch3.metroid.xml",
+    vendor: true,
+}
