@@ -67,3 +67,52 @@ vintf_fragment {
     src: "camera_provider.metroid.xml",
     vendor: true,
 }
+
+// batch 4 (2026-07-10): radio AIDL HALs (qcrilNrd runs fine, was just undeclared -> telephony
+// dead), clearkey drm + qspa (both were crash-looping on undeclared registration). Fragments
+// copied verbatim from stock B4.0 vendor manifest. Verified live via overlay before adding.
+vintf_fragment {
+    name: "android.hardware.radio.config.metroid4.xml",
+    src: "android.hardware.radio.config.xml",
+    vendor: true,
+}
+vintf_fragment {
+    name: "android.hardware.radio.data.metroid4.xml",
+    src: "android.hardware.radio.data.xml",
+    vendor: true,
+}
+vintf_fragment {
+    name: "android.hardware.radio.messaging.metroid4.xml",
+    src: "android.hardware.radio.messaging.xml",
+    vendor: true,
+}
+vintf_fragment {
+    name: "android.hardware.radio.modem.metroid4.xml",
+    src: "android.hardware.radio.modem.xml",
+    vendor: true,
+}
+vintf_fragment {
+    name: "android.hardware.radio.network.metroid4.xml",
+    src: "android.hardware.radio.network.xml",
+    vendor: true,
+}
+vintf_fragment {
+    name: "android.hardware.radio.sim.metroid4.xml",
+    src: "android.hardware.radio.sim.xml",
+    vendor: true,
+}
+vintf_fragment {
+    name: "android.hardware.radio.voice.metroid4.xml",
+    src: "android.hardware.radio.voice.xml",
+    vendor: true,
+}
+vintf_fragment {
+    name: "android.hardware.drm-service.clearkey.metroid4.xml",
+    src: "android.hardware.drm-service.clearkey.xml",
+    vendor: true,
+}
+vintf_fragment {
+    name: "vendor.qti.qspa-service.metroid4.xml",
+    src: "vendor.qti.qspa-service.xml",
+    vendor: true,
+}

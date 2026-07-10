@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Status bar + corner metrics extracted 2026-07-10 from stock B4.0
+     FrameworksResCommon_Sys_Metroid.apk (1260x2800 native panel). -->
+<resources>
+    <dimen name="status_bar_height">162px</dimen>
+    <dimen name="status_bar_height_default">162px</dimen>
+    <dimen name="status_bar_height_portrait">162px</dimen>
+    <dimen name="status_bar_height_landscape">36dp</dimen>
+    <dimen name="rounded_corner_radius">115px</dimen>
+</resources>

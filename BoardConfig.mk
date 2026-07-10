@@ -261,3 +261,9 @@ include device/qcom/sepolicy_vndr/SEPolicy.mk
 BOARD_VENDOR_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy/vendor
 SYSTEM_EXT_PUBLIC_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy/public
 SYSTEM_EXT_PRIVATE_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy/private
+
+# --- 64-bit media stack (Opus 2026-07-10): 32-bit mediaserver/drmserver cannot exec
+# on this 64-only device (zygote64) -> init 'Exec format error' loop -> Aperture blocks on
+# media.resource_manager -> black camera preview. Flip both to 64-bit via soong_config.
+TARGET_DYNAMIC_64_32_MEDIASERVER := true
+TARGET_DYNAMIC_64_32_DRMSERVER := true

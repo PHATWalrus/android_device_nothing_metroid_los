@@ -1,12 +1,29 @@
 # LineageOS 23 device tree — Nothing Phone (3) `metroid`
 
-Unofficial, **work-in-progress bring-up** of LineageOS 23 (Android 16) for the
-Nothing Phone (3) — codename `metroid`, Qualcomm **SM8735**.
+Unofficial port of LineageOS 23 (Android 16) for the Nothing Phone (3) —
+codename `metroid`, Qualcomm **SM8735**.
 
-**Status: ALPHA — it BOOTS** to the Setup Wizard (`sys.boot_completed=1`), but
-**audio, cellular (RIL), camera and NFC do not work yet.** See
-[`BRINGUP_GUIDE.md`](BRINGUP_GUIDE.md) for the full technical story and
-[Known issues](#known-issues).
+**Status: BETA** — boots to a usable daily-driver UI with most major subsystems
+working. **Camera is not working yet** (HAL linker-namespace issue — see
+[Known issues](#known-issues)). See [`BRINGUP_GUIDE.md`](BRINGUP_GUIDE.md) for
+the full technical story.
+
+## What works
+| Feature | Status |
+|---------|--------|
+| Boot to LineageOS UI | ✅ Working |
+| Display + touch | ✅ Working |
+| Wi-Fi (2.4 GHz + 5 GHz) | ✅ Working |
+| Audio (speaker, earpiece, mic) | ✅ Working |
+| Cellular / RIL (calls, SMS, data) | ✅ Working |
+| Bluetooth | ✅ Working |
+| GNSS / GPS | ✅ Working |
+| NFC | ✅ Working |
+| Sensors (accel, gyro, proximity…) | ✅ Working |
+| adb / USB debugging | ✅ Working |
+| Storage / /data | ✅ Working |
+| Camera | ❌ Not working (HAL link failure) |
+| Fingerprint (in-display) | ❌ Not working (HAL crash-loop) |
 
 ## What this repo is
 The **device tree** (`device/nothing/metroid`) plus the **framework patches**,
@@ -42,11 +59,13 @@ prebuilt boot chain.
 - `fastboot boot` hangs — always flash + reboot.
 
 ## Known issues
-- **Audio** — no ALSA sound card (ADSP audio-DSP path down).
-- **RIL / Camera** — HAL `CANNOT LINK` (linker-namespace / `ld.config.txt`).
-- **NFC / SE**, **fingerprint** — HAL down.
-- **Slow first boot (~7 min)** — runtime is imageless (odsign/boot-level key);
-  fixable with `WITH_DEXPREOPT`.
+- **Camera** — camera HAL `CANNOT LINK` (`android.frameworks.cameraservice.common-V1-ndk.so`);
+  linker-namespace / `ld.config.txt` problem. **This is the primary outstanding issue.**
+- **Fingerprint** — HAL crash-loops; in-display fingerprint not working.
+- **Slow first boot (~5-7 min)** — runtime is imageless (odsign/boot-level key);
+  fixable with `WITH_DEXPREOPT`; subsequent boots are normal speed.
+- Minor cosmetic HAL noise: `memtrack`, `lights`, `power.stats` log
+  registration failures — not user-visible.
 
 ## Credits
 LineageOS, Qualcomm CAF, reference trees **onyx** (Xiaomi 15 / SM8750) and

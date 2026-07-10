@@ -167,7 +167,12 @@ PRODUCT_COPY_FILES += \
 # fragments under etc/vintf/manifest/, per PLAYBOOK_FROM_OPUS_20260706_MAPPER_VINTF_FIX.md).
 # AOSP build rules forbid installing vintf/manifest/* via PRODUCT_COPY_FILES (build/make/core/
 # Makefile hard-errors on it) — must go through the vintf_fragment soong module instead.
-PRODUCT_PACKAGES += mapper.qti.xml wifi-service.metroid.xml audio_qti_services.metroid.xml audio_effects.metroid.xml hal_batch1.metroid.xml hal_batch2.metroid.xml hal_batch3.metroid.xml camera_provider.metroid.xml
+# mapper.qti.xml dropped 2026-07-10: qcom-caf gralloc source (mapper.qti) now provides the
+# same fragment -> fsgen packaging conflict; the standalone-fragment fix was proven ineffective
+# anyway (see metroid-mapper-vintf-fix-attempt-20260706).
+PRODUCT_PACKAGES += wifi-service.metroid.xml audio_qti_services.metroid.xml audio_effects.metroid.xml hal_batch1.metroid.xml hal_batch2.metroid.xml hal_batch3.metroid.xml camera_provider.metroid.xml
+# batch 4 (2026-07-10, live-verified): radio HALs + clearkey + qspa VINTF declarations
+PRODUCT_PACKAGES += android.hardware.radio.config.metroid4.xml android.hardware.radio.data.metroid4.xml android.hardware.radio.messaging.metroid4.xml android.hardware.radio.modem.metroid4.xml android.hardware.radio.network.metroid4.xml android.hardware.radio.sim.metroid4.xml android.hardware.radio.voice.metroid4.xml android.hardware.drm-service.clearkey.metroid4.xml vendor.qti.qspa-service.metroid4.xml
 
 # Force copy missing proprietary files
 $(call inherit-product-if-exists, device/nothing/metroid/proprietary_force_copy.mk)
@@ -191,3 +196,7 @@ PRODUCT_PACKAGES += audiohalservice.qti
 
 DEVICE_PACKAGE_OVERLAYS += device/nothing/metroid/overlay
 
+
+# Camera: skip Morpho EIS init in GME node (SIGILL in libmorpho_video_stabilizer on first
+# frame; forces QTIGMEWrapper instead). Verified live 2026-07-10 — camera preview + capture work.
+PRODUCT_VENDOR_PROPERTIES += persist.vendor.morpho.eis.force_gmenode=1
