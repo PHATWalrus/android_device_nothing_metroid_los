@@ -96,9 +96,16 @@ PRODUCT_PACKAGES +=     vendor.qti.hardware.vibrator.service
 # Vendor servicemanager (frameworks/native) - vndservice_contexts users need it
 PRODUCT_PACKAGES +=     vndservicemanager
 
-# WiFi HAL + supplicant (AOSP hardware/interfaces/wifi + external/wpa_supplicant_8).
-# .rc shipped, binary missing. Not required for boot; drop this block if it fails to build.
-PRODUCT_PACKAGES +=     android.hardware.wifi-service     wpa_supplicant     wpa_cli \
+# WiFi supplicant (external/wpa_supplicant_8). The wifi HAL service is the STOCK blob
+# (proprietary_force_copy.mk): the AOSP generic android.hardware.wifi-service has no vendor
+# impl here ("failed to open /vendor/etc/wifi/vendor_hals") -> IWifi start fails code 9.
+# Stock service + libwifi-hal{,-qcom,-ctrl} + wcn7750 WCNSS_qcom_cfg.ini (icnss2 probe needs
+# it or wlan0 never appears). Verified live on device 2026-07-09 (enable + multi-band scan).
+# libxml2.vendor: was only installed as a dep of the removed AOSP wifi-service; qseecomd
+# (libdrmfs.so) hard-requires it -> without it TEE dies -> keymint -> gatekeeper -> system_server
+# crash-loop (BiometricService "Gatekeeper service not available"). Found 2026-07-09.
+PRODUCT_PACKAGES +=     libxml2.vendor
+PRODUCT_PACKAGES +=     wpa_supplicant     wpa_cli \
                         android.hardware.wifi.hostapd-V2-ndk
 # Display HALs from source (b20): ~23s reset fix. Module names mirror onyx un_dt device.mk
 # (same SoC sun/sm8750); composer-service added (essential, buildable in sm8750/display tree).
@@ -160,7 +167,7 @@ PRODUCT_COPY_FILES += \
 # fragments under etc/vintf/manifest/, per PLAYBOOK_FROM_OPUS_20260706_MAPPER_VINTF_FIX.md).
 # AOSP build rules forbid installing vintf/manifest/* via PRODUCT_COPY_FILES (build/make/core/
 # Makefile hard-errors on it) — must go through the vintf_fragment soong module instead.
-PRODUCT_PACKAGES += mapper.qti.xml
+PRODUCT_PACKAGES += mapper.qti.xml wifi-service.metroid.xml audio_qti_services.metroid.xml audio_effects.metroid.xml
 
 # Force copy missing proprietary files
 $(call inherit-product-if-exists, device/nothing/metroid/proprietary_force_copy.mk)
@@ -181,3 +188,4 @@ PRODUCT_SYSTEM_PROPERTIES += \
 # missing -> audioserver AudioFlinger::onFirstRef() null-derefs -> SoundTrigger ExternalCaptureStateTracker
 # connect() LOG_ALWAYS_FATAL -> system_server crash loop. Install the core (+effect) audio HAL (soong pulls deps+VINTF).
 PRODUCT_PACKAGES += audiohalservice.qti
+

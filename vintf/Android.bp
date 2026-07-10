@@ -6,3 +6,27 @@ vintf_fragment {
     src: "mapper.qti.xml",
     vendor: true,
 }
+
+// wifi HAL VINTF fragment for the stock blob android.hardware.wifi-service (2026-07-09)
+vintf_fragment {
+    name: "wifi-service.metroid.xml",
+    src: "wifi-service.metroid.xml",
+    vendor: true,
+}
+
+// audio: AGM/PAL/PALEventNotifier declarations (served by audiohalservice.qti blob).
+// IListenSoundModel deliberately OMITTED — not served in this build (AGENTS.md warning #1).
+vintf_fragment {
+    name: "audio_qti_services.metroid.xml",
+    src: "audio_qti_services.metroid.xml",
+    vendor: true,
+}
+
+
+// audio effects IFactory declaration — audioserver hard-requires it (AudioFlinger::onFirstRef
+// SIGSEGV without it). The QTI effects module's own fragment does NOT land in our image.
+vintf_fragment {
+    name: "audio_effects.metroid.xml",
+    src: "audio_effects.metroid.xml",
+    vendor: true,
+}
