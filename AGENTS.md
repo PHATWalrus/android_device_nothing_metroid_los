@@ -34,11 +34,14 @@ known-good state. Git tag: **`known-good-boot-20260708`** (this repo).
      force-clean: `rm $OUT/vendor/etc/init/hw/init.target.rc` and the matching
      `out/soong/.intermediates/**/init.target.rc`, then rebuild vendorimage.
 
-3. **Do NOT re-enable the QTI USB gadget HAL.** It stays `disabled` in
-   `android.hardware.usb.gadget-service.qti.rc`. Early-adb provides USB via a
-   minimal adb-only configfs gadget instead. The framework patch
-   `UsbGadgetAidl.isServicePresent` (see patches/) already makes UsbService tolerate
-   the HAL being absent so `finishBooting()` doesn't hang.
+3. **USB Gadget HAL and early-adb are integrated in a hybrid config.**
+   The QTI USB gadget HAL (`vendor.usbgadget-hal`) is enabled to allow dynamic
+   USB composition switching (MTP, PTP, MIDI, tethering) via the LineageOS UI.
+   To avoid conflicts and retain early boot observability, `init.qcom.usb.rc`
+   sets up a hybrid configuration: it initializes and mounts all configfs
+   functions (MTP, PTP, adb, etc.) early under `on fs` and triggers static
+   early-adb at boot, before handing over to the dynamic USB gadget HAL
+   (triggered by `sys.usb.configfs=2` in late boot).
 
 4. **Do NOT revert the two `frameworks/base` patches** (in `patches/frameworks_base/`).
    They are required to reach boot_completed:

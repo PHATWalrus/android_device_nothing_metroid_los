@@ -58,3 +58,12 @@ vintf_fragment {
     src: "hal_batch3.metroid.xml",
     vendor: true,
 }
+
+// camera provider declaration (2026-07-10): the prior camera_provider.qti.xml fragment got
+// pruned by one of today's builds -> provider aborts "Cannot register AIDL QTI camera provider
+// service" every ~5s. Content from configs/hidl/manifest_qti_hals.xml.
+vintf_fragment {
+    name: "camera_provider.metroid.xml",
+    src: "camera_provider.metroid.xml",
+    vendor: true,
+}

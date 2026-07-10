@@ -167,7 +167,7 @@ PRODUCT_COPY_FILES += \
 # fragments under etc/vintf/manifest/, per PLAYBOOK_FROM_OPUS_20260706_MAPPER_VINTF_FIX.md).
 # AOSP build rules forbid installing vintf/manifest/* via PRODUCT_COPY_FILES (build/make/core/
 # Makefile hard-errors on it) — must go through the vintf_fragment soong module instead.
-PRODUCT_PACKAGES += mapper.qti.xml wifi-service.metroid.xml audio_qti_services.metroid.xml audio_effects.metroid.xml hal_batch1.metroid.xml hal_batch2.metroid.xml hal_batch3.metroid.xml
+PRODUCT_PACKAGES += mapper.qti.xml wifi-service.metroid.xml audio_qti_services.metroid.xml audio_effects.metroid.xml hal_batch1.metroid.xml hal_batch2.metroid.xml hal_batch3.metroid.xml camera_provider.metroid.xml
 
 # Force copy missing proprietary files
 $(call inherit-product-if-exists, device/nothing/metroid/proprietary_force_copy.mk)
@@ -188,4 +188,6 @@ PRODUCT_SYSTEM_PROPERTIES += \
 # missing -> audioserver AudioFlinger::onFirstRef() null-derefs -> SoundTrigger ExternalCaptureStateTracker
 # connect() LOG_ALWAYS_FATAL -> system_server crash loop. Install the core (+effect) audio HAL (soong pulls deps+VINTF).
 PRODUCT_PACKAGES += audiohalservice.qti
+
+DEVICE_PACKAGE_OVERLAYS += device/nothing/metroid/overlay
 
