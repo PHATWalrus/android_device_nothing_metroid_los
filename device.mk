@@ -200,3 +200,100 @@ DEVICE_PACKAGE_OVERLAYS += device/nothing/metroid/overlay
 # Camera: skip Morpho EIS init in GME node (SIGILL in libmorpho_video_stabilizer on first
 # frame; forces QTIGMEWrapper instead). Verified live 2026-07-10 — camera preview + capture work.
 PRODUCT_VENDOR_PROPERTIES += persist.vendor.morpho.eis.force_gmenode=1
+
+# Runtime dep of several camera/graphics blobs (their bp lists only V2 to avoid the
+# multi-version aidl conflict; the .so itself still DT_NEEDs V1).
+PRODUCT_PACKAGES += android.hardware.graphics.allocator-V1-ndk.vendor
+
+# Vendor-rebuild audit restores (2026-07-11): source-built services whose blob twins were
+# stripped; + the lowercase smoothzoom config (camera provider crash-loops without it).
+PRODUCT_PACKAGES += android.hardware.sensors-service.multihal hostapd hostapd_cli \
+    vendor.qti.hardware.memtrack-service
+PRODUCT_COPY_FILES += \
+    vendor/nothing/metroid/proprietary/vendor/etc/camera/metroid_smoothzoom_config.json:$(TARGET_COPY_OUT_VENDOR)/etc/camera/metroid_smoothzoom_config.json
+PRODUCT_PACKAGES += android.hardware.memtrack-V1-ndk.vendor android.hardware.graphics.common-V5-ndk.vendor
+PRODUCT_PACKAGES += vendor.qti.hardware.display.config-V1-ndk.vendor vendor.qti.hardware.display.config-V3-ndk.vendor vendor.qti.hardware.display.config-V4-ndk.vendor vendor.qti.hardware.display.config-V6-ndk.vendor vendor.qti.hardware.display.config-V8-ndk.vendor vendor.qti.hardware.display.config-V9-ndk.vendor vendor.qti.hardware.display.config-V10-ndk.vendor vendor.qti.hardware.display.config-V11-ndk.vendor vendor.qti.hardware.display.composer3-V2-ndk.vendor
+PRODUCT_PACKAGES += vendor.qti.hardware.paleventnotifier-V2-ndk.vendor
+PRODUCT_PACKAGES += libcppbor.vendor liblogwrap
+PRODUCT_PACKAGES += android.hardware.audio.effect-V2-ndk.vendor
+
+# All versioned NDK interface libs formerly pulled via blob dep entries (purged 2026-07-11
+# to end multi-version aidl conflicts). Installed explicitly as source-built vendor variants.
+PRODUCT_PACKAGES += \
+    android.frameworks.cameraservice.common-V1-ndk.vendor \
+    android.frameworks.cameraservice.device-V2-ndk.vendor \
+    android.frameworks.cameraservice.service-V2-ndk.vendor \
+    android.frameworks.location.altitude-V2-ndk.vendor \
+    android.frameworks.sensorservice-V1-ndk.vendor \
+    android.hardware.audio.core-V2-ndk.vendor \
+    android.hardware.audio.core.sounddose-V1-ndk.vendor \
+    android.hardware.authsecret-V1-ndk.vendor \
+    android.hardware.biometrics.common-V3-ndk.vendor \
+    android.hardware.biometrics.fingerprint-V3-ndk.vendor \
+    android.hardware.bluetooth-V1-ndk.vendor \
+    android.hardware.bluetooth.audio-V3-ndk.vendor \
+    android.hardware.bluetooth.audio-V4-ndk.vendor \
+    android.hardware.bluetooth.finder-V1-ndk.vendor \
+    android.hardware.bluetooth.lmp_event-V1-ndk.vendor \
+    android.hardware.camera.common-V1-ndk.vendor \
+    android.hardware.camera.device-V2-ndk.vendor \
+    android.hardware.camera.metadata-V2-ndk.vendor \
+    android.hardware.camera.provider-V2-ndk.vendor \
+    android.hardware.common.fmq-V1-ndk.vendor \
+    android.hardware.drm-V1-ndk.vendor \
+    android.hardware.gatekeeper-V1-ndk.vendor \
+    android.hardware.gnss-V4-ndk.vendor \
+    android.hardware.graphics.allocator-V2-ndk.vendor \
+    android.hardware.graphics.common-V5-ndk.vendor \
+    android.hardware.health-V1-ndk.vendor \
+    android.hardware.identity-V5-ndk.vendor \
+    android.hardware.light-V2-ndk.vendor \
+    android.hardware.media.c2-V1-ndk.vendor \
+    android.hardware.nfc-V1-ndk.vendor \
+    android.hardware.power-V5-ndk.vendor \
+    android.hardware.power.stats-V2-ndk.vendor \
+    android.hardware.radio-V2-ndk.vendor \
+    android.hardware.radio-V3-ndk.vendor \
+    android.hardware.radio.config-V3-ndk.vendor \
+    android.hardware.radio.data-V2-ndk.vendor \
+    android.hardware.radio.data-V3-ndk.vendor \
+    android.hardware.radio.messaging-V3-ndk.vendor \
+    android.hardware.radio.modem-V3-ndk.vendor \
+    android.hardware.radio.network-V2-ndk.vendor \
+    android.hardware.radio.network-V3-ndk.vendor \
+    android.hardware.radio.sap-V1-ndk.vendor \
+    android.hardware.radio.sim-V3-ndk.vendor \
+    android.hardware.radio.voice-V3-ndk.vendor \
+    android.hardware.secure_element-V1-ndk.vendor \
+    android.hardware.security.keymint-V2-ndk.vendor \
+    android.hardware.security.keymint-V3-ndk.vendor \
+    android.hardware.security.rkp-V3-ndk.vendor \
+    android.hardware.security.secureclock-V1-ndk.vendor \
+    android.hardware.security.sharedsecret-V1-ndk.vendor \
+    android.hardware.soundtrigger3-V1-ndk.vendor \
+    android.hardware.thermal-V1-ndk.vendor \
+    android.hardware.thermal-V2-ndk.vendor \
+    android.hardware.vibrator-V2-ndk.vendor \
+    android.hardware.weaver-V2-ndk.vendor \
+    android.hardware.wifi.common-V1-ndk.vendor \
+    android.hardware.wifi.hostapd-V2-ndk.vendor \
+    android.hardware.wifi.supplicant-V3-ndk.vendor \
+    android.media.audio.common.types-V2-ndk.vendor \
+    android.media.audio.common.types-V3-ndk.vendor \
+    android.se.omapi-V1-ndk.vendor \
+    android.system.net.netd-V1-ndk.vendor \
+    vendor.qti.hardware.agm-V1-ndk \
+    vendor.qti.hardware.bluetooth.audio-V1-ndk.vendor \
+    vendor.qti.hardware.camera.aon-V2-ndk.vendor \
+    vendor.qti.hardware.camera.offlinecamera-V2-ndk.vendor \
+    vendor.qti.hardware.display.color-V1-ndk.vendor \
+    vendor.qti.hardware.display.config-V12-ndk.vendor \
+    vendor.qti.hardware.display.config-V2-ndk.vendor \
+    vendor.qti.hardware.display.config-V5-ndk.vendor \
+    vendor.qti.hardware.display.config-V7-ndk.vendor \
+    vendor.qti.hardware.display.postproc-V1-ndk.vendor \
+    vendor.qti.hardware.pal-V1-ndk \
+    vendor.qti.hardware.paleventnotifier-V2-ndk.vendor \
+    vendor.qti.hardware.servicetrackeraidl-V1-ndk.vendor
+# liboffloadhal intentionally absent: blob conflicts with always-visible sm8750 source
+# (data-ipa-cfg-mgr namespace); tethering-offload accel only, basic tethering works without it.
