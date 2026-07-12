@@ -23,6 +23,13 @@
     <!-- Default to gestural navigation (no setup wizard runs to set it) -->
     <integer name="config_navBarInteractionMode">2</integer>
 
+    <!-- Create the (invisible) navigation bar. Without this, hasNavigationBar()=false ->
+         SystemUI never builds the NavigationBar window that hosts EdgeBackGestureHandler
+         (mIsAttached=false) -> the back swipe never registers even though touch is perfect.
+         This was the actual root cause of "back gesture doesn't work" (NOT touch/firmware).
+         Verified 2026-07-12 via qemu.hw.mainkeys=0 which forces the same hasNavigationBar=true. -->
+    <bool name="config_showNavigationBar">true</bool>
+
     <!-- Display cutout (top-center punch hole) + display shape, extracted 2026-07-10 from stock
          B4.0 FrameworksResCommon_Sys_Metroid.apk. Without these the status bar is default height
          and content collides with the physical hole/rounded corners (clock clipped top-left). -->
