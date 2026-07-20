@@ -24,7 +24,7 @@ Extract from the matching Nothing OS firmware dump:
 ./extract-files.py /path/to/metroid
 ```
 
-The list is generated from Nothing OS 4.1.A024. Do not substitute blobs from another device or firmware release without checking ELF dependencies and VINTF versions.
+The list is generated from Nothing OS `B4.1-260624-1457` for A024. Do not substitute blobs from another device or firmware release without checking ELF dependencies and VINTF versions.
 
 ## Build
 
