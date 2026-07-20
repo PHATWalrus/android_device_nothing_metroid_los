@@ -62,6 +62,9 @@ BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
 # Allow partition-specific selinux overrides (odm selinux auto-generation collision)
 BUILD_BROKEN_DUP_RULES := true
 
+# Allow missing required modules (e.g. prebuilt_libqcomfm_jni:64 required by FM2)
+BUILD_BROKEN_MISSING_REQUIRED_MODULES := true
+
 # Custom OEM Android IDs (vendor_qtr, vendor_qcc, etc.) referenced by vendor init scripts
 TARGET_FS_CONFIG_GEN := device/nothing/metroid/config.fs
 
