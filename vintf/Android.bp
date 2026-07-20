@@ -1,67 +1,52 @@
-// wifi HAL VINTF fragment for the stock blob android.hardware.wifi-service (2026-07-09)
+// Wi-Fi
 vintf_fragment {
     name: "wifi-service.metroid.xml",
     src: "wifi-service.metroid.xml",
     vendor: true,
 }
 
-// audio: AGM/PAL/PALEventNotifier declarations (served by audiohalservice.qti blob).
-// IListenSoundModel deliberately OMITTED — not served in this build (AGENTS.md warning #1).
+// Audio
 vintf_fragment {
     name: "audio_qti_services.metroid.xml",
     src: "audio_qti_services.metroid.xml",
     vendor: true,
 }
-
-
-// audio effects IFactory declaration — audioserver hard-requires it (AudioFlinger::onFirstRef
-// SIGSEGV without it). The QTI effects module's own fragment does NOT land in our image.
+// Audio effects
 vintf_fragment {
     name: "audio_effects.metroid.xml",
     src: "audio_effects.metroid.xml",
     vendor: true,
 }
 
-// batch 1 of crash-looper declarations (2026-07-09): identity, power.stats, memtrack,
-// sensorscalibrate, lights, snapdragonServices, fingerprint(+goodix daemon). Every one of
-// these services RUNS and aborts on addService -3 (not declared) — so declaring is safe
-// per the "only declare served HALs" rule. dspservice + wfdhdcp deferred (verify serve first).
+// Identity, power, sensors, lights, and fingerprint
 vintf_fragment {
     name: "hal_batch1.metroid.xml",
     src: "hal_batch1.metroid.xml",
     vendor: true,
 }
 
-// batch 2 (2026-07-09 night): NFC (st HAL runs, aborts undeclared) + wfdhdcp drm instance
-// (service runs, aborts undeclared). secure_element SIM1/SIM2 deferred until SIM present.
+// NFC and WFD HDCP
 vintf_fragment {
     name: "hal_batch2.metroid.xml",
     src: "hal_batch2.metroid.xml",
     vendor: true,
 }
 
-// batch 3 (2026-07-09): Bluetooth HCI (+audio provider, SAR) + GNSS. QTI binaries exist
-// (android.hardware.bluetooth@aidl-service-qti, android.hardware.gnss-aidl-service-qti);
-// stack asked for these and got VINTF denials. finder/socket omitted (not in stock decls
-// or unverified serve).
+// Bluetooth and GNSS
 vintf_fragment {
     name: "hal_batch3.metroid.xml",
     src: "hal_batch3.metroid.xml",
     vendor: true,
 }
 
-// camera provider declaration (2026-07-10): the prior camera_provider.qti.xml fragment got
-// pruned by one of today's builds -> provider aborts "Cannot register AIDL QTI camera provider
-// service" every ~5s. Content from configs/hidl/manifest_qti_hals.xml.
+// Camera
 vintf_fragment {
     name: "camera_provider.metroid.xml",
     src: "camera_provider.metroid.xml",
     vendor: true,
 }
 
-// batch 4 (2026-07-10): radio AIDL HALs (qcrilNrd runs fine, was just undeclared -> telephony
-// dead), clearkey drm + qspa (both were crash-looping on undeclared registration). Fragments
-// copied verbatim from stock B4.0 vendor manifest. Verified live via overlay before adding.
+// Radio
 vintf_fragment {
     name: "android.hardware.radio.config.metroid4.xml",
     src: "android.hardware.radio.config.xml",

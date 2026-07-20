@@ -55,8 +55,8 @@ TARGET_USES_VULKAN := true
 BOARD_USES_QCOM_HARDWARE := true
 BOARD_NO_RADIOIMAGE := true
 
-# Custom OEM Android IDs (vendor_qtr, vendor_qcc, etc.) referenced by vendor init scripts
-TARGET_FS_CONFIG_GEN := device/nothing/metroid/config.fs
+# Custom Android IDs and capabilities used by vendor services.
+TARGET_FS_CONFIG_GEN := $(DEVICE_PATH)/configs/config.fs
 
 # Kernel
 BOARD_BOOT_HEADER_VERSION := 4
@@ -204,7 +204,6 @@ DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE += device/nothing/metroid/configs/hid
 # SEPolicy
 include device/qcom/sepolicy_vndr/SEPolicy.mk
 BOARD_VENDOR_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy/vendor
-SYSTEM_EXT_PRIVATE_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy/private
 
 # Media
 TARGET_DYNAMIC_64_32_MEDIASERVER := true

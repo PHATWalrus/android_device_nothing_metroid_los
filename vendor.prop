@@ -223,12 +223,3 @@ vendor.usb.use_gadget_hal=1
 
 # WiFi
 wifi.aware.interface=wifi-aware0
-
-# Dalvik Heap Configurations moved to /system/build.prop via device.mk PRODUCT_PROPERTY_OVERRIDES.
-# /vendor/build.prop loads too late for zygote on this device (caused -Xmx16m OOM at class preload);
-# keeping them here also de-duped the system copy out of /system/build.prop.
-
-# OPUS bring-up: survive slow imageless first boot (Watchdog 60s*4=240s) + fix keystore boot-level key
-# (odsign Status(-8) INCOMPATIBLE_BLOCK_MODE = TEE rejects EARLY_BOOT_ONLY; use MAX_USES_PER_BOOT)
-ro.hw_timeout_multiplier=4
-ro.keystore.boot_level_key.strategy=TRUSTED_ENVIRONMENT:MAX_USES_PER_BOOT

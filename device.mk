@@ -68,6 +68,7 @@ PRODUCT_SOONG_NAMESPACES += \
 
 # Recovery init scripts
 PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/rootdir/etc/init.recovery.aosp.rc:recovery/root/init.recovery.aosp.rc \
     $(LOCAL_PATH)/rootdir/etc/init.recovery.qcom.rc:recovery/root/init.recovery.qcom.rc
 
 # HAL source namespaces
@@ -84,6 +85,9 @@ PRODUCT_PACKAGES += \
 # The stock Wi-Fi service requires the vendor hostapd interface and libxml2.
 PRODUCT_PACKAGES += \
     android.hardware.wifi.hostapd-V2-ndk \
+    firmware_WCNSS_qcom_cfg.ini_symlink \
+    firmware_wlan_mac.bin_symlink \
+    firmware_wlanmdsp.otaupdate_symlink \
     libxml2.vendor \
     wpa_cli \
     wpa_supplicant
