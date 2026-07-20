@@ -85,6 +85,7 @@ BOARD_BOOTCONFIG := \
 # Kernel - prebuilt
 TARGET_KERNEL_VERSION := 6.6
 TARGET_KERNEL_SOURCE := kernel/nothing/sm8735
+TARGET_KERNEL_CONFIG := gki_defconfig vendor/sun_perf.config vendor/Metroid.config
 TARGET_FORCE_PREBUILT_KERNEL := true
 TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/prebuilt/kernel
 TARGET_PREBUILT_DTB := $(DEVICE_PATH)/prebuilt/dtb.img
