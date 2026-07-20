@@ -9,6 +9,8 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota.mk)
 # Generic ramdisk - build init_boot from source (userdebug/permissive), per onyx
 $(call inherit-product, $(SRC_TARGET_DIR)/product/generic_ramdisk.mk)
 
+BOARD_SHIPPING_API_LEVEL := 202404
+
 # Bring-up (2026-06-30): neutralize A16 keystore2 module-attestation boot-block (non-SELinux
 # post-system_server crash suspect) + force early adb for live observability.
 PRODUCT_PRODUCT_PROPERTIES += \

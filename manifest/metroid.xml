@@ -1,8 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
-  <!-- Example local manifest. Adjust remotes/revisions to your setup. -->
-  <project name="YOURUSER/android_device_nothing_metroid" path="device/nothing/metroid" remote="github" revision="lineage-23" />
-  <!-- kernel + prebuilt boot chain / DLKM images (NOT in this repo): -->
-  <!-- <project name="YOURUSER/android_device_nothing_metroid-kernel" path="device/nothing/metroid-kernel" remote="github" revision="lineage-23" /> -->
-  <!-- proprietary blobs: extract from your own device with extract-files.sh; do not redistribute -->
+    <remote
+        name="phatwalrus"
+        fetch="https://github.com/PHATWalrus/" />
+
+    <project
+        name="android_device_nothing_metroid_los"
+        path="device/nothing/metroid"
+        remote="phatwalrus"
+        revision="master" />
+
+    <project
+        name="android_vendor_nothing_metroid"
+        path="vendor/nothing/metroid"
+        remote="phatwalrus"
+        revision="master" />
+
+    <project
+        name="android_kernel_msm-6.6_nothing_sm8735"
+        path="kernel/nothing/sm8735"
+        remote="phatwalrus"
+        revision="android-16" />
 </manifest>
