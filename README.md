@@ -1,74 +1,48 @@
-# LineageOS 23 device tree — Nothing Phone (3) `metroid`
+# LineageOS for Nothing Phone (3)
 
-Unofficial port of LineageOS 23 (Android 16) for the Nothing Phone (3) —
-codename `metroid`, Qualcomm **SM8735**.
+Device codename: `metroid`
+Platform: Qualcomm `sun` / SM8735
+Kernel: 6.6 GKI
+Target: LineageOS 23.2 / Android 16
 
-**Status: BETA** — boots to a usable daily-driver UI with most major subsystems
-working. **Camera is not working yet** (HAL linker-namespace issue — see
-[Known issues](#known-issues)). See [`BRINGUP_GUIDE.md`](BRINGUP_GUIDE.md) for
-the full technical story.
+The original device, vendor, and kernel baseline boots. The current branch contains additional build-system and checkout cleanup and must be rebuilt and device-tested before its runtime status is updated.
 
-## What works
-| Feature | Status |
-|---------|--------|
-| Boot to LineageOS UI | ✅ Working |
-| Display + touch | ✅ Working |
-| Wi-Fi (2.4 GHz + 5 GHz) | ✅ Working |
-| Audio (speaker, earpiece, mic) | ✅ Working |
-| Cellular / RIL (calls, SMS, data) | ✅ Working |
-| Bluetooth | ✅ Working |
-| GNSS / GPS | ✅ Working |
-| NFC | ✅ Working |
-| Sensors (accel, gyro, proximity…) | ✅ Working |
-| adb / USB debugging | ✅ Working |
-| Storage / /data | ✅ Working |
-| Camera | ❌ Not working (HAL link failure) |
-| Fingerprint (in-display) | ❌ Not working (HAL crash-loop) |
+## Source layout
 
-## What this repo is
-The **device tree** (`device/nothing/metroid`) plus the **framework patches**,
-build/flash **scripts**, and the **bring-up guide**. It does **not** contain
-proprietary vendor blobs (extract those from your own device) or the kernel /
-prebuilt boot chain.
+- `device/nothing/metroid`: device configuration
+- `vendor/nothing/metroid`: generated proprietary vendor tree
+- `kernel/nothing/sm8735`: Nothing 6.6 kernel source
+- `device/nothing/metroid-kernel`: locally staged stock `dtbo`, `init_boot`, and `vendor_boot` images
 
-## Building
-1. Set up a LineageOS 23 source tree.
-2. Add a local manifest (see [`manifest/metroid.xml`](manifest/metroid.xml)) that
-   pulls this device tree (and your kernel/prebuilt repo).
-3. Extract proprietary blobs from a running stock device:
-   `./device/nothing/metroid/extract-files.sh` (blobs are **not** redistributed).
-4. **Apply the framework patches** (required to reach boot):
-   ```bash
-   cd frameworks/base
-   git am /path/to/device/nothing/metroid/patches/*.patch
-   ```
-   - `0001-soundtrigger-...` — SoundTrigger tolerates audio policy being down
-   - `0002-usb-gadget-hal-...` — UsbService doesn't block `finishBooting` on a disabled gadget HAL
-5. Build:
-   ```bash
-   source build/envsetup.sh
-   lunch lineage_metroid-bp2a-userdebug
-   m
-   ```
+The fallback manifest is in `manifest/metroid.xml`. Current Lineage roomservice cannot represent the custom GitHub organization for normal project dependencies, so the local manifest must be installed before the first sync.
 
-## Flashing landmines (read before flashing)
-- **Slot A only.** `fastboot set_active a` + `fastboot erase misc` before every flash.
-- **Never** disable verity/verification on the **root** vbmeta.
-- vendor must be **ext4**; vendor_boot page_size **0x1000**; make `vbmeta_vendor`
-  coherently from the images.
-- `fastboot boot` hangs — always flash + reboot.
+## Proprietary files
 
-## Known issues
-- **Camera** — camera HAL `CANNOT LINK` (`android.frameworks.cameraservice.common-V1-ndk.so`);
-  linker-namespace / `ld.config.txt` problem. **This is the primary outstanding issue.**
-- **Fingerprint** — HAL crash-loops; in-display fingerprint not working.
-- **Slow first boot (~5-7 min)** — runtime is imageless (odsign/boot-level key);
-  fixable with `WITH_DEXPREOPT`; subsequent boots are normal speed.
-- Minor cosmetic HAL noise: `memtrack`, `lights`, `power.stats` log
-  registration failures — not user-visible.
+Extract from the matching Nothing OS firmware dump:
 
-## Credits
-LineageOS, Qualcomm CAF, reference trees **onyx** (Xiaomi 15 / SM8750) and
-**pong** (Nothing Phone 2), and Nothing for the kernel source.
+```bash
+./extract-files.py /path/to/metroid
+```
 
-*Unofficial. No warranty. You are responsible for your device.*
+The list is generated from Nothing OS 4.1.A024. Do not substitute blobs from another device or firmware release without checking ELF dependencies and VINTF versions.
+
+## Build
+
+```bash
+export USE_CCACHE=1
+export CCACHE_EXEC=/usr/bin/ccache
+export CCACHE_DIR=/mnt/ccache
+ccache -M 50G -F 0
+
+source build/envsetup.sh
+breakfast metroid
+mka bacon
+```
+
+The stock boot-chain artifacts are currently staged outside this repository. A clean checkout must recreate `device/nothing/metroid-kernel` before building.
+
+## Validation status
+
+- Known baseline: boots to Android UI
+- Current static tree: not built
+- Recovery, VINTF, encryption, radio, Wi-Fi, Bluetooth, audio, camera, sensors, fingerprint, NFC, GNSS, charging, SELinux, and OTA: require validation on the current build
