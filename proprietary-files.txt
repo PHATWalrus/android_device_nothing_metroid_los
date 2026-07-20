@@ -17,10 +17,6 @@ odm/overlayfs_origin/vendor/etc/init/android.hardware.security.keymint-service.s
 odm/overlayfs_origin/vendor/etc/init/android.hardware.weaver-service.thales.rc
 system_ext/apex/com.android.compos.apex
 system_ext/apex/com.android.vndk.v34.apex
-system_ext/etc/aconfig/flag.info
-system_ext/etc/aconfig/flag.map
-system_ext/etc/aconfig/flag.val
-system_ext/etc/aconfig/package.map
 system_ext/etc/default-permissions/default-permissions-com.quicinc.voice.activation.xml
 system_ext/etc/dpm/dpm.conf
 system_ext/etc/hdr_config/ans_off/ans_config.txt
@@ -58,9 +54,6 @@ system_ext/etc/init/vendor.qti.qccsyshal_aidl-service.rc
 system_ext/etc/init/wfdservice.rc
 system_ext/etc/nt_performance/cmd_table.xml
 system_ext/etc/perf/wlc_model.tflite
-system_ext/etc/permissions/androidx.window.extensions.xml
-system_ext/etc/permissions/androidx.window.sidecar.xml
-system_ext/etc/permissions/appfunctions.extension.xml
 system_ext/etc/permissions/audiosphere.xml
 system_ext/etc/permissions/com.nothing.OfflineOTAUpgradeApp.xml
 system_ext/etc/permissions/com.nothing.agreement.xml
@@ -89,7 +82,6 @@ system_ext/etc/permissions/com.qualcomm.qti.imscmservice-V2.2-java.xml
 system_ext/etc/permissions/com.qualcomm.qti.izattools.xml
 system_ext/etc/permissions/dpmapi.xml
 system_ext/etc/permissions/embms-noship_product_privapp_permissions_qti.xml
-system_ext/etc/permissions/extphonelib.xml
 system_ext/etc/permissions/gallery-google-lens-permissions.xml
 system_ext/etc/permissions/google-lens-permissions.xml
 system_ext/etc/permissions/privapp-permissions-NTCamera.xml
@@ -106,8 +98,6 @@ system_ext/etc/permissions/privapp-permissions-qti-system-ext.xml
 system_ext/etc/permissions/qcrilhook.xml
 system_ext/etc/permissions/qti_libpermissions.xml
 system_ext/etc/permissions/qti_permissions.xml
-system_ext/etc/permissions/qti_telephony_hidl_wrapper.xml
-system_ext/etc/permissions/qti_telephony_utils.xml
 system_ext/etc/permissions/telephony_system-ext_privapp-permissions-qti.xml
 system_ext/etc/permissions/vendor.qti.hardware.c2pa-V1-java.xml
 system_ext/etc/permissions/vendor.qti.ims.rcsservice.xml
@@ -126,7 +116,6 @@ system_ext/etc/security/fsverity/BuildManifestSystemExt.apk.idsig
 system_ext/etc/sltntc/sltntc_SM7325.conf
 system_ext/etc/sltntc/sltntc_SM7635.conf
 system_ext/etc/sltntc/sltntc_SM8475.conf
-system_ext/etc/sysconfig/android.telephony.satellite.xml
 system_ext/etc/sysconfig/com.nothing.gallery.xml
 system_ext/etc/sysconfig/initial-package-stopped-states-LogKit.xml
 system_ext/etc/sysconfig/nothing-initial-package-stopped-states.xml
@@ -140,7 +129,6 @@ system_ext/etc/sysconfig/whitelist_com.qualcomm.qti.uceShimService.xml
 system_ext/etc/system_perfetto.cfg
 system_ext/etc/wfdconfigsink.xml
 system_ext/etc/wmshell.protolog.json.gz
-system_ext/etc/wmshell.protolog.pb
 system_ext/framework/ActivityExt.jar
 system_ext/framework/ActivityExt.jar.fsv_meta
 system_ext/framework/SatelliteClient.jar
@@ -525,8 +513,6 @@ system_ext/framework/vendor.qti.latency-V2.2-java.jar
 system_ext/framework/vendor.qti.latency-V2.2-java.jar.fsv_meta
 system_ext/framework/vendor.qti.latencyaidlservice-V1-java.jar
 system_ext/framework/vendor.qti.latencyaidlservice-V1-java.jar.fsv_meta
-system_ext/lib64/android.hardware.radio@1.5.so
-system_ext/lib64/android.hardware.radio@1.6.so
 system_ext/lib64/android.hidl.base@1.0.so
 system_ext/lib64/com.qualcomm.qti.ant@1.0.so
 system_ext/lib64/com.qualcomm.qti.bluetooth_audio@1.0.so
@@ -832,6 +818,8 @@ vendor/bin/hw/android.hardware.security.keymint-service-spu-qti
 vendor/bin/hw/android.hardware.security.keymint-service.strongbox-thales
 vendor/bin/hw/android.hardware.weaver-service-spu-qti
 vendor/bin/hw/android.hardware.weaver-service.thales
+# Keep dependency metadata separate from the paired AOSP V4 module.
+vendor/bin/hw/android.hardware.wifi-service;DISABLE_DEPS
 vendor/bin/hw/hostapd
 vendor/bin/hw/qconfigservice
 vendor/bin/hw/qcrilNrd
@@ -855,6 +843,7 @@ vendor/bin/hw/vendor.qti.hardware.secureprocessor
 vendor/bin/hw/vendor.qti.hardware.sensorscalibrate-service
 vendor/bin/hw/vendor.qti.hardware.servicetrackeraidl-service
 vendor/bin/hw/vendor.qti.hardware.spu-service
+vendor/bin/hw/vendor.qti.hardware.vibrator.service
 vendor/bin/hw/vendor.qti.media.c2@1.0-service
 vendor/bin/hw/vendor.qti.media.c2audio@1.0-service
 vendor/bin/hw/vendor.qti.memory.pasrmanager-service
@@ -1038,9 +1027,6 @@ vendor/etc/Diag_rf.cfg
 vendor/etc/Diag_sensor.cfg
 vendor/etc/HapticsPolicy.xml
 vendor/etc/Hapticsconfig.xml
-vendor/etc/IPACM_Filter_cfg.xml
-vendor/etc/IPACM_cfg.xml
-vendor/etc/NOTICE.xml.gz
 vendor/etc/a2dp_audio_policy_configuration.xml
 vendor/etc/acdbdata/ffv_models/ffv__5.0.2_0.1__eai_4.8_enpu_v5.pmd
 vendor/etc/acdbdata/ffv_models/ffv__7.1.1_0.1__eai_4.8_enpu_v5.pmd
@@ -1103,15 +1089,11 @@ vendor/etc/acdbdata/nn_vad_models/fai__3.0.0_0.0__eai_4.2_enpuv5.pmd
 vendor/etc/acdbdata/nn_vad_models/fai__3.0.0_0.0__eai_4.6_enpuv5.pmd
 vendor/etc/acdbdata/tuna_qrd/QRD_tuna_acdb_cal.acdb
 vendor/etc/acdbdata/tuna_qrd/QRD_tuna_workspaceFileXml.qwsp
-vendor/etc/aconfig_flags.pb
 vendor/etc/advance_thermal_mitigation/atmc.json
 vendor/etc/advance_thermal_mitigation/atmc_ind.json
 vendor/etc/advance_thermal_mitigation/atmc_ind_win.json
 vendor/etc/advance_thermal_mitigation/nt_boost_adjuster.xml
-vendor/etc/aidl/hfp/hfp_codec_capabilities.xml
-vendor/etc/aidl/le_audio/aidl_audio_set_configurations.bfbs
 vendor/etc/aidl/le_audio/aidl_audio_set_configurations.json
-vendor/etc/aidl/le_audio/aidl_audio_set_scenarios.bfbs
 vendor/etc/aidl/le_audio/aidl_audio_set_scenarios.json
 vendor/etc/apdr.conf
 vendor/etc/audio/audio_module_config_primary.xml
@@ -1130,11 +1112,8 @@ vendor/etc/audio/vendor_audio_interfaces.xml
 vendor/etc/backend_conf.xml
 vendor/etc/bluetooth_qti_audio_policy_configuration.xml
 vendor/etc/bluetooth_qti_hearing_aid_audio_policy_configuration.xml
-vendor/etc/boringssl_self_test.zygote64.rc
-vendor/etc/boringssl_self_test.zygote64_32.rc
 vendor/etc/bpf/info
 vendor/etc/bpf/qmsUidStats.o
-vendor/etc/build_flags.json
 vendor/etc/camera/Arabicfont/NotoNaskhArabic.ttf
 vendor/etc/camera/FroggerPro_smoothzoom_config.json
 vendor/etc/camera/Metroid_smoothzoom_config.json
@@ -1345,8 +1324,6 @@ vendor/etc/felica/common.cfg
 vendor/etc/felica/mfm.cfg
 vendor/etc/felica/mfs.cfg
 vendor/etc/first_zramwriteback.fstab
-vendor/etc/fs_config_dirs
-vendor/etc/fs_config_files
 vendor/etc/fstab.default
 vendor/etc/fstab.emmc
 vendor/etc/ftm_test_config
@@ -1362,7 +1339,6 @@ vendor/etc/ftm_test_config_tuna7-mtp-snd-card
 vendor/etc/gnss_antenna_info.conf
 vendor/etc/gpfspath_oem_config.xml
 vendor/etc/gps.conf
-vendor/etc/group
 vendor/etc/hal_uuid_map_JPN.xml
 vendor/etc/hal_uuid_map_config.xml
 vendor/etc/hostapd/hostapd.accept
@@ -1372,27 +1348,17 @@ vendor/etc/init.qti.fm.sh
 vendor/etc/init/android.hardware.authsecret-service.rc
 vendor/etc/init/android.hardware.biometrics.face-service.noth.rc
 vendor/etc/init/android.hardware.bluetooth@aidl-service-qti.rc
-vendor/etc/init/android.hardware.boot-service.qti.rc
-vendor/etc/init/android.hardware.drm-service.clearkey.rc
 vendor/etc/init/android.hardware.drm@1.1-service.wfdhdcp.rc
 vendor/etc/init/android.hardware.gatekeeper-service-qti.rc
 vendor/etc/init/android.hardware.gatekeeper-service-spu-qti.rc
 vendor/etc/init/android.hardware.gnss-aidl-service-qti.rc
-vendor/etc/init/android.hardware.health-service.qti.rc
 vendor/etc/init/android.hardware.identity-service-qti.rc
 vendor/etc/init/android.hardware.power-service.rc
 vendor/etc/init/android.hardware.secure_element-service.qti.rc
 vendor/etc/init/android.hardware.security.keymint-service-qti.rc
 vendor/etc/init/android.hardware.security.keymint-service-spu-qti.rc
-vendor/etc/init/android.hardware.sensors-service-multihal.rc
-vendor/etc/init/android.hardware.thermal-service.qti.rc
-vendor/etc/init/android.hardware.usb-service.qti.rc
-vendor/etc/init/android.hardware.usb.gadget-service.qti.rc
 vendor/etc/init/android.hardware.weaver-service-spu-qti.rc
-vendor/etc/init/android.hardware.wifi-service.rc
 vendor/etc/init/android.hardware.wifi.supplicant-service.rc
-vendor/etc/init/audiohalservice_qti.rc
-vendor/etc/init/boringssl_self_test.rc
 vendor/etc/init/c2painternetservice.rc
 vendor/etc/init/cnd.rc
 vendor/etc/init/com.qualcomm.qti.wifidisplayhal@1.0-service.rc
@@ -1426,7 +1392,6 @@ vendor/etc/init/init.ntf.rc
 vendor/etc/init/init.qccvendor.rc
 vendor/etc/init/init.qlm-service.rc
 vendor/etc/init/init.qmesa.rc
-vendor/etc/init/init.qti.display_boot.rc
 vendor/etc/init/init.qti.fm.rc
 vendor/etc/init/init.qti.media.rc
 vendor/etc/init/init.qti.qcv.rc
@@ -1439,9 +1404,7 @@ vendor/etc/init/init.vendor.wlan.rc
 vendor/etc/init/init_fan_service.rc
 vendor/etc/init/init_thermal-engine-v2.rc
 vendor/etc/init/ipacm-diag.rc
-vendor/etc/init/ipacm.rc
 vendor/etc/init/loc-launcher.rc
-vendor/etc/init/memtrack_qti.rc
 vendor/etc/init/nfc-service-st.rc
 vendor/etc/init/nicmd.rc
 vendor/etc/init/noth_bsp_daemon.rc
@@ -1461,7 +1424,6 @@ vendor/etc/init/qmipriod.debug.rc
 vendor/etc/init/qmipriod.rc
 vendor/etc/init/qms.rc
 vendor/etc/init/qseecomd.rc
-vendor/etc/init/qspa_vendor.rc
 vendor/etc/init/qttestservice.rc
 vendor/etc/init/qwesd.rc
 vendor/etc/init/shsusrd.rc
@@ -1477,17 +1439,13 @@ vendor/etc/init/vendor.nothing.hardware.biometrics.fingerprint-service.rc
 vendor/etc/init/vendor.qsap.qapeservice.rc
 vendor/etc/init/vendor.qsap.sensors.rc
 vendor/etc/init/vendor.qti.adsprpc-guestos-service.rc
-vendor/etc/init/vendor.qti.audio-adsprpc-service.rc
 vendor/etc/init/vendor.qti.camera.provider-service_64.rc
 vendor/etc/init/vendor.qti.cdsprpc-service.rc
 vendor/etc/init/vendor.qti.diag.rc
 vendor/etc/init/vendor.qti.hardware.alarm-service.rc
 vendor/etc/init/vendor.qti.hardware.c2pa-aidl-service-qti.rc
 vendor/etc/init/vendor.qti.hardware.capabilityconfigstore-service.rc
-vendor/etc/init/vendor.qti.hardware.display.allocator-service.rc
 vendor/etc/init/vendor.qti.hardware.display.color-service.rc
-vendor/etc/init/vendor.qti.hardware.display.composer-service.rc
-vendor/etc/init/vendor.qti.hardware.display.demura-service.rc
 vendor/etc/init/vendor.qti.hardware.dsp-service.rc
 vendor/etc/init/vendor.qti.hardware.lights.service.rc
 vendor/etc/init/vendor.qti.hardware.minkipcbinder@1.0-service.rc
@@ -1496,13 +1454,11 @@ vendor/etc/init/vendor.qti.hardware.qseecom@1.0-service.rc
 vendor/etc/init/vendor.qti.hardware.secureprocessor.rc
 vendor/etc/init/vendor.qti.hardware.sensorscalibrate-service.rc
 vendor/etc/init/vendor.qti.hardware.servicetrackeraidl-service.rc
-vendor/etc/init/vendor.qti.hardware.vibrator.service.rc
 vendor/etc/init/vendor.qti.hardware.wifi.wifilearner-service.rc
 vendor/etc/init/vendor.qti.media.c2@1.0-service.rc
 vendor/etc/init/vendor.qti.media.c2audio@1.0-service.rc
 vendor/etc/init/vendor.qti.memory.pasrmanager-service.rc
 vendor/etc/init/vendor.qti.psiclient@1.0-service.rc
-vendor/etc/init/vendor.qti.qspa-service.rc
 vendor/etc/init/vendor.qti.qspmhal-service.rc
 vendor/etc/init/vendor.qti.rmt_storage.rc
 vendor/etc/init/vendor.qti.smp2p.rc
@@ -1511,7 +1467,6 @@ vendor/etc/init/vendor.qti.tftp.rc
 vendor/etc/init/vendor.sensors.qti.rc
 vendor/etc/init/vendor.sensors.sscrpcd.rc
 vendor/etc/init/vmmgr.rc
-vendor/etc/init/vndservicemanager.rc
 vendor/etc/init/vppservice.rc
 vendor/etc/init/wfdvndservice.rc
 vendor/etc/init/wifi_ftm.rc
@@ -1521,7 +1476,6 @@ vendor/etc/libnfc-hal-st.conf
 vendor/etc/libnfc-nci-felica.conf
 vendor/etc/libnfc-nci.conf
 vendor/etc/license.lic
-vendor/etc/linker.config.pb
 vendor/etc/lm/AppClassifierFeature.xml
 vendor/etc/lm/LightningLaunchesFeature.xml
 vendor/etc/lm/PreKillFeature.xml
@@ -1587,7 +1541,6 @@ vendor/etc/media_profiles_tuna_v0.xml
 vendor/etc/media_profiles_tuna_v1.xml
 vendor/etc/mem_logger_config.xml
 vendor/etc/microphone_characteristics.xml
-vendor/etc/mkshrc
 vendor/etc/mobile/mobile.config
 vendor/etc/models/acd/environment.eai
 vendor/etc/models/acd/event.eai
@@ -1600,7 +1553,6 @@ vendor/etc/nt_performance/nt_named_thread_affinity.xml
 vendor/etc/nt_performance/nt_perf_enhancer.cfg
 vendor/etc/nt_performance/platform_config.xml
 vendor/etc/nt_performance/scene_table.xml
-vendor/etc/passwd
 vendor/etc/perf/avcsysnodesconfigs.xml
 vendor/etc/perf/commonresourceconfigs.xml
 vendor/etc/perf/commonsysnodesconfigs.xml
@@ -1617,7 +1569,6 @@ vendor/etc/perf/targetresourceconfigs.xml
 vendor/etc/perf/targetsysnodesconfigs.xml
 vendor/etc/perf/testcommonresourceconfigs.xml
 vendor/etc/perf/testtargetresourceconfigs.xml
-vendor/etc/permissions/advancedSample_camera_extensions.xml
 vendor/etc/permissions/android.hardware.audio.low_latency.xml
 vendor/etc/permissions/android.hardware.audio.pro.xml
 vendor/etc/permissions/android.hardware.biometrics.face.xml
@@ -1629,7 +1580,6 @@ vendor/etc/permissions/android.hardware.camera.front.xml
 vendor/etc/permissions/android.hardware.camera.full.xml
 vendor/etc/permissions/android.hardware.camera.raw.xml
 vendor/etc/permissions/android.hardware.fingerprint.xml
-vendor/etc/permissions/android.hardware.hardware_keystore.xml
 vendor/etc/permissions/android.hardware.keystore.app_attest_key.xml
 vendor/etc/permissions/android.hardware.light.xml
 vendor/etc/permissions/android.hardware.location.gps.xml
@@ -1664,7 +1614,6 @@ vendor/etc/permissions/com.nothing.features_aicore.xml
 vendor/etc/permissions/com.nothing.features_unsupported_vnd.xml
 vendor/etc/permissions/com.nothing.features_vnd.xml
 vendor/etc/permissions/com.nxp.mifare.xml
-vendor/etc/permissions/features_com.android.virt.xml
 vendor/etc/permissions/handheld_core_hardware.xml
 vendor/etc/permissions/noRil/apq_excluded_telephony_features.xml
 vendor/etc/permissions/privapp-permissions-qti-vendor.xml
@@ -1753,8 +1702,6 @@ vendor/etc/res/images/charger/num7.png
 vendor/etc/res/images/charger/num8.png
 vendor/etc/res/images/charger/num9.png
 vendor/etc/res/images/charger/numpercent.png
-vendor/etc/res/images/default/charger/battery_fail.png
-vendor/etc/res/images/default/charger/battery_scale.png
 vendor/etc/richtapresources/NT_OnOff_button.he
 vendor/etc/richtapresources/NT_camera_photo.he
 vendor/etc/richtapresources/NT_camera_zoom.he
@@ -1874,18 +1821,6 @@ vendor/etc/seccomp_policy/wfdhdcphalservice.policy
 vendor/etc/seccomp_policy/wfdvndservice.policy
 vendor/etc/seccomp_policy/wifidisplayhalservice.policy
 vendor/etc/seccomp_policy/xrcommhald@2.0.policy
-vendor/etc/selinux/plat_pub_versioned.cil
-vendor/etc/selinux/plat_sepolicy_vers.txt
-vendor/etc/selinux/selinux_denial_metadata
-vendor/etc/selinux/vendor_file_contexts
-vendor/etc/selinux/vendor_hwservice_contexts
-vendor/etc/selinux/vendor_keystore2_key_contexts
-vendor/etc/selinux/vendor_mac_permissions.xml
-vendor/etc/selinux/vendor_property_contexts
-vendor/etc/selinux/vendor_seapp_contexts
-vendor/etc/selinux/vendor_sepolicy.cil
-vendor/etc/selinux/vendor_service_contexts
-vendor/etc/selinux/vndservice_contexts
 vendor/etc/sensors/config/bonito_bu52053nvx_0.json
 vendor/etc/sensors/config/bonito_ccd_base.json
 vendor/etc/sensors/config/bonito_default_sensors.json
@@ -2051,7 +1986,6 @@ vendor/etc/telephony_packages.xml
 vendor/etc/thermal-engine.conf
 vendor/etc/ueventd.rc
 vendor/etc/usb_audio_policy_configuration.xml
-vendor/etc/usb_compositions.conf
 vendor/etc/usecaseKvManager.xml
 vendor/etc/vmmgr.conf
 vendor/etc/wfdconfig.xml
@@ -2093,7 +2027,6 @@ vendor/etc/whisper/vocab.bin
 vendor/etc/wifi/kiwi_v2/WCNSS_qcom_cfg.ini
 vendor/etc/wifi/p2p_supplicant_overlay.conf
 vendor/etc/wifi/vendor_cmd.xml
-vendor/etc/wifi/wpa_supplicant.conf
 vendor/etc/wifi/wpa_supplicant_overlay.conf
 vendor/etc/xtwifi.conf
 vendor/firmware/CAMERA_ICP.b00
@@ -3048,7 +2981,6 @@ vendor/lib64/libchilog.so
 vendor/lib64/libchinodeevautils.so
 vendor/lib64/libchinodehmeutils.so
 vendor/lib64/libchrome.so
-vendor/lib64/libclang_rt.ubsan_standalone-aarch64-android.so
 vendor/lib64/libcld80211.so
 vendor/lib64/libclstc_algorithm_adapter.so
 vendor/lib64/libclstc_gcp_adapter.so
@@ -3580,7 +3512,6 @@ vendor/lib64/libsys_info_cache.so
 vendor/lib64/libsysmon_cdsp_skel.so
 vendor/lib64/libsystem_health_mon2.so
 vendor/lib64/libtaautoload.so
-vendor/lib64/libtensorflowlite_c.so
 vendor/lib64/libtestutils.so
 vendor/lib64/libtfestriping.so
 vendor/lib64/libthermalclient.so
@@ -4088,4 +4019,3 @@ vendor/product/media/audio/ui/camera_click.ogg
 vendor/product/media/audio/ui/camera_focus.ogg
 vendor/product/media/audio/ui/screenshot.ogg
 vendor/rfs/rfs_symlinks
-

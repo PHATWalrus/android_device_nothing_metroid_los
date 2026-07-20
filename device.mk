@@ -1,5 +1,8 @@
 LOCAL_PATH := device/nothing/metroid
 
+# Keep the kernel monorepo out of Soong module discovery; it is built separately.
+PRODUCT_SOURCE_ROOT_DIRS += -kernel/nothing/sm8735
+
 # A/B
 $(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota.mk)
 
@@ -90,14 +93,14 @@ PRODUCT_PACKAGES +=     android.hardware.thermal-service.qti
 # USB + USB gadget HAL (vendor/qcom/opensource/usb/hal, default namespace)
 PRODUCT_PACKAGES +=     android.hardware.usb-service.qti     android.hardware.usb.gadget-service.qti
 
-# Vibrator HAL (vendor/qcom/opensource/vibrator/aidl, default namespace)
+# The stock service supports metroid's AW86927/RichTap interface.
 PRODUCT_PACKAGES +=     vendor.qti.hardware.vibrator.service
 
 # Vendor servicemanager (frameworks/native) - vndservice_contexts users need it
 PRODUCT_PACKAGES +=     vndservicemanager
 
-# WiFi supplicant (external/wpa_supplicant_8). The wifi HAL service is the STOCK blob
-# (proprietary_force_copy.mk): the AOSP generic android.hardware.wifi-service has no vendor
+# WiFi supplicant (external/wpa_supplicant_8). The wifi HAL service is the stock blob;
+# the AOSP generic android.hardware.wifi-service has no vendor
 # impl here ("failed to open /vendor/etc/wifi/vendor_hals") -> IWifi start fails code 9.
 # Stock service + libwifi-hal{,-qcom,-ctrl} + wcn7750 WCNSS_qcom_cfg.ini (icnss2 probe needs
 # it or wlan0 never appears). Verified live on device 2026-07-09 (enable + multi-band scan).
@@ -107,6 +110,9 @@ PRODUCT_PACKAGES +=     vndservicemanager
 PRODUCT_PACKAGES +=     libxml2.vendor
 PRODUCT_PACKAGES +=     wpa_supplicant     wpa_cli \
                         android.hardware.wifi.hostapd-V2-ndk
+
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/rootdir/etc/zz.init.metroid.vibrator.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/zz.init.metroid.vibrator.rc
 # Display HALs from source (b20): ~23s reset fix. Module names mirror onyx un_dt device.mk
 # (same SoC sun/sm8750); composer-service added (essential, buildable in sm8750/display tree).
 PRODUCT_PACKAGES +=     vendor.qti.hardware.display.composer-service     vendor.qti.hardware.display.allocator-service     vendor.qti.hardware.display.demura-service     vendor.qti.hardware.display.snapalloc-impl     android.hardware.graphics.mapper@4.0-impl-qti-display     android.hardware.graphics.composer3-V3-ndk.vendor     vendor.qti.hardware.display.composer3-V1-ndk.vendor     vendor.qti.hardware.display.config-V12-ndk.vendor     vendor.qti.hardware.display.aiqe-V2-ndk.vendor
@@ -143,8 +149,6 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rootdir/etc/fstab.qcom:$(TARGET_COPY_OUT_VENDOR)/etc/fstab.qcom \
     $(LOCAL_PATH)/rootdir/etc/fstab.qcom:$(TARGET_COPY_OUT_RAMDISK)/fstab.qcom \
     $(LOCAL_PATH)/rootdir/etc/fstab.qcom:$(TARGET_COPY_OUT_RAMDISK)/first_stage_ramdisk/fstab.qcom \
-    vendor/nothing/metroid/proprietary/vendor/lib64/libkeymaster_messages.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libkeymaster_messages.so \
-    vendor/nothing/metroid/proprietary/vendor/lib64/libwfdaac_vendor.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libwfdaac_vendor.so \
     $(LOCAL_PATH)/rootdir/etc/fstab.qcom:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/fstab.qcom \
     $(LOCAL_PATH)/rootdir/etc/fstab.qcom:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.qcom
 
@@ -162,21 +166,8 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rootdir/etc/init.ntcap.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.ntcap.rc \
     $(LOCAL_PATH)/rootdir/bin/ntcap.sh:$(TARGET_COPY_OUT_VENDOR)/bin/ntcap.sh
 
-# gralloc mapper VINTF fragment (standalone, matches stock layout — NOT inlined into
-# manifest.xml, since AOSP libui's openDeclaredPassthroughHal only resolves standalone
-# fragments under etc/vintf/manifest/, per PLAYBOOK_FROM_OPUS_20260706_MAPPER_VINTF_FIX.md).
-# AOSP build rules forbid installing vintf/manifest/* via PRODUCT_COPY_FILES (build/make/core/
-# Makefile hard-errors on it) — must go through the vintf_fragment soong module instead.
-# mapper.qti.xml dropped 2026-07-10: qcom-caf gralloc source (mapper.qti) now provides the
-# same fragment -> fsgen packaging conflict; the standalone-fragment fix was proven ineffective
-# anyway (see metroid-mapper-vintf-fix-attempt-20260706).
 PRODUCT_PACKAGES += wifi-service.metroid.xml audio_qti_services.metroid.xml audio_effects.metroid.xml hal_batch1.metroid.xml hal_batch2.metroid.xml hal_batch3.metroid.xml camera_provider.metroid.xml
-# batch 4 (2026-07-10, live-verified): radio HALs + clearkey + qspa VINTF declarations
-PRODUCT_PACKAGES += android.hardware.radio.config.metroid4.xml android.hardware.radio.data.metroid4.xml android.hardware.radio.messaging.metroid4.xml android.hardware.radio.modem.metroid4.xml android.hardware.radio.network.metroid4.xml android.hardware.radio.sim.metroid4.xml android.hardware.radio.voice.metroid4.xml android.hardware.drm-service.clearkey.metroid4.xml vendor.qti.qspa-service.metroid4.xml
-
-# Force copy missing proprietary files
-$(call inherit-product-if-exists, device/nothing/metroid/proprietary_force_copy.mk)
-
+PRODUCT_PACKAGES += android.hardware.radio.config.metroid4.xml android.hardware.radio.data.metroid4.xml android.hardware.radio.messaging.metroid4.xml android.hardware.radio.modem.metroid4.xml android.hardware.radio.network.metroid4.xml android.hardware.radio.sim.metroid4.xml android.hardware.radio.voice.metroid4.xml
 
 # Force boot-time sepolicy recompile from CIL (stock prebuilt init does not honor the LOS odm precompiled)
 PRODUCT_PRECOMPILED_SEPOLICY := false

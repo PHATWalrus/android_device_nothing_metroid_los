@@ -616,6 +616,13 @@ subsystem mem_buf_vm
 # Q2SPI UWB device
 /dev/q2spiuwb    0660    uwb    uwb
 
+/dev/aw86927_haptic                         0660    system  system
+/sys/class/leds/vibrator_nt gain             0660    system  system
+/sys/class/leds/vibrator_nt lk_f0            0660    system  system
+/sys/class/leds/vibrator_nt sample_param     0660    system  system
+/sys/class/leds/vibrator_nt RT_sample_param_result 0660 system system
+/sys/class/leds/vibrator_nt haptic_interface_disable 0660 system system
+
 # RemoteProc state
 /sys/class/remoteproc/remoteproc*   state    0660    root  system
 

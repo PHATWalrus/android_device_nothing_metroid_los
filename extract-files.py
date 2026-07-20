@@ -8,6 +8,7 @@ from extract_utils.main import (
     ExtractUtils,
     ExtractUtilsModule,
 )
+from extract_utils.fixups_lib import lib_fixups
 
 namespace_imports = [
     'hardware/qcom-caf/sm8750',
@@ -22,6 +23,7 @@ namespace_imports = [
 module = ExtractUtilsModule(
     'metroid',
     'nothing',
+    lib_fixups=lib_fixups,
     namespace_imports=namespace_imports,
 )
 

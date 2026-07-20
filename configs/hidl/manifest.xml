@@ -7,6 +7,11 @@
         <name>android.hardware.secure_element</name>
         <fqname>ISecureElement/eSE1</fqname>
     </hal>
+    <hal format="aidl">
+        <name>android.hardware.vibrator</name>
+        <version>2</version>
+        <fqname>IVibrator/default</fqname>
+    </hal>
     <!-- KeyMint (TEE) + RKP/secureclock/sharedsecret. keystore2 discovers keymint backends
          via VINTF; without these it aborts constructing the mandatory TEE level -> InitFatalReboot.
          Versions verbatim from stock svf/etc/vintf/manifest/android.hardware.security.keymint-service-qti.xml -->

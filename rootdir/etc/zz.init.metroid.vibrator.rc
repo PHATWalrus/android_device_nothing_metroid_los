@@ -1,0 +1,13 @@
+on post-fs-data
+    mkdir /mnt/vendor/persist/haptic 0770 system system
+    chown system system /proc/haptic/f0
+    chmod 0660 /proc/haptic/f0
+
+service vendor.qti.vibrator /vendor/bin/hw/vendor.qti.hardware.vibrator.service
+    override
+    interface aidl android.hardware.vibrator.IVibrator/default
+    class hal
+    user system
+    group system input
+    setenv RICHTAP_DEVICE_PATH /dev/aw86927_haptic
+    setenv ENV_RICHTAP_CONFIG_PATH /odm/etc/aac_richtap.config
