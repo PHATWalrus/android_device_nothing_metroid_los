@@ -6,25 +6,19 @@ PRODUCT_SOURCE_ROOT_DIRS += -kernel/nothing/sm8735
 # A/B
 $(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota.mk)
 
-# Generic ramdisk - build init_boot from source (userdebug/permissive), per onyx
+# Generic ramdisk
 $(call inherit-product, $(SRC_TARGET_DIR)/product/generic_ramdisk.mk)
 
 BOARD_SHIPPING_API_LEVEL := 202404
 
-# Bring-up (2026-06-30): neutralize A16 keystore2 module-attestation boot-block (non-SELinux
-# post-system_server crash suspect) + force early adb for live observability.
+# Temporary boot diagnostics used by the known-good baseline.
 PRODUCT_PRODUCT_PROPERTIES += \
-#   init.svc_debug.no_fatal.keystore2=true \
     init.svc_debug.no_fatal.boot-hal-1-2=true
 
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.adb.secure=0
 
-# Dalvik heap must land in /system/build.prop: on this device /vendor/build.prop is not loaded
-# before zygote, so vendor-hosted dalvik.vm.heapsize never reaches app_process and zygote runs on
-# the AndroidRuntime -Xmx16m default -> OutOfMemoryError at class preload. PRODUCT_SYSTEM_PROPERTIES
-# targets the system partition only; PRODUCT_PROPERTY_OVERRIDES also feeds vendor/build.prop and the
-# prop gets claimed by vendor (stripped from system).
+# Zygote reads these values from the system partition during early boot.
 PRODUCT_SYSTEM_PROPERTIES += \
     dalvik.vm.heapstartsize=16m \
     dalvik.vm.heapgrowthlimit=256m \
@@ -54,15 +48,12 @@ AB_OTA_POSTINSTALL_CONFIG += \
 PRODUCT_PACKAGES += \
     checkpoint_gc \
     otapreopt_script
-
-
-
-# fastbootd
+# Fastbootd
 PRODUCT_PACKAGES += \
     android.hardware.fastboot@1.1-impl-mock \
     fastbootd
 
-# Health (AIDL — HIDL @2.1 is deprecated at FCM 202404 and fails VINTF)
+# Health
 PRODUCT_PACKAGES += \
     android.hardware.health-service.qti \
     android.hardware.health-service.qti_recovery
@@ -79,80 +70,66 @@ PRODUCT_SOONG_NAMESPACES += \
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rootdir/etc/init.recovery.qcom.rc:recovery/root/init.recovery.qcom.rc
 
-# === b19: QCOM HAL services whose .rc is shipped as a Nothing blob but whose BINARY is
-# NOT in proprietary-files.txt (init had a dangling .rc -> service never started).
-# Build these from the same QCOM/AOSP sources onyx (same SoC, sun/sm8750) builds.
-# (Verified absent in proprietary-files.txt: bin/hw/{thermal,usb,usb.gadget,vibrator,wifi}-service, bin/vndservicemanager.)
+# HAL source namespaces
+PRODUCT_SOONG_NAMESPACES += \
+    hardware/qcom-caf/sm8750/display \
+    hardware/qcom-caf/thermal
 
-# Thermal HAL (hardware/qcom-caf/thermal is its own soong namespace)
-PRODUCT_SOONG_NAMESPACES +=     hardware/qcom-caf/thermal
+PRODUCT_PACKAGES += \
+    android.hardware.thermal-service.qti \
+    android.hardware.usb-service.qti \
+    android.hardware.usb.gadget-service.qti \
+    vndservicemanager
 
-# Display HALs (b20): build from source (hardware/qcom-caf/sm8750/display is its own soong namespace)
-PRODUCT_SOONG_NAMESPACES += hardware/qcom-caf/sm8750/display
-
-PRODUCT_PACKAGES +=     android.hardware.thermal-service.qti
-
-# USB + USB gadget HAL (vendor/qcom/opensource/usb/hal, default namespace)
-PRODUCT_PACKAGES +=     android.hardware.usb-service.qti     android.hardware.usb.gadget-service.qti
-
-# The stock service supports metroid's AW86927/RichTap interface.
-PRODUCT_PACKAGES +=     vendor.qti.hardware.vibrator.service
-
-# Vendor servicemanager (frameworks/native) - vndservice_contexts users need it
-PRODUCT_PACKAGES +=     vndservicemanager
-
-# WiFi supplicant (external/wpa_supplicant_8). The wifi HAL service is the stock blob;
-# the AOSP generic android.hardware.wifi-service has no vendor
-# impl here ("failed to open /vendor/etc/wifi/vendor_hals") -> IWifi start fails code 9.
-# Stock service + libwifi-hal{,-qcom,-ctrl} + wcn7750 WCNSS_qcom_cfg.ini (icnss2 probe needs
-# it or wlan0 never appears). Verified live on device 2026-07-09 (enable + multi-band scan).
-# libxml2.vendor: was only installed as a dep of the removed AOSP wifi-service; qseecomd
-# (libdrmfs.so) hard-requires it -> without it TEE dies -> keymint -> gatekeeper -> system_server
-# crash-loop (BiometricService "Gatekeeper service not available"). Found 2026-07-09.
-PRODUCT_PACKAGES +=     libxml2.vendor
-PRODUCT_PACKAGES +=     wpa_supplicant     wpa_cli \
-                        android.hardware.wifi.hostapd-V2-ndk
+# The stock Wi-Fi service requires the vendor hostapd interface and libxml2.
+PRODUCT_PACKAGES += \
+    android.hardware.wifi.hostapd-V2-ndk \
+    libxml2.vendor \
+    wpa_cli \
+    wpa_supplicant
 
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rootdir/etc/zz.init.metroid.vibrator.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/zz.init.metroid.vibrator.rc
-# Display HALs from source (b20): ~23s reset fix. Module names mirror onyx un_dt device.mk
-# (same SoC sun/sm8750); composer-service added (essential, buildable in sm8750/display tree).
-PRODUCT_PACKAGES +=     vendor.qti.hardware.display.composer-service     vendor.qti.hardware.display.allocator-service     vendor.qti.hardware.display.demura-service     vendor.qti.hardware.display.snapalloc-impl     android.hardware.graphics.mapper@4.0-impl-qti-display     android.hardware.graphics.composer3-V3-ndk.vendor     vendor.qti.hardware.display.composer3-V1-ndk.vendor     vendor.qti.hardware.display.config-V12-ndk.vendor     vendor.qti.hardware.display.aiqe-V2-ndk.vendor
+# Display
+PRODUCT_PACKAGES += \
+    android.hardware.graphics.composer3-V3-ndk.vendor \
+    android.hardware.graphics.mapper@4.0-impl-qti-display \
+    vendor.qti.hardware.display.aiqe-V2-ndk.vendor \
+    vendor.qti.hardware.display.allocator-service \
+    vendor.qti.hardware.display.composer-service \
+    vendor.qti.hardware.display.composer3-V1-ndk.vendor \
+    vendor.qti.hardware.display.config-V12-ndk.vendor \
+    vendor.qti.hardware.display.demura-service \
+    vendor.qti.hardware.display.snapalloc-impl
 
-# Boot control HAL from source (b20): mirror onyx device.mk
-PRODUCT_PACKAGES +=     android.hardware.boot-service.qti     android.hardware.boot-service.qti.recovery \
-                        libkeymaster_messages \
-                        librmnetctl \
-                        rmnetcli \
-                        libcodec2_aidl \
-                        android.hardware.radio.sim-V3-ndk \
-                        android.hardware.bluetooth.finder-V1-ndk \
-                        android.hardware.health-V1-ndk \
-                        android.frameworks.cameraservice.common-V1-ndk \
-                        android.hardware.sensors@2.1.vendor \
-                        libcodec2_vndk \
-                        android.hardware.radio-V2-ndk \
-                        android.hardware.radio.data-V2-ndk \
-                        android.hardware.radio.network-V2-ndk \
-                        android.hardware.radio@1.2.vendor \
-                        android.hardware.radio@1.3.vendor \
-                        android.hardware.radio@1.4.vendor \
-                        android.media.audio.common.types-V2-cpp
+# Boot control and proprietary interface dependencies
+PRODUCT_PACKAGES += \
+    android.frameworks.cameraservice.common-V1-ndk \
+    android.hardware.bluetooth.finder-V1-ndk \
+    android.hardware.boot-service.qti \
+    android.hardware.boot-service.qti.recovery \
+    android.hardware.health-V1-ndk \
+    android.hardware.radio-V2-ndk \
+    android.hardware.radio.data-V2-ndk \
+    android.hardware.radio.network-V2-ndk \
+    android.hardware.radio.sim-V3-ndk \
+    android.hardware.radio@1.2.vendor \
+    android.hardware.radio@1.3.vendor \
+    android.hardware.radio@1.4.vendor \
+    android.hardware.sensors@2.1.vendor \
+    android.media.audio.common.types-V2-cpp \
+    libcodec2_aidl \
+    libcodec2_vndk \
+    libkeymaster_messages \
+    librmnetctl \
+    rmnetcli
 
-
-# Inherit the proprietary vendor blobs (generated by setup-makefiles.sh)
+# Proprietary vendor blobs
 $(call inherit-product-if-exists, vendor/nothing/metroid/metroid-vendor.mk)
 
-# Bring-up build21: no_fatal blanket for observability (keep device up past ~29s for adb)
-PRODUCT_COPY_FILES += $(LOCAL_PATH)/rootdir/etc/init.bringup_nofatal.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.bringup_nofatal.rc
-
-# Bring-up build23: copy fstab.qcom to vendor partition and ramdisks (first-stage mount)
+# Vendor fstab
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/rootdir/etc/fstab.qcom:$(TARGET_COPY_OUT_VENDOR)/etc/fstab.qcom \
-    $(LOCAL_PATH)/rootdir/etc/fstab.qcom:$(TARGET_COPY_OUT_RAMDISK)/fstab.qcom \
-    $(LOCAL_PATH)/rootdir/etc/fstab.qcom:$(TARGET_COPY_OUT_RAMDISK)/first_stage_ramdisk/fstab.qcom \
-    $(LOCAL_PATH)/rootdir/etc/fstab.qcom:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/fstab.qcom \
-    $(LOCAL_PATH)/rootdir/etc/fstab.qcom:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.qcom
+    $(LOCAL_PATH)/rootdir/etc/fstab.qcom:$(TARGET_COPY_OUT_VENDOR)/etc/fstab.qcom
 
 # Audio policy configurations
 PRODUCT_COPY_FILES += \
@@ -161,35 +138,38 @@ PRODUCT_COPY_FILES += \
     vendor/nothing/metroid/proprietary/vendor/etc/audio/sku_tuna/r_submix_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/r_submix_audio_policy_configuration.xml \
     vendor/nothing/metroid/proprietary/vendor/etc/audio/sku_tuna/audio_policy_volumes.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_volumes.xml \
     vendor/nothing/metroid/proprietary/vendor/etc/audio/sku_tuna/default_volume_tables.xml:$(TARGET_COPY_OUT_VENDOR)/etc/default_volume_tables.xml
+# VINTF fragments
+PRODUCT_PACKAGES += \
+    audio_effects.metroid.xml \
+    audio_qti_services.metroid.xml \
+    camera_provider.metroid.xml \
+    hal_batch1.metroid.xml \
+    hal_batch2.metroid.xml \
+    hal_batch3.metroid.xml \
+    wifi-service.metroid.xml
 
+PRODUCT_PACKAGES += \
+    android.hardware.radio.config.metroid4.xml \
+    android.hardware.radio.data.metroid4.xml \
+    android.hardware.radio.messaging.metroid4.xml \
+    android.hardware.radio.modem.metroid4.xml \
+    android.hardware.radio.network.metroid4.xml \
+    android.hardware.radio.sim.metroid4.xml \
+    android.hardware.radio.voice.metroid4.xml
 
-# Bring-up: persistent boot-log capture (dmesg + logcat -> /mnt/vendor/nt_log, survives ~29s reset; no USB)
-PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/rootdir/etc/init.ntcap.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.ntcap.rc \
-    $(LOCAL_PATH)/rootdir/bin/ntcap.sh:$(TARGET_COPY_OUT_VENDOR)/bin/ntcap.sh
-
-PRODUCT_PACKAGES += wifi-service.metroid.xml audio_qti_services.metroid.xml audio_effects.metroid.xml hal_batch1.metroid.xml hal_batch2.metroid.xml hal_batch3.metroid.xml camera_provider.metroid.xml
-PRODUCT_PACKAGES += android.hardware.radio.config.metroid4.xml android.hardware.radio.data.metroid4.xml android.hardware.radio.messaging.metroid4.xml android.hardware.radio.modem.metroid4.xml android.hardware.radio.network.metroid4.xml android.hardware.radio.sim.metroid4.xml android.hardware.radio.voice.metroid4.xml
-
-# Force boot-time sepolicy recompile from CIL (stock prebuilt init does not honor the LOS odm precompiled)
+# Compile policy from CIL at boot because the stock init image ignores ODM precompiled policy.
 PRODUCT_PRECOMPILED_SEPOLICY := false
 
-# OPUS bring-up: EARLY (system build.prop, before zygote) props — /vendor/build.prop loads too late here.
-# ro.hw_timeout_multiplier=4 -> framework Watchdog 60s*4=240s to survive the slow imageless first boot
-# (odsign fails -> no boot.art -> imageless -> system_server main thread >60s -> Watchdog kill loop).
-# boot_level_key.strategy: TEE keymint rejects EARLY_BOOT_ONLY (odsign Status(-8)); use MAX_USES_PER_BOOT.
+# The first boot uses imageless ART and the TEE rejects EARLY_BOOT_ONLY keys.
 PRODUCT_SYSTEM_PROPERTIES += \
     ro.hw_timeout_multiplier=4 \
     ro.keystore.boot_level_key.strategy=TRUSTED_ENVIRONMENT:MAX_USES_PER_BOOT
 
-# OPUS bring-up: audio HAL was BUILT but never installed (not in PRODUCT_PACKAGES) -> /vendor/bin/hw/audiohalservice.qti
-# missing -> audioserver AudioFlinger::onFirstRef() null-derefs -> SoundTrigger ExternalCaptureStateTracker
-# connect() LOG_ALWAYS_FATAL -> system_server crash loop. Install the core (+effect) audio HAL (soong pulls deps+VINTF).
-PRODUCT_PACKAGES += audiohalservice.qti
+# Audio
+PRODUCT_PACKAGES += \
+    audiohalservice.qti
 
 DEVICE_PACKAGE_OVERLAYS += device/nothing/metroid/overlay
-
-
-# Camera: skip Morpho EIS init in GME node (SIGILL in libmorpho_video_stabilizer on first
-# frame; forces QTIGMEWrapper instead). Verified live 2026-07-10 — camera preview + capture work.
-PRODUCT_VENDOR_PROPERTIES += persist.vendor.morpho.eis.force_gmenode=1
+# The stock Morpho EIS library faults on this userspace; use the QTI GME path.
+PRODUCT_VENDOR_PROPERTIES += \
+    persist.vendor.morpho.eis.force_gmenode=1

@@ -46,5 +46,3 @@
 /data/vendor/mbnconfig(/.*)? u:object_r:vendor_firmware_data_file:s0
 
 # Persistent logging
-/vendor/bin/ntcap\.sh u:object_r:ntcap_exec:s0
-

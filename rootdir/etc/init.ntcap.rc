@@ -1,5 +1,0 @@
-service vendor.ntcap /vendor/bin/sh /vendor/bin/ntcap.sh
-    class core
-    user root
-    group root log system
-    seclabel u:r:ntcap:s0

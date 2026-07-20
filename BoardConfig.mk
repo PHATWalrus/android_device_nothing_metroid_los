@@ -1,6 +1,6 @@
 DEVICE_PATH := device/nothing/metroid
 
-# Bring-up: dexpreopt off (restores 07-05 23:40 known-good EROFS bring-up config)
+# Required by the current imageless first-boot path.
 WITH_DEXPREOPT := false
 
 # A/B
@@ -46,16 +46,10 @@ QCOM_BOARD_PLATFORMS := $(TARGET_SOC)
 TARGET_BOARD_PLATFORM_GPU := Adreno-825
 
 # Display
-TW_THEME := portrait_hdpi
 TARGET_SCREEN_DENSITY := 460
 TARGET_SCREEN_HEIGHT := 1260
 TARGET_SCREEN_WIDTH := 2800
-TW_MAX_BRIGHTNESS := 4500
-TW_DEFAULT_BRIGHTNESS := 2000
 TARGET_USES_VULKAN := true
-TW_FRAMERATE := 144
-TARGET_RECOVERY_PIXEL_FORMAT := "RGBX_8888"
-TW_BRIGHTNESS_PATH := "/sys/class/backlight/panel0-backlight/brightness"
 
 # Board
 BOARD_USES_QCOM_HARDWARE := true
@@ -75,6 +69,7 @@ BOARD_TAGS_OFFSET := 0x00000100
 BOARD_DTB_OFFSET := 0x01f00000
 BOARD_KERNEL_CMDLINE := bootopt=64S3,32N2,64N2 erofs.reserved_pages=64 nosoftlockup log_buf_len=1M ignore_loglevel printk.devkmsg=on androidboot.init_fatal_reboot_target=recovery androidboot.selinux=permissive
 BOARD_KERNEL_IMAGE_NAME := Image
+BOARD_USES_GENERIC_KERNEL_IMAGE := true
 
 # Bootconfig
 BOARD_BOOTCONFIG := \
@@ -129,7 +124,7 @@ BOARD_VENDORIMAGE_FILE_SYSTEM_TYPE := ext4
 TARGET_COPY_OUT_SYSTEM := system
 TARGET_COPY_OUT_VENDOR := vendor
 
-# Separate logical partitions (the OEM fstab mounts these at first-stage; do NOT flatten)
+# Separate logical partitions mounted during first stage.
 TARGET_COPY_OUT_SYSTEM_EXT := system_ext
 TARGET_COPY_OUT_PRODUCT := product
 TARGET_COPY_OUT_ODM := odm
@@ -138,9 +133,7 @@ BOARD_SYSTEM_EXTIMAGE_FILE_SYSTEM_TYPE := erofs
 BOARD_PRODUCTIMAGE_FILE_SYSTEM_TYPE := erofs
 BOARD_ODMIMAGE_FILE_SYSTEM_TYPE := erofs
 
-# vendor_dlkm/system_dlkm: stock fstab first-stage-mounts these; modules actually
-# live in vendor_boot (117 of them), so build them as (empty) partitions just so
-# the first-stage mount succeeds instead of aborting -> "logo then reboot".
+# Kernel modules are currently supplied by the prebuilt vendor boot image.
 TARGET_COPY_OUT_VENDOR_DLKM := vendor_dlkm
 TARGET_COPY_OUT_SYSTEM_DLKM := system_dlkm
 BOARD_USES_VENDOR_DLKMIMAGE := true
@@ -157,13 +150,7 @@ VENDOR_SECURITY_PATCH := 2026-04-05
 
 # Recovery
 BOARD_EXCLUDE_KERNEL_FROM_RECOVERY_IMAGE := true
-TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/rootdir/etc/fstab.qcom
-TARGET_RECOVERY_QCOM_RTC_FIX := true
-BOARD_HAS_LARGE_FILESYSTEM := true
-BOARD_USES_GENERIC_KERNEL_IMAGE := true
-BOARD_HAS_NO_SELECT_BUTTON := true
-BOARD_SUPPRESS_SECURE_ERASE := true
-RECOVERY_SDCARD_ON_DATA := true
+TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/recovery.fstab
 TARGET_RECOVERY_PIXEL_FORMAT := RGBX_8888
 TARGET_USERIMAGES_USE_EXT4 := true
 TARGET_USERIMAGES_USE_F2FS := true
@@ -201,54 +188,7 @@ BOARD_AVB_VENDOR_DLKM_ADD_HASHTREE_FOOTER_ARGS += --hash_algorithm sha256
 BOARD_AVB_VENDOR_ADD_HASHTREE_FOOTER_ARGS += --hash_algorithm sha256
 BOARD_AVB_SYSTEM_DLKM_ADD_HASHTREE_FOOTER_ARGS += --hash_algorithm sha256
 
-# Hack: prevent anti rollback
-#PLATFORM_SECURITY_PATCH := 2099-12-31
-#VENDOR_SECURITY_PATCH := 2099-12-31
-#PLATFORM_VERSION := 12
-TW_INCLUDE_CRYPTO := false
-TW_INCLUDE_CRYPTO_FBE := false
-BOARD_USES_QCOM_FBE_DECRYPTION := true
-TW_INCLUDE_FBE_METADATA_DECRYPT := true
 BOARD_USES_METADATA_PARTITION := true
-
-# TWRP Configs
-TW_EXCLUDE_APEX := true
-TW_EXTRA_LANGUAGES := true
-TW_THEME := portrait_hdpi
-TARGET_USES_MKE2FS := true
-TW_NO_BIND_SYSTEM := true
-TW_NO_HAPTICS := true
-TW_USE_NEW_MINADBD := true
-TW_SCREEN_BLANK_ON_BOOT := true
-TW_USE_MODEL_HARDWARE_ID_FOR_DEVICE_ID := true
-TW_DEVICE_VERSION := SavedByLight Metroid
-TW_BACKUP_EXCLUSIONS := /data/fonts
-TW_USE_TOOLBOX := true
-TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/recovery.fstab
-
-# Tools
-TW_INCLUDE_FB2PNG := true
-TW_INCLUDE_NTFS_3G := true
-TW_INCLUDE_REPACKTOOLS := true
-TW_INCLUDE_RESETPROP := true
-TW_INCLUDE_LPTOOLS := true
-TW_INCLUDE_LPDUMP := true
-TW_INCLUDE_LIBRESETPROP := true
-TW_EXCLUDE_DEFAULT_USB_INIT := true
-
-# log
-TWRP_EVENT_LOGGING := true
-TWRP_INCLUDE_LOGCAT := true
-TARGET_USES_LOGD := true
-
-# vendor_boot
-TW_LOAD_VENDOR_BOOT_MODULES := true
-
-# Statusbar icons flags
-TW_STATUS_ICONS_ALIGN := center
-TW_CUSTOM_CPU_POS := 580
-TW_CUSTOM_CLOCK_POS := 50
-TW_CUSTOM_BATTERY_POS := 800
 
 # Treble
 PRODUCT_ENFORCE_VINTF_MANIFEST := true
@@ -261,17 +201,11 @@ DEVICE_MANIFEST_FILE := device/nothing/metroid/configs/hidl/manifest.xml hardwar
 -include vendor/nothing/metroid/BoardConfigVendor.mk
 DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE += device/nothing/metroid/configs/hidl/compatibility_matrix.device.xml
 
-# --- SEPolicy wiring (Opus 2026-07-07: fixes keymint/keystore2 InitFatalReboot @21s) ---
-# QTI HAL service binaries (keymint/boot/fingerprint) were unlabeled ("rootfs") -> init
-# refuses to exec them EVEN IN PERMISSIVE -> keystore2 crash-loop -> InitFatalReboot.
-# platform=sun -> sm8750 QTI sepolicy labels keymint-service-qti vendor_hal_keymint_qti_exec.
+# SEPolicy
 include device/qcom/sepolicy_vndr/SEPolicy.mk
 BOARD_VENDOR_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy/vendor
-SYSTEM_EXT_PUBLIC_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy/public
 SYSTEM_EXT_PRIVATE_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy/private
 
-# --- 64-bit media stack (Opus 2026-07-10): 32-bit mediaserver/drmserver cannot exec
-# on this 64-only device (zygote64) -> init 'Exec format error' loop -> Aperture blocks on
-# media.resource_manager -> black camera preview. Flip both to 64-bit via soong_config.
+# Media
 TARGET_DYNAMIC_64_32_MEDIASERVER := true
 TARGET_DYNAMIC_64_32_DRMSERVER := true
