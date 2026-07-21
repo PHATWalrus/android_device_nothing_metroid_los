@@ -1,0 +1,5 @@
+# Glyph Matrix LED driver sysfs type (matches stock Nothing OS system_ext policy).
+# The matrix-leds sysfs nodes (all_brightness, frame_brightness, single_brightness,
+# led_video_play, trans_info, ...) are relabeled to this type so the platform-signed
+# GlyphService (com.nothing.thirdparty, runs as system_app / uid.system) can drive them.
+type sysfs_led_driver_info, sysfs_type, fs_type;

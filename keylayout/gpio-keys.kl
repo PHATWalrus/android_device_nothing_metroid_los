@@ -1,0 +1,9 @@
+# Nothing Phone (3) gpio-keys
+# Scancode 250 (0xfa) = Essential Key. Mapped to CAMERA as the transport keycode;
+# the MetroidKeyHandler (system_server DeviceKeyHandler) intercepts scanCode 250
+# and toggles the torch, consuming the event. Without the handler this falls back
+# to a camera-launch key.
+
+key 114   VOLUME_DOWN
+key 115   VOLUME_UP
+key 250   CAMERA

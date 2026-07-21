@@ -1,0 +1,3 @@
+# Label the Glyph Matrix LED sysfs so the platform GlyphService can drive it.
+# SPI path from stock: soc/8c0000.qcom,qupv3_2_geni_se/888000.spi/spi_master/spi10/spi10.0/leds/matrix-leds
+genfscon sysfs /devices/platform/soc/8c0000.qcom,qupv3_2_geni_se/888000.spi/spi_master/spi10/spi10.0/leds/matrix-leds u:object_r:sysfs_led_driver_info:s0

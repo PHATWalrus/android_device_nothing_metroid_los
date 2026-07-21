@@ -181,6 +181,24 @@ $(call inherit-product-if-exists, device/nothing/metroid/proprietary_force_copy.
 # Force boot-time sepolicy recompile from CIL (stock prebuilt init does not honor the LOS odm precompiled)
 PRODUCT_PRECOMPILED_SEPOLICY := false
 
+# ---------------------------------------------------------------------------
+# Glyph Matrix stack (ported from stock NothingOS 4.0, see GLYPH_PORT_20260720.md)
+#   NtThirdParty      = com.nothing.thirdparty  -> GlyphService + toy framework (uid.system)
+#   GlyphNotification = com.nothing.glyphnotification (LED-strip notifier, priv-app)
+#   NothingToy/Magicball/Leveler = first-party Glyph Matrix toys
+# Prebuilt modules + certificates defined in vendor/nothing/metroid/glyph/Android.mk
+# ---------------------------------------------------------------------------
+PRODUCT_PACKAGES += \
+    NtThirdParty \
+    GlyphNotification \
+    NothingToy \
+    Magicball \
+    Leveler
+
+# Glyph sysconfig XML (privapp-permissions xml already copied by metroid-vendor.mk).
+PRODUCT_COPY_FILES += \
+    vendor/nothing/metroid/glyph/etc/sysconfig/com.nothing.glyphnotification.xml:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/sysconfig/com.nothing.glyphnotification.xml
+
 # OPUS bring-up: EARLY (system build.prop, before zygote) props — /vendor/build.prop loads too late here.
 # ro.hw_timeout_multiplier=4 -> framework Watchdog 60s*4=240s to survive the slow imageless first boot
 # (odsign fails -> no boot.art -> imageless -> system_server main thread >60s -> Watchdog kill loop).
@@ -195,6 +213,12 @@ PRODUCT_SYSTEM_PROPERTIES += \
 PRODUCT_PACKAGES += audiohalservice.qti
 
 DEVICE_PACKAGE_OVERLAYS += device/nothing/metroid/overlay
+
+# Essential Key (gpio-keys scancode 250): keylayout + system_server KeyHandler that
+# toggles the torch (config_deviceKeyHandlerLibs lineage-sdk overlay points at the jar).
+PRODUCT_COPY_FILES += \
+    device/nothing/metroid/keylayout/gpio-keys.kl:$(TARGET_COPY_OUT_SYSTEM)/usr/keylayout/gpio-keys.kl
+PRODUCT_PACKAGES += MetroidKeyHandler
 
 
 # Camera: skip Morpho EIS init in GME node (SIGILL in libmorpho_video_stabilizer on first

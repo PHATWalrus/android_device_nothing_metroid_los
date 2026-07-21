@@ -1,0 +1,9 @@
+// Nothing Phone (3) Essential Key handler — torch toggle.
+// Loaded by PhoneWindowManager via config_deviceKeyHandlerLibs
+// (lineage-sdk overlay) as /system/framework/MetroidKeyHandler.jar.
+
+java_library {
+    name: "MetroidKeyHandler",
+    srcs: ["src/**/*.java"],
+    installable: true,
+}

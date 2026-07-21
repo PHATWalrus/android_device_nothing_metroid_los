@@ -1,0 +1,8 @@
+# GlyphService (com.nothing.thirdparty, sharedUserId=android.uid.system) writes the
+# Glyph Matrix frames directly to the matrix-leds sysfs nodes.
+allow system_app sysfs_led_driver_info:dir search;
+allow system_app sysfs_led_driver_info:file rw_file_perms;
+
+# GlyphNotification also toggles the LED nodes.
+allow priv_app sysfs_led_driver_info:dir search;
+allow priv_app sysfs_led_driver_info:file rw_file_perms;
