@@ -8,6 +8,10 @@ from extract_utils.main import (
     ExtractUtils,
     ExtractUtilsModule,
 )
+from extract_utils.makefiles import (
+    MakefilesCtx,
+    ProductPackagesCtx,
+)
 from extract_utils.fixups_blob import (
     blob_fixup,
     blob_fixups_user_type,
@@ -85,13 +89,43 @@ blob_fixups: blob_fixups_user_type = {
         ),
 }
 
+
+def write_recovery_touch_modules(
+    ctx: MakefilesCtx,
+    _packages_ctx: ProductPackagesCtx,
+) -> None:
+    ctx.bp_out.write(
+        '''\
+prebuilt_vendor {
+    name: "qts_ko_recovery",
+    src: "proprietary/vendor_dlkm/lib/modules/qts.ko",
+    filename: "qts.ko",
+    relative_install_path: "lib/modules",
+    recovery: true,
+}
+
+prebuilt_vendor {
+    name: "focaltech_tp_ko_recovery",
+    src: "proprietary/vendor_dlkm/lib/modules/focaltech_tp.ko",
+    filename: "focaltech_tp.ko",
+    relative_install_path: "lib/modules",
+    recovery: true,
+}
+'''
+    )
+
+
 module = ExtractUtilsModule(
     'metroid',
     'nothing',
     blob_fixups=blob_fixups,
     lib_fixups=lib_fixups,
     namespace_imports=namespace_imports,
+    skip_main_proprietary_file=True,
 )
+
+proprietary_file = module.add_proprietary_file('proprietary-files.txt')
+proprietary_file.add_post_makefile_generation_fn(write_recovery_touch_modules)
 
 if __name__ == '__main__':
     utils = ExtractUtils.device(module)

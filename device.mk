@@ -62,6 +62,7 @@ PRODUCT_PACKAGES += \
 
 # Partitions
 PRODUCT_BUILD_PVMFW_IMAGE := true
+PRODUCT_BUILD_INIT_BOOT_IMAGE := true
 PRODUCT_USE_DYNAMIC_PARTITIONS := true
 PRODUCT_BUILD_VENDOR_BOOT_IMAGE := false
 
@@ -76,9 +77,11 @@ PRODUCT_SOONG_NAMESPACES += \
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rootdir/etc/init.recovery.aosp.rc:recovery/root/init.recovery.aosp.rc \
     $(LOCAL_PATH)/rootdir/etc/init.recovery.qcom.rc:recovery/root/init.recovery.qcom.rc \
-    vendor/nothing/metroid/proprietary/vendor_dlkm/lib/modules/qts.ko:recovery/root/vendor/lib/modules/qts.ko \
-    vendor/nothing/metroid/proprietary/vendor_dlkm/lib/modules/focaltech_tp.ko:recovery/root/vendor/lib/modules/focaltech_tp.ko \
     vendor/nothing/metroid/proprietary/vendor/firmware/focaltech_ts_fw_boe.bin:recovery/root/vendor/firmware/focaltech_ts_fw_boe.bin
+
+PRODUCT_PACKAGES += \
+    qts_ko_recovery \
+    focaltech_tp_ko_recovery
 
 PRODUCT_SYSTEM_EXT_PROPERTIES += \
     ro.minui.blacklist_input_devices=aw9380x_0_ch11
