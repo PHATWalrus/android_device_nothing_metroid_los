@@ -2430,10 +2430,6 @@ vendor/lib64/hw/camera.qcom.so
 vendor/lib64/hw/com.qti.chi.offline.so
 vendor/lib64/hw/com.qti.chi.override.so
 
-# Boot-critical runtime
-vendor/bin/audioadsprpcd
-vendor/etc/init/vendor.qti.audio-adsprpc-service.rc
-
 # Fingerprint HAL bridge
 vendor/lib64/hw/fingerprint.default.so
 
