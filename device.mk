@@ -6,6 +6,8 @@ PRODUCT_SOURCE_ROOT_DIRS += -kernel/nothing/sm8735
 # A/B
 $(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota.mk)
 
+PRODUCT_BUILD_FASTBOOT_PACKAGE := true
+
 # Generic ramdisk
 $(call inherit-product, $(SRC_TARGET_DIR)/product/generic_ramdisk.mk)
 
