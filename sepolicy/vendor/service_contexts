@@ -1,1 +1,2 @@
-# Empty service_contexts
+# Fingerprint
+vendor.goodix.hardware.biometrics.fingerprint.IGoodixFingerprintDaemon/default u:object_r:vendor_hal_fingerprint_service_nothing:s0
