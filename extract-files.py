@@ -40,6 +40,8 @@ blob_fixups: blob_fixups_user_type = {
         .clear_symbol_version('AHardwareBuffer_lockPlanes')
         .clear_symbol_version('AHardwareBuffer_release')
         .clear_symbol_version('AHardwareBuffer_unlock'),
+    'vendor/lib64/libntcamskia.so': blob_fixup()
+        .add_needed('libnativewindow.so'),
     (
         'vendor/lib64/com.nothing.camera.postproc@1.0-service-impl.so',
         'vendor/lib64/camera/components/com.qti.node.dewarp.so',
@@ -63,6 +65,13 @@ blob_fixups: blob_fixups_user_type = {
         .regex_replace(
             r'^<\?xml version="2\.0"',
             '<?xml version="1.0"',
+        ),
+    'system_ext/lib64/libwfdnative.so': blob_fixup()
+        .add_needed('libinput_shim.so'),
+    'system_ext/lib64/vendor.qti.hardware.qccsyshal@1.2-halimpl.so': blob_fixup()
+        .replace_needed(
+            'libprotobuf-cpp-full.so',
+            'libprotobuf-cpp-full-21.7.so',
         ),
     'vendor/lib64/libqcodec2_core.so': blob_fixup()
         .replace_needed(
