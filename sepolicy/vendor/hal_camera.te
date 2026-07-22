@@ -1,4 +1,13 @@
 
+type vendor_hal_noth_camera_service,
+    hal_service_type, protected_service, service_manager_type;
+
+type vendor_hal_nothing_postproc_service,
+    hal_service_type, protected_service, service_manager_type;
+
+add_service(hal_camera_default, vendor_hal_noth_camera_service)
+add_service(hal_camera_default, vendor_hal_nothing_postproc_service)
+
 set_prop(hal_camera, vendor_camera_sensor_prop)
 set_prop(hal_camera_default, vendor_camera_p3enable_prop)
 set_prop(hal_camera_default, vendor_camera_xdrversion_prop)

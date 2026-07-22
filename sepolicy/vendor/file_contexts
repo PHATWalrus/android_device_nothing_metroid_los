@@ -11,6 +11,7 @@
 /dev/block/platform/soc/1d84000.ufshc/by-name/modemfirmware_[ab] u:object_r:vendor_modem_block_device:s0
 
 # Camera
+/(vendor|system/vendor)/bin/hw/vendor\.noth\.hardware\.camera-service u:object_r:hal_camera_default_exec:s0
 
 # Diag
 /data/vendor/diag(/.*)? u:object_r:minidump_data_file:s0
