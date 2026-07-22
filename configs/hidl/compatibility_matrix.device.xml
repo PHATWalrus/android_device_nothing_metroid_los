@@ -1,8 +1,22 @@
 <compatibility-matrix version="8.0" type="framework">
     <hal format="aidl" optional="true">
+        <name>com.nothing.camera.postproc</name>
+        <interface>
+            <name>IPostProcService</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+    <hal format="aidl" optional="true">
         <name>vendor.goodix.hardware.biometrics.fingerprint</name>
         <interface>
             <name>IGoodixFingerprintDaemon</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+    <hal format="aidl" optional="true">
+        <name>vendor.noth.hardware.camera</name>
+        <interface>
+            <name>INtCamService</name>
             <instance>default</instance>
         </interface>
     </hal>
@@ -75,6 +89,22 @@
         <version>1</version>
         <interface>
             <name>IBluetoothSar</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+    <hal format="aidl" optional="true">
+        <name>vendor.qti.hardware.camera.aon</name>
+        <version>1-3</version>
+        <interface>
+            <name>IAONService</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+    <hal format="aidl" optional="true">
+        <name>vendor.qti.hardware.camera.offlinecamera</name>
+        <version>1-2</version>
+        <interface>
+            <name>IOfflineCameraService</name>
             <instance>default</instance>
         </interface>
     </hal>

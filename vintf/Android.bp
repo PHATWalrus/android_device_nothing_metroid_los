@@ -45,6 +45,26 @@ vintf_fragment {
     src: "camera_provider.metroid.xml",
     vendor: true,
 }
+vintf_fragment {
+    name: "com.nothing.camera.postproc-impl.xml",
+    src: "com.nothing.camera.postproc-impl.xml",
+    vendor: true,
+}
+vintf_fragment {
+    name: "vendor.noth.hardware.camera-service.xml",
+    src: "vendor.noth.hardware.camera-service.xml",
+    vendor: true,
+}
+vintf_fragment {
+    name: "vendor.qti.camera.aon-impl.xml",
+    src: "vendor.qti.camera.aon-impl.xml",
+    vendor: true,
+}
+vintf_fragment {
+    name: "vendor.qti.camera.offlinecamera-impl.xml",
+    src: "vendor.qti.camera.offlinecamera-impl.xml",
+    vendor: true,
+}
 
 // Radio
 vintf_fragment {

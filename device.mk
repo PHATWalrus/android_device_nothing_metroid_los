@@ -174,9 +174,13 @@ PRODUCT_PACKAGES += \
     audio_effects.metroid.xml \
     audio_qti_services.metroid.xml \
     camera_provider.metroid.xml \
+    com.nothing.camera.postproc-impl.xml \
     hal_batch1.metroid.xml \
     hal_batch2.metroid.xml \
     hal_batch3.metroid.xml \
+    vendor.noth.hardware.camera-service.xml \
+    vendor.qti.camera.aon-impl.xml \
+    vendor.qti.camera.offlinecamera-impl.xml \
     wifi-service.metroid.xml
 
 PRODUCT_PACKAGES += \
