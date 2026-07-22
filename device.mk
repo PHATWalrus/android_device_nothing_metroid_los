@@ -50,7 +50,7 @@ PRODUCT_PACKAGES += \
     otapreopt_script
 # Fastbootd
 PRODUCT_PACKAGES += \
-    android.hardware.fastboot@1.1-impl-mock \
+    android.hardware.fastboot-service.example_recovery \
     fastbootd
 
 # Health
@@ -59,8 +59,12 @@ PRODUCT_PACKAGES += \
     android.hardware.health-service.qti_recovery
 
 # Partitions
+PRODUCT_BUILD_PVMFW_IMAGE := true
 PRODUCT_USE_DYNAMIC_PARTITIONS := true
 PRODUCT_BUILD_VENDOR_BOOT_IMAGE := false
+
+# Android Virtualization Framework
+$(call inherit-product, packages/modules/Virtualization/build/apex/product_packages.mk)
 
 # Soong namespaces
 PRODUCT_SOONG_NAMESPACES += \
@@ -93,7 +97,9 @@ PRODUCT_PACKAGES += \
     wpa_supplicant
 
 PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/rootdir/etc/android.hardware.wifi-service.metroid.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/android.hardware.wifi-service.metroid.rc \
     $(LOCAL_PATH)/rootdir/etc/zz.init.metroid.vibrator.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/zz.init.metroid.vibrator.rc
+
 # Display
 PRODUCT_PACKAGES += \
     android.hardware.graphics.composer3-V3-ndk.vendor \
@@ -127,6 +133,10 @@ PRODUCT_PACKAGES += \
     libkeymaster_messages \
     librmnetctl \
     rmnetcli
+
+# Frozen VNDK required by the stock vendor interface.
+PRODUCT_PACKAGES += \
+    com.android.vndk.v34
 
 # Proprietary vendor blobs
 $(call inherit-product-if-exists, vendor/nothing/metroid/metroid-vendor.mk)

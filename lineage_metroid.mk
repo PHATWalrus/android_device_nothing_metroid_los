@@ -16,3 +16,11 @@ PRODUCT_MODEL := Phone (3)
 
 PRODUCT_GMS_CLIENTID_BASE := android-nothing
 PRODUCT_SHIPPING_API_LEVEL := 35
+
+PRODUCT_BUILD_PROP_OVERRIDES += \
+    BuildDesc="qssi_64-user 16 BQ2A.250721.001-BP2A.250605.031.A3 2606241457 release-keys" \
+    BuildFingerprint=Nothing/Metroid/Metroid:15/AQ3A.250728.001/2606241457:user/release-keys \
+    DeviceName=Metroid \
+    DeviceProduct=Metroid \
+    SystemDevice=Metroid \
+    SystemName=Metroid
