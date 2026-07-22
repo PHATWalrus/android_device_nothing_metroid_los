@@ -203,6 +203,7 @@ PRODUCT_SYSTEM_PROPERTIES += \
 
 # Audio
 PRODUCT_PACKAGES += \
+    audioadsprpcd \
     audiohalservice.qti
 
 DEVICE_PACKAGE_OVERLAYS += device/nothing/metroid/overlay
