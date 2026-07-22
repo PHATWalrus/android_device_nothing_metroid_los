@@ -1,3 +1,5 @@
+type sysfs_led_driver_info, sysfs_type, fs_type;
+
 allow priv_app sysfs_led_driver_info:dir search;
 allow priv_app sysfs_led_driver_info:file rw_file_perms;
 
