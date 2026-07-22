@@ -85,6 +85,7 @@ TARGET_FORCE_PREBUILT_KERNEL := true
 TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/prebuilt/kernel
 TARGET_PREBUILT_DTB := $(DEVICE_PATH)/prebuilt/dtb.img
 TARGET_PREBUILT_KERNEL_HEADERS := $(DEVICE_PATH)/prebuilt/kernel-headers.tar.gz
+BOARD_PREBUILT_BOOTIMAGE := device/nothing/metroid-kernel/boot.img
 BOARD_PREBUILT_DTBOIMAGE := device/nothing/metroid-kernel/dtbo.img
 BOARD_PREBUILT_INIT_BOOT_IMAGE := device/nothing/metroid-kernel/init_boot.img
 BOARD_PREBUILT_VENDOR_BOOTIMAGE := device/nothing/metroid-kernel/vendor_boot.img
