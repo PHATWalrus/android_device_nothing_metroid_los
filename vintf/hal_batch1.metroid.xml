@@ -39,9 +39,4 @@
         <name>vendor.qti.hardware.dsp</name>
         <fqname>IDspService/default</fqname>
     </hal>
-    <hal format="aidl">
-        <name>android.hardware.sensors</name>
-        <version>2</version>
-        <fqname>ISensors/default</fqname>
-    </hal>
 </manifest>

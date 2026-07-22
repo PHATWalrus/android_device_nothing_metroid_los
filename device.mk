@@ -137,6 +137,7 @@ PRODUCT_PACKAGES += \
     android.hardware.radio@1.3.vendor \
     android.hardware.radio@1.4.vendor \
     android.hardware.sensors@2.1.vendor \
+    android.hardware.sensors-service.multihal \
     android.media.audio.common.types-V2-cpp \
     libcodec2_aidl \
     libcodec2_vndk \
