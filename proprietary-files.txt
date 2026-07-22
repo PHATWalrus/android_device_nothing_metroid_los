@@ -14,6 +14,9 @@ odm/etc/sysconfig/sku_JPN/jp_choice_screen.xml
 odm/etc/sysconfig/sku_TUR/qsb_widget.xml
 odm/etc/sysconfig/sku_TUR/tmada.xml
 odm/overlayfs_origin/vendor/etc/init/android.hardware.weaver-service.thales.rc
+product/app/Leveler/Leveler.apk;EXTRACT_ONLY
+product/app/Magicball/Magicball.apk;EXTRACT_ONLY
+product/app/NothingToy/NothingToy.apk;EXTRACT_ONLY
 system_dlkm/lib/modules/6lowpan.ko;EXTRACT_ONLY
 system_dlkm/lib/modules/8021q.ko;EXTRACT_ONLY
 system_dlkm/lib/modules/9pnet.ko;EXTRACT_ONLY
@@ -114,6 +117,7 @@ system_dlkm/lib/modules/vmw_vsock_virtio_transport.ko;EXTRACT_ONLY
 system_dlkm/lib/modules/wwan.ko;EXTRACT_ONLY
 system_dlkm/lib/modules/zram.ko;EXTRACT_ONLY
 system_dlkm/lib/modules/zsmalloc.ko;EXTRACT_ONLY
+system_ext/app/NtThirdParty/NtThirdParty.apk;EXTRACT_ONLY
 system_ext/etc/default-permissions/default-permissions-com.quicinc.voice.activation.xml
 system_ext/etc/dpm/dpm.conf
 system_ext/etc/hdr_config/ans_off/ans_config.txt
@@ -210,6 +214,7 @@ system_ext/etc/sltntc/sltntc_SM7325.conf
 system_ext/etc/sltntc/sltntc_SM7635.conf
 system_ext/etc/sltntc/sltntc_SM8475.conf
 system_ext/etc/sysconfig/com.nothing.gallery.xml
+system_ext/etc/sysconfig/com.nothing.glyphnotification.xml
 system_ext/etc/sysconfig/initial-package-stopped-states-LogKit.xml
 system_ext/etc/sysconfig/nothing-initial-package-stopped-states.xml
 system_ext/etc/sysconfig/odm-initial-package-stopped-states.xml
@@ -223,6 +228,7 @@ system_ext/etc/system_perfetto.cfg
 system_ext/etc/wfdconfigsink.xml
 system_ext/etc/wmshell.protolog.json.gz
 system_ext/framework/ActivityExt.jar
+system_ext/priv-app/GlyphNotification/GlyphNotification.apk;EXTRACT_ONLY
 system_ext/framework/androidx.window.extensions.jar
 system_ext/framework/androidx.window.sidecar.jar
 system_ext/framework/audiosphere.jar

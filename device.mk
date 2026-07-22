@@ -151,6 +151,13 @@ PRODUCT_PACKAGES += \
 # Proprietary vendor blobs
 $(call inherit-product-if-exists, vendor/nothing/metroid/metroid-vendor.mk)
 
+PRODUCT_PACKAGES += \
+    GlyphNotification \
+    Leveler \
+    Magicball \
+    NothingToy \
+    NtThirdParty
+
 # Vendor fstab
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rootdir/etc/fstab.qcom:$(TARGET_COPY_OUT_VENDOR)/etc/fstab.qcom
