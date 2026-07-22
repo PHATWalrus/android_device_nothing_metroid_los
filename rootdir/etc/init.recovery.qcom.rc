@@ -27,6 +27,10 @@
 
 import /init.recovery.aosp.rc
 
+on early-init
+    insmod /vendor/lib/modules/qts.ko
+    insmod /vendor/lib/modules/focaltech_tp.ko
+
 on early-fs
     setprop sys.usb.configfs 0
 
