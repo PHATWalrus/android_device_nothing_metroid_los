@@ -5,6 +5,8 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
 # Inherit from metroid device.
 $(call inherit-product, device/nothing/metroid/device.mk)
 
+WITH_ADB_INSECURE := true
+
 # Inherit Lineage configuration.
 $(call inherit-product, vendor/lineage/config/common_full_phone.mk)
 

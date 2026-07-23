@@ -17,9 +17,6 @@ BOARD_SHIPPING_API_LEVEL := 202404
 PRODUCT_PRODUCT_PROPERTIES += \
     init.svc_debug.no_fatal.boot-hal-1-2=true
 
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.adb.secure=0
-
 # Zygote reads these values from the system partition during early boot.
 PRODUCT_SYSTEM_PROPERTIES += \
     dalvik.vm.heapstartsize=16m \
