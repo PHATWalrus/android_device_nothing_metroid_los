@@ -1,0 +1,9 @@
+type metroid_bootlog, domain, coredomain;
+
+userdebug_or_eng(`
+    domain_trans(init, logcat_exec, metroid_bootlog)
+    read_logd(metroid_bootlog)
+
+    allow metroid_bootlog mnt_product_file:dir rw_dir_perms;
+    allow metroid_bootlog mnt_product_file:file create_file_perms;
+')

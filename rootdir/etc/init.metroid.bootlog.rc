@@ -1,0 +1,10 @@
+on property:logd.ready=true && property:ro.debuggable=1
+    restorecon /mnt/product/nt_log
+    start metroid-bootlog
+
+service metroid-bootlog /system/bin/logcat -b all -v threadtime -v uid -T 100000 -f /mnt/product/nt_log/lineage-boot.log -r 2048 -n 3
+    class core
+    user root
+    group root log system
+    disabled
+    seclabel u:r:metroid_bootlog:s0

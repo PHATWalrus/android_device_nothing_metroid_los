@@ -136,7 +136,6 @@ system_ext/etc/init/init.factoryflag.rc
 system_ext/etc/init/nt_bpf.rc
 system_ext/etc/init/nt_core.rc
 system_ext/etc/init/nt_factorytest.rc
-system_ext/etc/init/nt_logkit.rc
 system_ext/etc/init/nt_performance_config.rc
 system_ext/etc/init/nt_performance_init.rc
 system_ext/etc/init/nt_sys_rdump_tool.rc
