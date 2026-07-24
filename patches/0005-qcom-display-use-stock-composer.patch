@@ -1,0 +1,94 @@
+diff --git a/composer/Android.bp b/composer/Android.bp
+index f6d5e3e..70d6f73 100644
+--- a/composer/Android.bp
++++ b/composer/Android.bp
+@@ -77,7 +77,43 @@ cc_defaults {
+     ],
+ }
+ 
+-cc_binary {
++soong_config_module_type {
++    name: "qticomposer3_cc_binary",
++    module_type: "cc_binary",
++    config_namespace: "qtidisplay",
++    bool_variables: [
++        "stock_composer",
++    ],
++    properties: [
++        "enabled",
++    ],
++}
++
++soong_config_module_type {
++    name: "qticomposer3_prebuilt_etc",
++    module_type: "prebuilt_etc",
++    config_namespace: "qtidisplay",
++    bool_variables: [
++        "stock_composer",
++    ],
++    properties: [
++        "enabled",
++    ],
++}
++
++soong_config_module_type {
++    name: "qticomposer3_prebuilt_etc_xml",
++    module_type: "prebuilt_etc_xml",
++    config_namespace: "qtidisplay",
++    bool_variables: [
++        "stock_composer",
++    ],
++    properties: [
++        "enabled",
++    ],
++}
++
++qticomposer3_cc_binary {
+     name: "vendor.qti.hardware.display.composer-service",
+     defaults: [
+         "qtidisplay_defaults",
+@@ -106,17 +142,29 @@ cc_binary {
+         "vendor.qti.hardware.display.composer-service.xml",
+     ],
+ 
++    soong_config_variables: {
++        stock_composer: {
++            enabled: false,
++        },
++    },
++
+ }
+ 
+-prebuilt_etc {
++qticomposer3_prebuilt_etc {
+     name: "vendor.qti.hardware.display.composer-service.rc",
+     src: "vendor.qti.hardware.display.composer-service.rc",
+     filename_from_src: true,
+     sub_dir: "init",
+     vendor: true,
++
++    soong_config_variables: {
++        stock_composer: {
++            enabled: false,
++        },
++    },
+ }
+ 
+-prebuilt_etc_xml {
++qticomposer3_prebuilt_etc_xml {
+     name: "vendor.qti.hardware.display.composer-service.xml",
+     src: select(soong_config_variable("qtidisplay", "composer_version"), {
+         "v3_3": "vendor.qti.hardware.display.composer-service3_v3.xml",
+@@ -125,6 +173,12 @@ prebuilt_etc_xml {
+     filename_from_src: true,
+     sub_dir: "vintf/manifest",
+     vendor: true,
++
++    soong_config_variables: {
++        stock_composer: {
++            enabled: false,
++        },
++    },
+ }
+ 
+ cc_fuzz {

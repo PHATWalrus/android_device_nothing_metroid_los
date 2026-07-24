@@ -10,7 +10,8 @@ WITH_ADB_INSECURE := true
 # Inherit Lineage configuration.
 $(call inherit-product, vendor/lineage/config/common_full_phone.mk)
 
-PRODUCT_PACKAGES := $(filter-out vendor.qti.hardware.display.composer-service,$(PRODUCT_PACKAGES))
+SOONG_CONFIG_qtidisplay += stock_composer
+SOONG_CONFIG_qtidisplay_stock_composer := true
 
 PRODUCT_NAME := lineage_metroid
 PRODUCT_DEVICE := metroid
