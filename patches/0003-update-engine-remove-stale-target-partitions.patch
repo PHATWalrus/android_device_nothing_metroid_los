@@ -1,0 +1,62 @@
+diff --git a/aosp/dynamic_partition_control_android.cc b/aosp/dynamic_partition_control_android.cc
+index ec1ca32..f9d5ae1 100644
+--- a/aosp/dynamic_partition_control_android.cc
++++ b/aosp/dynamic_partition_control_android.cc
+@@ -1075,9 +1075,6 @@ bool DynamicPartitionControlAndroid::UpdatePartitionMetadata(
+   const std::string target_suffix = SlotSuffixForSlotNumber(target_slot);
+   DeleteGroupsWithSuffix(builder, target_suffix);
+ 
+-  TEST_AND_RETURN_FALSE(
+-      CheckSuperPartitionAllocatableSpace(builder, manifest, false));
+-
+   // name of partition(e.g. "system") -> size in bytes
+   std::map<std::string, uint64_t> partition_sizes;
+   for (const auto& partition : manifest.partitions()) {
+@@ -1085,6 +1082,15 @@ bool DynamicPartitionControlAndroid::UpdatePartitionMetadata(
+                             partition.new_partition_info().size());
+   }
+ 
++  for (const auto& group : manifest.dynamic_partition_metadata().groups()) {
++    for (const auto& partition_name : group.partition_names()) {
++      builder->RemovePartition(partition_name + target_suffix);
++    }
++  }
++
++  TEST_AND_RETURN_FALSE(
++      CheckSuperPartitionAllocatableSpace(builder, manifest, false));
++
+   for (const auto& group : manifest.dynamic_partition_metadata().groups()) {
+     auto group_name_suffix = group.name() + target_suffix;
+     if (!builder->AddGroup(group_name_suffix, group.size())) {
+diff --git a/aosp/dynamic_partition_control_android_unittest.cc b/aosp/dynamic_partition_control_android_unittest.cc
+index 6822394..026ebc9 100644
+--- a/aosp/dynamic_partition_control_android_unittest.cc
++++ b/aosp/dynamic_partition_control_android_unittest.cc
+@@ -601,6 +601,27 @@ TEST_P(DynamicPartitionControlAndroidGroupTestP, GroupTooBig) {
+       << "Should not be able to grow over size of super / 2";
+ }
+ 
++TEST_P(DynamicPartitionControlAndroidGroupTestP,
++       RemovesStaleTargetPartitionBeforeRecreatingGroups) {
++  auto super_metadata = NewFakeMetadata(source_manifest);
++  ASSERT_NE(nullptr,
++            super_metadata->AddPartition(T("system_ext"), "default", 0));
++
++  DeltaArchiveManifest update_manifest;
++  auto* group = AddGroup(&update_manifest, "android", 3_GiB);
++  AddPartition(&update_manifest, group, "system", 2_GiB);
++  AddPartition(&update_manifest, group, "system_ext", 1_GiB);
++
++  ASSERT_TRUE(module_->UpdatePartitionMetadata(
++      super_metadata.get(), target(), update_manifest));
++
++  DeltaArchiveManifest expected;
++  group = AddGroup(&expected, T("android"), 3_GiB);
++  AddPartition(&expected, group, T("system"), 2_GiB);
++  AddPartition(&expected, group, T("system_ext"), 1_GiB);
++  ASSERT_THAT(super_metadata.get(), MetadataMatches(expected));
++}
++
+ TEST_P(DynamicPartitionControlAndroidGroupTestP, AddPartitionToGroup) {
+   DeltaArchiveManifest expected;
+   auto* g = AddGroup(&expected, T("android"), 3_GiB);

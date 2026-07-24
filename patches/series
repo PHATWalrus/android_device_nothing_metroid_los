@@ -1,0 +1,4 @@
+vendor/lineage 0001-lineage-add-fastboot-package.patch
+vendor/lineage 0002-lineage-regenerate-prebuilt-kernel-headers.patch
+system/update_engine 0003-update-engine-remove-stale-target-partitions.patch
+hardware/qcom-caf/sm8750/audio/pal 0004-qcom-pal-fix-format-specifiers.patch

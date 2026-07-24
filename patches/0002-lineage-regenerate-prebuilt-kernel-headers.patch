@@ -1,0 +1,14 @@
+diff --git a/build/soong/Android.bp b/build/soong/Android.bp
+index 295a6af..b563509 100644
+--- a/build/soong/Android.bp
++++ b/build/soong/Android.bp
+@@ -59,6 +59,9 @@ lineage_generator {
+     // The headers extract command
+     cmd: "mkdir -p $(KERNEL_BUILD_OUT_PREFIX)$(genDir) && gzip -d < $(TARGET_PREBUILT_KERNEL_HEADERS) | tar -x -C $(KERNEL_BUILD_OUT_PREFIX)$(genDir) && vendor/lineage/tools/clean_headers.sh $(KERNEL_BUILD_OUT_PREFIX)$(genDir)",
+ 
++    dep_root: ".",
++    dep_files: ["$(TARGET_PREBUILT_KERNEL_HEADERS)"],
++
+     // Directories that can be imported by a cc_* module generated_headers property
+     export_include_dirs: [
+         "usr/audio/include/uapi",
