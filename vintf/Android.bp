@@ -7,10 +7,29 @@ vintf_fragment {
 
 // Audio
 vintf_fragment {
+    name: "audio_bluetooth_core.metroid.xml",
+    src: "audio_bluetooth_core.metroid.xml",
+    vendor: true,
+}
+
+vintf_fragment {
+    name: "bluetooth_audio.metroid.xml",
+    src: "bluetooth_audio.metroid.xml",
+    vendor: true,
+}
+
+vintf_fragment {
     name: "audio_qti_services.metroid.xml",
     src: "audio_qti_services.metroid.xml",
     vendor: true,
 }
+
+vintf_fragment {
+    name: "audio_core_default.metroid.xml",
+    src: "audio_core_default.metroid.xml",
+    vendor: true,
+}
+
 // Audio effects
 vintf_fragment {
     name: "audio_effects.metroid.xml",
@@ -36,6 +55,20 @@ vintf_fragment {
 vintf_fragment {
     name: "hal_batch3.metroid.xml",
     src: "hal_batch3.metroid.xml",
+    vendor: true,
+}
+
+// Media
+vintf_fragment {
+    name: "media_c2.metroid.xml",
+    src: "media_c2.metroid.xml",
+    vendor: true,
+}
+
+// Qualcomm vendor services
+vintf_fragment {
+    name: "qti_services.metroid.xml",
+    src: "qti_services.metroid.xml",
     vendor: true,
 }
 

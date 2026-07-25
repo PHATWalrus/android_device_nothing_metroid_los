@@ -7,6 +7,7 @@ PRODUCT_SOURCE_ROOT_DIRS += -kernel/nothing/sm8735
 $(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota.mk)
 
 PRODUCT_BUILD_FASTBOOT_PACKAGE := true
+PRODUCT_BUILD_OTA_PACKAGE := false
 
 # Generic ramdisk
 $(call inherit-product, $(SRC_TARGET_DIR)/product/generic_ramdisk.mk)
@@ -62,6 +63,11 @@ PRODUCT_BUILD_PVMFW_IMAGE := true
 PRODUCT_USE_DYNAMIC_PARTITIONS := true
 PRODUCT_BUILD_VENDOR_BOOT_IMAGE := false
 
+PRODUCT_PACKAGES += \
+    vendor_bt_firmware_mountpoint \
+    vendor_dsp_mountpoint \
+    vendor_firmware_mnt_mountpoint
+
 # Android Virtualization Framework
 $(call inherit-product, packages/modules/Virtualization/build/apex/product_packages.mk)
 
@@ -91,6 +97,7 @@ PRODUCT_PACKAGES += \
     android.hardware.thermal-service.qti \
     android.hardware.usb-service.qti \
     android.hardware.usb.gadget-service.qti \
+    vendor.qti.hardware.memtrack-service \
     vndservicemanager
 
 # The stock Wi-Fi service requires the vendor hostapd interface and libxml2.
@@ -111,9 +118,10 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
     android.hardware.graphics.composer3-V3-ndk.vendor \
     android.hardware.graphics.mapper@4.0-impl-qti-display \
+    init.qti.display_boot.rc \
+    init.qti.display_boot.sh \
     vendor.qti.hardware.display.aiqe-V2-ndk.vendor \
     vendor.qti.hardware.display.allocator-service \
-    vendor.qti.hardware.display.composer-service \
     vendor.qti.hardware.display.composer3-V1-ndk.vendor \
     vendor.qti.hardware.display.config-V12-ndk.vendor \
     vendor.qti.hardware.display.demura-service \
@@ -135,7 +143,6 @@ PRODUCT_PACKAGES += \
     android.hardware.radio@1.4.vendor \
     android.hardware.sensors@2.1.vendor \
     android.hardware.sensors-service.multihal \
-    android.media.audio.common.types-V2-cpp \
     libcodec2_aidl \
     libcodec2_vndk \
     libkeymaster_messages \
@@ -164,6 +171,11 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rootdir/etc/init.metroid.bootlog.rc:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/init/init.metroid.bootlog.rc
 
+ifneq ($(filter eng userdebug,$(TARGET_BUILD_VARIANT)),)
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/rootdir/etc/init.metroid.debug.rc:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/init/init.metroid.debug.rc
+endif
+
 # Audio policy configurations
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/audio/audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_configuration.xml \
@@ -173,13 +185,18 @@ PRODUCT_COPY_FILES += \
     vendor/nothing/metroid/proprietary/vendor/etc/audio/sku_tuna/default_volume_tables.xml:$(TARGET_COPY_OUT_VENDOR)/etc/default_volume_tables.xml
 # VINTF fragments
 PRODUCT_PACKAGES += \
-    audio_effects.metroid.xml \
+    audio_bluetooth_core.metroid.xml \
+    bluetooth_audio.metroid.xml \
     audio_qti_services.metroid.xml \
+    audio_effects.metroid.xml \
+    audio_core_default.metroid.xml \
     camera_provider.metroid.xml \
     com.nothing.camera.postproc-impl.xml \
     hal_batch1.metroid.xml \
     hal_batch2.metroid.xml \
     hal_batch3.metroid.xml \
+    media_c2.metroid.xml \
+    qti_services.metroid.xml \
     vendor.noth.hardware.camera-service.xml \
     vendor.qti.camera.aon-impl.xml \
     vendor.qti.camera.offlinecamera-impl.xml \
@@ -205,7 +222,34 @@ PRODUCT_SYSTEM_PROPERTIES += \
 # Audio
 PRODUCT_PACKAGES += \
     audioadsprpcd \
-    audiohalservice.qti
+    audiohalservice.qti \
+    android.hardware.audio.common-V2-ndk.vendor \
+    android.hardware.audio.common-V3-ndk.vendor \
+    android.hardware.audio.core-V2-ndk.vendor \
+    android.hardware.audio.core.sounddose-V1-ndk.vendor \
+    android.hardware.audio.core.sounddose-V2-ndk.vendor \
+    android.hardware.audio.effect-V2-ndk.vendor \
+    android.hardware.bluetooth.audio-V3-ndk.vendor \
+    android.hardware.bluetooth.audio-V4-ndk.vendor \
+    android.hardware.soundtrigger3-V1-ndk.vendor \
+    android.media.audio.common.types-V2-ndk.vendor \
+    android.media.audio.common.types-V3-ndk.vendor \
+    vendor.qti.hardware.agm-V1-ndk \
+    vendor.qti.hardware.pal-V1-ndk \
+    vendor.qti.hardware.paleventnotifier-V2-ndk \
+    libar-pal \
+    libaudiocorehal.default \
+    libaudiocorehal.qti \
+    libaudioeffecthal.qti
+PRODUCT_PACKAGES += libbundleaidl libdownmixaidl libdynamicsprocessingaidl libloudnessenhanceraidl libreverbaidl libvisualizeraidl
+PRODUCT_PACKAGES += libbundlewrapper libdownmix libreverbwrapper
+PRODUCT_PACKAGES += libvolumelistener libqcompostprocbundle libqcomvisualizer libqcomvoiceprocessing
+PRODUCT_PACKAGES += libaudio_aidl_conversion_common_ndk.vendor libaudioaidlcommon.vendor libaudioserviceexampleimpl libaudioplatformconverter.qti libaudioutils.vendor
+
+PRODUCT_PACKAGES += \
+    metroid_stock_android_hardware_bluetooth_audio_sw \
+    libalsautilsv2 \
+    libtinyalsav2
 
 DEVICE_PACKAGE_OVERLAYS += device/nothing/metroid/overlay
 # The stock Morpho EIS library faults on this userspace; use the QTI GME path.

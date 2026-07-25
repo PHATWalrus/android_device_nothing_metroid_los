@@ -27,6 +27,30 @@ namespace_imports = [
 
 blob_fixups: blob_fixups_user_type = {
     (
+        'vendor/bin/hw/vendor.qti.hardware.display.composer-service',
+        'vendor/bin/poweropt-service',
+        'vendor/lib64/camera/components/com.arcsoft.node.motiondetect.so',
+        'vendor/lib64/hw/camera.qcom.so',
+        'vendor/lib64/libaodoptfeature.so',
+        'vendor/lib64/libapengine.so',
+        'vendor/lib64/libcamerapoweroptfeature.so',
+        'vendor/lib64/libcamxcoreutils.so',
+        'vendor/lib64/libcamxods.so',
+        'vendor/lib64/libgamepoweroptfeature.so',
+        'vendor/lib64/liblearningmodule.so',
+        'vendor/lib64/liboffscreenpoweroptfeature.so',
+        'vendor/lib64/libpowercallback.so',
+        'vendor/lib64/libpowercore.so',
+        'vendor/lib64/libpsmoptfeature.so',
+        'vendor/lib64/libsdmclient.so',
+        'vendor/lib64/libstandbyfeature.so',
+        'vendor/lib64/libvideooptfeature.so',
+        'vendor/lib64/soundfx/libquasar.so',
+    ): blob_fixup().replace_needed(
+        'libtinyxml2.so',
+        'libtinyxml2-v35.so',
+    ),
+    (
         'vendor/lib64/libVoiceSdk.so',
         'vendor/lib64/libcapiv2uvvendor.so',
         'vendor/lib64/liblistensoundmodel2vendor.so',
@@ -42,6 +66,8 @@ blob_fixups: blob_fixups_user_type = {
         .clear_symbol_version('AHardwareBuffer_unlock'),
     'vendor/lib64/libntcamskia.so': blob_fixup()
         .add_needed('libnativewindow.so'),
+    'vendor/lib64/libaudioserviceexampleimpl.so': blob_fixup()
+        .add_needed('libaudioutils_shim.so'),
     (
         'vendor/lib64/com.nothing.camera.postproc@1.0-service-impl.so',
         'vendor/lib64/camera/components/com.qti.node.dewarp.so',
@@ -60,6 +86,12 @@ blob_fixups: blob_fixups_user_type = {
             r'\s+start vendor\.cnss_diag\n\n'
             r'service vendor\.cnss_diag .*?^\s+oneshot\n\n?',
             '',
+        ),
+    'vendor/etc/init/power.stats.rc': blob_fixup()
+        .regex_replace(
+            r'(?m)^(    group system)$',
+            r'\1\n    interface aidl '
+            r'android.hardware.power.stats.IPowerStats/default',
         ),
     'system_ext/etc/permissions/vendor.qti.hardware.c2pa-V1-java.xml': blob_fixup()
         .regex_replace(

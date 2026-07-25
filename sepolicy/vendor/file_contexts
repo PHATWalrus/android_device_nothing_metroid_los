@@ -30,6 +30,12 @@
 # GNSS
 /(odm|vendor|vendor/odm|system/vendor/odm)/bin/hw/android\.hardware\.gnss.*-service-qti u:object_r:vendor_hal_gnss_qti_exec:s0
 
+# Power stats
+/(vendor|system/vendor)/bin/hw/android\.hardware\.power\.stats-service u:object_r:hal_power_stats_default_exec:s0
+
+# Memtrack
+/(vendor|system/vendor)/bin/hw/vendor\.qti\.hardware\.memtrack-service u:object_r:hal_memtrack_default_exec:s0
+
 # QRTR
 /(vendor|system/vendor)/bin/qrtr-lookup u:object_r:vendor_qrtr_exec:s0
 

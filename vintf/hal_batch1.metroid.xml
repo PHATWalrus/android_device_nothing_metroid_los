@@ -10,10 +10,6 @@
         <fqname>IPowerStats/default</fqname>
     </hal>
     <hal format="aidl">
-        <name>android.hardware.memtrack</name>
-        <fqname>IMemtrack/default</fqname>
-    </hal>
-    <hal format="aidl">
         <name>vendor.qti.hardware.sensorscalibrate</name>
         <fqname>ISensorsCalibrate/default</fqname>
     </hal>
@@ -38,5 +34,10 @@
     <hal format="aidl">
         <name>vendor.qti.hardware.dsp</name>
         <fqname>IDspService/default</fqname>
+    </hal>
+    <hal format="aidl">
+        <name>android.hardware.power</name>
+        <version>5</version>
+        <fqname>IPower/default</fqname>
     </hal>
 </manifest>

@@ -3,7 +3,7 @@ soong_namespace {
         "hardware/google/interfaces",
         "hardware/google/pixel",
         "hardware/lineage/interfaces/power-libperfmgr",
-        "hardware/qcom-caf/common/libqti-perfd-client"
+        "hardware/qcom-caf/common/libqti-perfd-client",
     ],
 }
 
@@ -28,3 +28,4 @@ install_symlink {
     symlink_target: "/vendor/etc/wifi/wcn7750/WCNSS_qcom_cfg.ini",
 }
 
+// Bluetooth audio is provided by the stock QTI implementation in the vendor image.

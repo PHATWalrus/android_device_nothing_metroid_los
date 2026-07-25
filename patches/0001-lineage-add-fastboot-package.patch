@@ -18,4 +18,8 @@ index 272a4b8..817479a 100644
 +endif
 +
  .PHONY: bacon
- bacon: $(LINEAGE_TARGET_PACKAGE) $(DEFAULT_GOAL)
+-bacon: $(LINEAGE_TARGET_PACKAGE) $(DEFAULT_GOAL)
++ifneq ($(PRODUCT_BUILD_OTA_PACKAGE),false)
++bacon: $(LINEAGE_TARGET_PACKAGE)
++endif
++bacon: $(DEFAULT_GOAL)
