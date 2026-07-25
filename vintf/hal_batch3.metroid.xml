@@ -3,11 +3,10 @@
         <name>android.hardware.bluetooth</name>
         <fqname>IBluetoothHci/default</fqname>
     </hal>
-    <hal format="aidl">
-        <name>android.hardware.bluetooth.audio</name>
-        <version>4</version>
-        <fqname>IBluetoothAudioProviderFactory/default</fqname>
-    </hal>
+    <!-- METROID: android.hardware.bluetooth.audio@4 removed here — we build the AOSP
+         source audio.bluetooth.default HAL (v5), declared by
+         hardware/interfaces/bluetooth/audio/aidl/default/bluetooth_audio.xml, which
+         conflicted with this stock-vendor v4 declaration of the same fqname. -->
     <hal format="aidl">
         <name>vendor.qti.hardware.bluetooth_sar</name>
         <fqname>IBluetoothSar/default</fqname>

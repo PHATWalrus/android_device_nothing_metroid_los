@@ -12,6 +12,8 @@ AB_OTA_PARTITIONS += \
     vendor_boot \
     system \
     vendor \
+    vendor_dlkm \
+    system_dlkm \
     odm \
     recovery \
     product \
@@ -77,7 +79,7 @@ BOARD_KERNEL_OFFSET := 0x00008000
 BOARD_RAMDISK_OFFSET := 0x01000000
 BOARD_TAGS_OFFSET := 0x00000100
 BOARD_DTB_OFFSET := 0x01f00000
-BOARD_KERNEL_CMDLINE := bootopt=64S3,32N2,64N2 erofs.reserved_pages=64 nosoftlockup log_buf_len=1M ignore_loglevel printk.devkmsg=on androidboot.init_fatal_reboot_target=recovery androidboot.selinux=permissive
+BOARD_KERNEL_CMDLINE := bootopt=64S3,32N2,64N2 erofs.reserved_pages=64 nosoftlockup log_buf_len=1M ignore_loglevel printk.devkmsg=on androidboot.selinux=permissive
 BOARD_KERNEL_IMAGE_NAME := Image
 
 # Bootconfig
@@ -128,6 +130,31 @@ BOARD_SYSTEMIMAGE_FILE_SYSTEM_TYPE := erofs
 BOARD_USERDATAIMAGE_FILE_SYSTEM_TYPE := f2fs
 BOARD_VENDORIMAGE_FILE_SYSTEM_TYPE := ext4
 
+# vendor.img is built FROM SOURCE -- no BOARD_PREBUILT_VENDORIMAGE pin (2026-07-24).
+#
+# The pin used to live here with a comment blaming an "NDK31->NDK36 AIDL ABI skew" in the
+# android.hardware.*-V{N}-ndk.so libs. That diagnosis was WRONG; do not resurrect it:
+#   - The from-source -ndk.so libs export a strict SUPERSET of the prebuilt ones. The only
+#     absent symbol is __cfi_check (cross-DSO CFI is off here), which is not a load failure.
+#   - Intersecting the UND symbols of 10 proprietary consumer HALs against the from-source
+#     libs gave ZERO unresolved symbols in every case. The size delta is .text codegen.
+#   - aidl_api frozen versions all match; nothing builds as an unfrozen V{N+1}.
+#   - The "only the -ndk.so libs differ" diff was bogus: it silently skipped /vendor/bin
+#     (permission denied without sudo).
+# The actual regression was /vendor/bin/hw/audiohalservice.qti going missing because
+# `PRODUCT_PACKAGES += audiohalservice.qti` got commented out in device.mk, while its .rc and
+# the audio.core VINTF fragment still shipped -> audioserver dies -> system_server crash loop
+# (the exact chain already documented in BRINGUP_GUIDE.md). The pin masked it because the
+# pinned image was a Jul 8 build made while that line was still live.
+#
+# STATUS 2026-07-25: the from-source vendor STILL does not boot even with the audio HAL restored.
+# Bisect (pinned vendor + every other change) boots fine, so the blocker is vendor CONTENT only.
+# Ruled out so far: ext4 validity (e2fsck clean), sepolicy compile (secilc exit 0), undefined types
+# in vendor_file_contexts (zero), missing HAL binaries (only benign lib64/mapper.qti.so), dlkm
+# population (319/100 modules present), AVB coherence (all four digests match). Failure is in
+# FIRST-stage init: ntcap forced to `on init` still never runs. Re-pinned to keep the device usable.
+BOARD_PREBUILT_VENDORIMAGE := /home/logix/dev/metroid/proven_vendor/vendor.img
+
 TARGET_COPY_OUT_SYSTEM := system
 TARGET_COPY_OUT_VENDOR := vendor
 
@@ -140,9 +167,9 @@ BOARD_SYSTEM_EXTIMAGE_FILE_SYSTEM_TYPE := erofs
 BOARD_PRODUCTIMAGE_FILE_SYSTEM_TYPE := erofs
 BOARD_ODMIMAGE_FILE_SYSTEM_TYPE := erofs
 
-# vendor_dlkm/system_dlkm: stock fstab first-stage-mounts these; modules actually
-# live in vendor_boot (117 of them), so build them as (empty) partitions just so
-# the first-stage mount succeeds instead of aborting -> "logo then reboot".
+# vendor_dlkm/system_dlkm: stock fstab first-stage-mounts these. They MUST be
+# populated with the stock kernel-module set (see dlkm_modules.mk) -- shipping them
+# empty drops the secure-side modules and hard-resets ~7-9s into boot.
 TARGET_COPY_OUT_VENDOR_DLKM := vendor_dlkm
 TARGET_COPY_OUT_SYSTEM_DLKM := system_dlkm
 BOARD_USES_VENDOR_DLKMIMAGE := true
@@ -169,6 +196,11 @@ TARGET_RECOVERY_PIXEL_FORMAT := RGBX_8888
 TARGET_USERIMAGES_USE_EXT4 := true
 TARGET_USERIMAGES_USE_F2FS := true
 
+# Recovery kernel modules
+BOARD_RECOVERY_KERNEL_MODULES := \
+    $(wildcard device/nothing/metroid-kernel/vendor_dlkm/*.ko)
+
+
 # Verified Boot
 BOARD_AVB_ENABLE := true
 BOARD_AVB_MAKE_VBMETA_IMAGE_ARGS += --flags 3
@@ -191,6 +223,19 @@ BOARD_AVB_VBMETA_SYSTEM_KEY_PATH := external/avb/test/data/testkey_rsa2048.pem
 BOARD_AVB_VBMETA_SYSTEM_ALGORITHM := SHA256_RSA2048
 BOARD_AVB_VBMETA_SYSTEM_ROLLBACK_INDEX := $(PLATFORM_SECURITY_PATCH_TIMESTAMP)
 BOARD_AVB_VBMETA_SYSTEM_ROLLBACK_INDEX_LOCATION := 2
+
+# The device has a real vbmeta_vendor partition and first-stage init verifies vendor/odm/
+# vendor_dlkm/system_dlkm against it. Without this, the build emits no vbmeta_vendor.img, the
+# on-device one keeps describing whatever vendor was flashed last, and ANY from-source vendor
+# fails dm-verity in first_stage_mount -> init fatal -> reboot to bootloader ~15s in (looks
+# exactly like a "from-source vendor crash-loop"; cost several sessions to find, 2026-07-24).
+# This replaces the out-of-tree scripts/build_dlkmfix.sh, which hand-rolled the same vbmeta with
+# `avbtool make_vbmeta_image --include_descriptors_from_image`.
+BOARD_AVB_VBMETA_VENDOR := vendor vendor_dlkm system_dlkm odm
+BOARD_AVB_VBMETA_VENDOR_KEY_PATH := external/avb/test/data/testkey_rsa2048.pem
+BOARD_AVB_VBMETA_VENDOR_ALGORITHM := SHA256_RSA2048
+BOARD_AVB_VBMETA_VENDOR_ROLLBACK_INDEX := $(PLATFORM_SECURITY_PATCH_TIMESTAMP)
+BOARD_AVB_VBMETA_VENDOR_ROLLBACK_INDEX_LOCATION := 4
 
 BOARD_AVB_VENDOR_DLKM_ADD_HASHTREE_FOOTER_ARGS += --hash_algorithm sha256
 BOARD_AVB_VENDOR_ADD_HASHTREE_FOOTER_ARGS += --hash_algorithm sha256

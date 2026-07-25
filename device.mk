@@ -188,12 +188,12 @@ PRODUCT_PRECOMPILED_SEPOLICY := false
 #   NothingToy/Magicball/Leveler = first-party Glyph Matrix toys
 # Prebuilt modules + certificates defined in vendor/nothing/metroid/glyph/Android.mk
 # ---------------------------------------------------------------------------
-PRODUCT_PACKAGES += \
-    NtThirdParty \
-    GlyphNotification \
-    NothingToy \
-    Magicball \
-    Leveler
+# PRODUCT_PACKAGES += \
+#     NtThirdParty \
+#     GlyphNotification \
+#     NothingToy \
+#     Magicball \
+#     Leveler
 
 # Glyph sysconfig XML (privapp-permissions xml already copied by metroid-vendor.mk).
 PRODUCT_COPY_FILES += \
@@ -205,11 +205,18 @@ PRODUCT_COPY_FILES += \
 # boot_level_key.strategy: TEE keymint rejects EARLY_BOOT_ONLY (odsign Status(-8)); use MAX_USES_PER_BOOT.
 PRODUCT_SYSTEM_PROPERTIES += \
     ro.hw_timeout_multiplier=4 \
-    ro.keystore.boot_level_key.strategy=TRUSTED_ENVIRONMENT:MAX_USES_PER_BOOT
+    ro.keystore.boot_level_key.strategy=TRUSTED_ENVIRONMENT:MAX_USES_PER_BOOT \
+    persist.sys.disable_rescue=true \
+    rescueparty.disabled=true
+
+
 
 # OPUS bring-up: audio HAL was BUILT but never installed (not in PRODUCT_PACKAGES) -> /vendor/bin/hw/audiohalservice.qti
 # missing -> audioserver AudioFlinger::onFirstRef() null-derefs -> SoundTrigger ExternalCaptureStateTracker
 # connect() LOG_ALWAYS_FATAL -> system_server crash loop. Install the core (+effect) audio HAL (soong pulls deps+VINTF).
+# DO NOT comment this out again: manifest_audiocorehal_default.xml (a vintf_fragment of
+# libaudiocorehal.default.so) declares android.hardware.audio.core with no server without it,
+# and the failure only shows up once the prebuilt-vendor pin is gone. 2026-07-24.
 PRODUCT_PACKAGES += audiohalservice.qti
 
 DEVICE_PACKAGE_OVERLAYS += device/nothing/metroid/overlay
@@ -223,4 +230,10 @@ PRODUCT_PACKAGES += MetroidKeyHandler
 
 # Camera: skip Morpho EIS init in GME node (SIGILL in libmorpho_video_stabilizer on first
 # frame; forces QTIGMEWrapper instead). Verified live 2026-07-10 — camera preview + capture work.
-PRODUCT_VENDOR_PROPERTIES += persist.vendor.morpho.eis.force_gmenode=1
+# MUST be PRODUCT_SYSTEM_PROPERTIES: /vendor/build.prop isn't loaded pre-zygote, so
+# PRODUCT_VENDOR_PROPERTIES never reached runtime (empty at boot, verified 2026-07-24).
+# System build.prop IS loaded early → prop actually applies.
+PRODUCT_SYSTEM_PROPERTIES += persist.vendor.morpho.eis.force_gmenode=1
+
+# Populate vendor_dlkm + system_dlkm with the stock kernel modules (empty = hard reset ~7-9s).
+include $(LOCAL_PATH)/dlkm_modules.mk

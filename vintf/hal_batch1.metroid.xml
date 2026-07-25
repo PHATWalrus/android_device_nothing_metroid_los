@@ -44,4 +44,29 @@
         <version>2</version>
         <fqname>ISensors/default</fqname>
     </hal>
+    <hal format="aidl">
+        <name>vendor.qti.qccvndhal_aidl</name>
+        <fqname>IQccvndhal/qccvndhal</fqname>
+    </hal>
+    <hal format="aidl">
+        <name>vendor.qti.qspmhal</name>
+        <fqname>IQspmhal/default</fqname>
+    </hal>
+    <hal format="aidl">
+        <name>vendor.qti.ims.uceaidlservice</name>
+        <fqname>IUceService/default</fqname>
+    </hal>
+    <hal format="aidl">
+        <name>vendor.qti.ims.factoryaidlservice</name>
+        <fqname>IImsFactory/default</fqname>
+    </hal>
+    <hal format="aidl">
+        <name>vendor.qti.ims.imscmaidlservice</name>
+        <fqname>IImsCmService/default</fqname>
+    </hal>
+    <hal format="aidl">
+        <name>android.hardware.health</name>
+        <version>4</version>
+        <fqname>IHealth/default</fqname>
+    </hal>
 </manifest>
