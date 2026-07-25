@@ -69,6 +69,11 @@ on post-fs
 
 on boot
     setprop sys.usb.config adb
+    mkdir /firmware
+    mount vfat /dev/block/bootdevice/by-name/modem${ro.boot.slot_suffix} /firmware ro
+    write /sys/class/remoteproc/remoteproc1/state start
+    start health-hal-2-1
+    start vendor.qti.vibrator
 
 on property:ro.boot.usbcontroller=*
     setprop sys.usb.controller ${ro.boot.usbcontroller}
@@ -78,9 +83,3 @@ on property:ro.boot.usbcontroller=*
     write /sys/bus/platform/devices/${ro.boot.usb.dwc3_msm:-a600000.ssusb}/mode peripheral
     wait /sys/class/udc/${ro.boot.usbcontroller} 1
 
-on property:twrp.modules.loaded=true
-    mkdir /firmware
-    mount vfat /dev/block/bootdevice/by-name/modem${ro.boot.slot_suffix} /firmware ro
-    write /sys/class/remoteproc/remoteproc1/state start
-    start health-hal-2-1
-    start vendor.qti.vibrator

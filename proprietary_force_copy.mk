@@ -235,4 +235,59 @@ PRODUCT_COPY_FILES += \
     vendor/nothing/metroid/proprietary/vendor/bin/hlosminkdaemon:$(TARGET_COPY_OUT_VENDOR)/bin/hlosminkdaemon \
     vendor/nothing/metroid/proprietary/vendor/bin/init.qti.display_boot.sh:$(TARGET_COPY_OUT_VENDOR)/bin/init.qti.display_boot.sh \
     vendor/nothing/metroid/proprietary/vendor/bin/vendor.qti.qspa-service:$(TARGET_COPY_OUT_VENDOR)/bin/vendor.qti.qspa-service \
-    vendor/nothing/metroid/proprietary/vendor/bin/hw/android.hardware.drm-service.clearkey:$(TARGET_COPY_OUT_VENDOR)/bin/hw/android.hardware.drm-service.clearkey
+    vendor/nothing/metroid/proprietary/vendor/bin/hw/android.hardware.drm-service.clearkey:$(TARGET_COPY_OUT_VENDOR)/bin/hw/android.hardware.drm-service.clearkey \
+    vendor/nothing/metroid/proprietary/vendor/bin/init.qcom.sh:$(TARGET_COPY_OUT_VENDOR)/bin/init.qcom.sh \
+    vendor/nothing/metroid/proprietary/vendor/bin/init.qcom.post_boot.sh:$(TARGET_COPY_OUT_VENDOR)/bin/init.qcom.post_boot.sh \
+    vendor/nothing/metroid/proprietary/vendor/bin/init.qcom.sdio.sh:$(TARGET_COPY_OUT_VENDOR)/bin/init.qcom.sdio.sh \
+    vendor/nothing/metroid/proprietary/vendor/bin/vendor_modprobe.sh:$(TARGET_COPY_OUT_VENDOR)/bin/vendor_modprobe.sh \
+    vendor/nothing/metroid/proprietary/vendor/bin/cnss_diag:$(TARGET_COPY_OUT_VENDOR)/bin/cnss_diag \
+    vendor/nothing/metroid/proprietary/vendor/bin/hw/android.hardware.security.keymint-service-spu-qti:$(TARGET_COPY_OUT_VENDOR)/bin/hw/android.hardware.security.keymint-service-spu-qti \
+    vendor/nothing/metroid/proprietary/vendor/bin/hw/android.hardware.security.keymint-service.strongbox-thales:$(TARGET_COPY_OUT_VENDOR)/bin/hw/android.hardware.security.keymint-service.strongbox-thales \
+    vendor/nothing/metroid/proprietary/vendor/bin/hw/android.hardware.sensors-service.multihal:$(TARGET_COPY_OUT_VENDOR)/bin/hw/android.hardware.sensors-service.multihal \
+    vendor/nothing/metroid/proprietary/vendor/bin/hw/vendor.noth.hardware.charge-service:$(TARGET_COPY_OUT_VENDOR)/bin/hw/vendor.noth.hardware.charge-service \
+    vendor/nothing/metroid/proprietary/vendor/bin/hw/vendor.qti.hardware.memtrack-service:$(TARGET_COPY_OUT_VENDOR)/bin/hw/vendor.qti.hardware.memtrack-service \
+    vendor/nothing/metroid/proprietary/vendor/bin/nt_ddr_test:$(TARGET_COPY_OUT_VENDOR)/bin/nt_ddr_test \
+    vendor/nothing/metroid/proprietary/vendor/bin/qttestclient:$(TARGET_COPY_OUT_VENDOR)/bin/qttestclient \
+    vendor/nothing/metroid/proprietary/vendor/bin/qttestservice:$(TARGET_COPY_OUT_VENDOR)/bin/qttestservice \
+    vendor/nothing/metroid/proprietary/vendor/bin/spu_install_keybox:$(TARGET_COPY_OUT_VENDOR)/bin/spu_install_keybox \
+    vendor/nothing/metroid/proprietary/vendor/bin/wifidisplayhalservice:$(TARGET_COPY_OUT_VENDOR)/bin/wifidisplayhalservice \
+    vendor/nothing/metroid/proprietary/vendor/etc/camera/metroid_smoothzoom_config.json:$(TARGET_COPY_OUT_VENDOR)/etc/camera/metroid_smoothzoom_config.json \
+    vendor/nothing/metroid/proprietary/vendor/lib64/android.hardware.graphics.common-V5-ndk.so:$(TARGET_COPY_OUT_VENDOR)/lib64/android.hardware.graphics.common-V5-ndk.so \
+    vendor/nothing/metroid/proprietary/vendor/lib64/android.hardware.memtrack-V1-ndk.so:$(TARGET_COPY_OUT_VENDOR)/lib64/android.hardware.memtrack-V1-ndk.so \
+    vendor/nothing/metroid/proprietary/vendor/lib64/android.hardware.tetheroffload-V1-ndk.so:$(TARGET_COPY_OUT_VENDOR)/lib64/android.hardware.tetheroffload-V1-ndk.so \
+    vendor/nothing/metroid/proprietary/vendor/lib64/hw/android.hardware.bluetooth.audio_sw.so:$(TARGET_COPY_OUT_VENDOR)/lib64/hw/android.hardware.bluetooth.audio_sw.so \
+    vendor/nothing/metroid/proprietary/vendor/lib64/hw/libaudiocorehal.default.so:$(TARGET_COPY_OUT_VENDOR)/lib64/hw/libaudiocorehal.default.so \
+    vendor/nothing/metroid/proprietary/vendor/lib64/hw/libaudiocorehal.qti.so:$(TARGET_COPY_OUT_VENDOR)/lib64/hw/libaudiocorehal.qti.so \
+    vendor/nothing/metroid/proprietary/vendor/lib64/hw/libaudioeffecthal.qti.so:$(TARGET_COPY_OUT_VENDOR)/lib64/hw/libaudioeffecthal.qti.so \
+    vendor/nothing/metroid/proprietary/vendor/lib64/libaudioplatformconverter.qti.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libaudioplatformconverter.qti.so \
+    vendor/nothing/metroid/proprietary/vendor/lib64/libcppbor.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libcppbor.so \
+    vendor/nothing/metroid/proprietary/vendor/lib64/libjc_keymint-thales.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libjc_keymint-thales.so \
+    vendor/nothing/metroid/proprietary/vendor/lib64/liblogwrap.so:$(TARGET_COPY_OUT_VENDOR)/lib64/liblogwrap.so \
+    vendor/nothing/metroid/proprietary/vendor/lib64/liboffloadhal.so:$(TARGET_COPY_OUT_VENDOR)/lib64/liboffloadhal.so \
+    vendor/nothing/metroid/proprietary/vendor/lib64/libqapesdk.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libqapesdk.so \
+    vendor/nothing/metroid/proprietary/vendor/lib64/libqcodec2_core.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libqcodec2_core.so \
+    vendor/nothing/metroid/proprietary/vendor/lib64/libqtigefar.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libqtigefar.so \
+    vendor/nothing/metroid/proprietary/vendor/lib64/libqtnodes.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libqtnodes.so \
+    vendor/nothing/metroid/proprietary/vendor/lib64/libqttestclient.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libqttestclient.so \
+    vendor/nothing/metroid/proprietary/vendor/lib64/libspukeymint.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libspukeymint.so \
+    vendor/nothing/metroid/proprietary/vendor/lib64/libspukeymintprovision.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libspukeymintprovision.so \
+    vendor/nothing/metroid/proprietary/vendor/lib64/libwfdmmsrc_proprietary.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libwfdmmsrc_proprietary.so \
+    vendor/nothing/metroid/proprietary/vendor/lib64/libwfdsessionmodule.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libwfdsessionmodule.so \
+    vendor/nothing/metroid/proprietary/vendor/lib64/libwfdsourcesession_proprietary.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libwfdsourcesession_proprietary.so \
+    vendor/nothing/metroid/proprietary/vendor/lib64/libwfdsourcesm_proprietary.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libwfdsourcesm_proprietary.so \
+    vendor/nothing/metroid/proprietary/vendor/lib64/soundfx/libqcompostprocbundle.so:$(TARGET_COPY_OUT_VENDOR)/lib64/soundfx/libqcompostprocbundle.so \
+    vendor/nothing/metroid/proprietary/vendor/lib64/soundfx/libqcomvisualizer.so:$(TARGET_COPY_OUT_VENDOR)/lib64/soundfx/libqcomvisualizer.so \
+    vendor/nothing/metroid/proprietary/vendor/lib64/soundfx/libqcomvoiceprocessing.so:$(TARGET_COPY_OUT_VENDOR)/lib64/soundfx/libqcomvoiceprocessing.so \
+    vendor/nothing/metroid/proprietary/vendor/lib64/soundfx/libvolumelistener.so:$(TARGET_COPY_OUT_VENDOR)/lib64/soundfx/libvolumelistener.so \
+    vendor/nothing/metroid/proprietary/vendor/lib64/vendor.qti.hardware.display.composer3-V2-ndk.so:$(TARGET_COPY_OUT_VENDOR)/lib64/vendor.qti.hardware.display.composer3-V2-ndk.so \
+    vendor/nothing/metroid/proprietary/vendor/lib64/vendor.qti.hardware.display.config-V1-ndk.so:$(TARGET_COPY_OUT_VENDOR)/lib64/vendor.qti.hardware.display.config-V1-ndk.so \
+    vendor/nothing/metroid/proprietary/vendor/lib64/vendor.qti.hardware.display.config-V10-ndk.so:$(TARGET_COPY_OUT_VENDOR)/lib64/vendor.qti.hardware.display.config-V10-ndk.so \
+    vendor/nothing/metroid/proprietary/vendor/lib64/vendor.qti.hardware.display.config-V11-ndk.so:$(TARGET_COPY_OUT_VENDOR)/lib64/vendor.qti.hardware.display.config-V11-ndk.so \
+    vendor/nothing/metroid/proprietary/vendor/lib64/vendor.qti.hardware.display.config-V3-ndk.so:$(TARGET_COPY_OUT_VENDOR)/lib64/vendor.qti.hardware.display.config-V3-ndk.so \
+    vendor/nothing/metroid/proprietary/vendor/lib64/vendor.qti.hardware.display.config-V4-ndk.so:$(TARGET_COPY_OUT_VENDOR)/lib64/vendor.qti.hardware.display.config-V4-ndk.so \
+    vendor/nothing/metroid/proprietary/vendor/lib64/vendor.qti.hardware.display.config-V6-ndk.so:$(TARGET_COPY_OUT_VENDOR)/lib64/vendor.qti.hardware.display.config-V6-ndk.so \
+    vendor/nothing/metroid/proprietary/vendor/lib64/vendor.qti.hardware.display.config-V8-ndk.so:$(TARGET_COPY_OUT_VENDOR)/lib64/vendor.qti.hardware.display.config-V8-ndk.so \
+    vendor/nothing/metroid/proprietary/vendor/lib64/vendor.qti.hardware.display.config-V9-ndk.so:$(TARGET_COPY_OUT_VENDOR)/lib64/vendor.qti.hardware.display.config-V9-ndk.so \
+    vendor/nothing/metroid/proprietary/vendor/lib64/vendor.qti.hardware.wifidisplaysessionl@1.0-halimpl.so:$(TARGET_COPY_OUT_VENDOR)/lib64/vendor.qti.hardware.wifidisplaysessionl@1.0-halimpl.so
+
+

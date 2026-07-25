@@ -30,4 +30,5 @@ persist.vendor.tracking.dfs=true
 ro.vendor.touch.touchscheduler.enable=true
 
 # SSR
-persist.vendor.ssr.restart_level=ALL_ENABLE
+persist.vendor.ssr.restart_level=RELATED
+

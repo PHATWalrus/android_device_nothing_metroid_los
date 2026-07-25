@@ -14,6 +14,7 @@
 
 # Diag
 /data/vendor/diag(/.*)? u:object_r:minidump_data_file:s0
+/(vendor|system/vendor)/bin/diagcommd u:object_r:vendor_diagcommd_exec:s0
 
 # Fingerprint
 /data/vendor/fpc(/.*)? u:object_r:fingerprint_vendor_data_file:s0
