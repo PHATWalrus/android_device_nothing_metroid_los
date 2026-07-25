@@ -3,3 +3,10 @@ service vendor.ntcap /vendor/bin/sh /vendor/bin/ntcap.sh
     user root
     group root log system
     seclabel u:r:ntcap:s0
+
+# DIAGNOSTIC 2026-07-25: `class core` is only started by `class_start core` in `on boot`, which is
+# LATER than the from-source-vendor boot failure -- so ntcap never ran and rawdump held nothing but
+# the previous good boot. Start it explicitly at `on init` so the failure window is captured.
+# Remove along with the rest of the ntcap scaffolding before official submission.
+on init
+    start vendor.ntcap

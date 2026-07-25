@@ -64,8 +64,15 @@ bash build_dlkmfix.sh && bash flash_props.sh    # then adb reboot bootloader to 
 ```
 
 ## BUILD / FLASH
-- Product-config changes need `./build_los23.sh {systemimage|vendorimage}` (kati regen), NOT bare ninja.
-- Framework `.java/.cpp` → `systemimage`. init rc / VINTF / PRODUCT_PACKAGES → `vendorimage`.
+- Product-config changes need `./build_los23.sh {systemimage|superimage}` (kati regen), NOT bare ninja.
+- Framework `.java/.cpp` → `systemimage`. init rc / VINTF / PRODUCT_PACKAGES → **`superimage`**
+  (it pulls vendorimage → INTERNAL_VENDORIMAGE_FILES, so the new module actually gets built).
+  NEVER `vnod`/`snod`/`*-nodeps` after a PRODUCT_PACKAGES change — they repack without building it,
+  which is how `audiohalservice.qti` silently vanished from vendor.img (2026-07-24).
+- Dropping a module from PRODUCT_PACKAGES does NOT remove it from the staging dir on an incremental
+  build — `rm` the stale file out of `out/.../vendor/...` yourself or it still ships.
+- Before every flash run `python3 ~/dev/metroid/audit_init_rc_services.py` (shipped init services
+  whose binary isn't installed) and `python3 ~/dev/metroid/diff_vendor_images.py`.
 - Repack super + coherent vbmeta_vendor: `bash build_dlkmfix.sh`.
 - Flash: `bash flash_props.sh` (flashes super+vbmeta+vbmeta_vendor+init_boot; watches boot_completed).
 - Bounce Android/recovery → fastboot with `adb reboot bootloader` (no button-holds).
