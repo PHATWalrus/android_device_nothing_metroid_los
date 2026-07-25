@@ -79,7 +79,11 @@ BOARD_KERNEL_OFFSET := 0x00008000
 BOARD_RAMDISK_OFFSET := 0x01000000
 BOARD_TAGS_OFFSET := 0x00000100
 BOARD_DTB_OFFSET := 0x01f00000
-BOARD_KERNEL_CMDLINE := bootopt=64S3,32N2,64N2 erofs.reserved_pages=64 nosoftlockup log_buf_len=1M ignore_loglevel printk.devkmsg=on androidboot.selinux=permissive
+# androidboot.init_fatal_reboot_target=recovery: an init FATAL then boots RECOVERY (which has adb)
+# instead of dropping to fastboot or hanging with no USB. Without it a failed bring-up boot is
+# unrecoverable without physically holding buttons, and unreadable. Re-added 2026-07-25 after two
+# such hangs. Keep this for bring-up; drop it for release builds.
+BOARD_KERNEL_CMDLINE := bootopt=64S3,32N2,64N2 erofs.reserved_pages=64 nosoftlockup log_buf_len=1M ignore_loglevel printk.devkmsg=on androidboot.init_fatal_reboot_target=recovery androidboot.selinux=permissive
 BOARD_KERNEL_IMAGE_NAME := Image
 
 # Bootconfig
@@ -91,7 +95,8 @@ BOARD_BOOTCONFIG := \
     androidboot.hypervisor.protected_vm.supported=true \
     androidboot.vendor.qspa=true \
     androidboot.serialconsole=0 \
-    androidboot.selinux=permissive
+    androidboot.selinux=permissive \
+    androidboot.init_fatal_reboot_target=recovery
 
 # Kernel - prebuilt
 TARGET_KERNEL_VERSION := 6.6
@@ -146,14 +151,6 @@ BOARD_VENDORIMAGE_FILE_SYSTEM_TYPE := ext4
 # the audio.core VINTF fragment still shipped -> audioserver dies -> system_server crash loop
 # (the exact chain already documented in BRINGUP_GUIDE.md). The pin masked it because the
 # pinned image was a Jul 8 build made while that line was still live.
-#
-# STATUS 2026-07-25: the from-source vendor STILL does not boot even with the audio HAL restored.
-# Bisect (pinned vendor + every other change) boots fine, so the blocker is vendor CONTENT only.
-# Ruled out so far: ext4 validity (e2fsck clean), sepolicy compile (secilc exit 0), undefined types
-# in vendor_file_contexts (zero), missing HAL binaries (only benign lib64/mapper.qti.so), dlkm
-# population (319/100 modules present), AVB coherence (all four digests match). Failure is in
-# FIRST-stage init: ntcap forced to `on init` still never runs. Re-pinned to keep the device usable.
-BOARD_PREBUILT_VENDORIMAGE := /home/logix/dev/metroid/proven_vendor/vendor.img
 
 TARGET_COPY_OUT_SYSTEM := system
 TARGET_COPY_OUT_VENDOR := vendor
