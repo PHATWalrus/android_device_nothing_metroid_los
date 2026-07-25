@@ -1,0 +1,16 @@
+diff --git a/Android.bp b/Android.bp
+index e57d86e..da6e08c 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -57,8 +57,9 @@ cc_library_shared {
+
+ cc_library_shared {
+     name: "libaudioutils_shim",
+-    shared_libs: [
+-        "libaudioutils",
++    header_libs: [
++        "libaudioutils_headers",
++        "libutils_headers",
+     ],
+     srcs: [
+         "libaudioutils/mutex.cpp",

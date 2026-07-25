@@ -1,4 +1,5 @@
 diff --git a/device/src/Bluetooth.cpp b/device/src/Bluetooth.cpp
+index c811e46..fc52613 100644
 --- a/device/src/Bluetooth.cpp
 +++ b/device/src/Bluetooth.cpp
 @@ -2569,9 +2569,9 @@ void BtSco::convertCodecInfo(audio_lc3_codec_cfg_t &lc3CodecInfo,
@@ -14,6 +15,7 @@ diff --git a/device/src/Bluetooth.cpp b/device/src/Bluetooth.cpp
          return;
      }
 diff --git a/device/src/HapticsDevProtection.cpp b/device/src/HapticsDevProtection.cpp
+index 98beb54..7eb4ca9 100644
 --- a/device/src/HapticsDevProtection.cpp
 +++ b/device/src/HapticsDevProtection.cpp
 @@ -1721,7 +1721,7 @@ int32_t HapticsDevProtection::getFTMParameter(void **param)
@@ -26,6 +28,7 @@ diff --git a/device/src/HapticsDevProtection.cpp b/device/src/HapticsDevProtecti
      if (resString.str().length() > 0 && ((*param) != nullptr)) {
          payload_size = resString.str().length() + 1;
 diff --git a/resource_manager/src/ResourceManager.cpp b/resource_manager/src/ResourceManager.cpp
+index f39d954..172ea84 100644
 --- a/resource_manager/src/ResourceManager.cpp
 +++ b/resource_manager/src/ResourceManager.cpp
 @@ -1735,7 +1735,7 @@ int32_t ResourceManager::voiceuiDmgrRestartUseCases(vui_dmgr_param_restart_useca
@@ -65,6 +68,7 @@ diff --git a/resource_manager/src/ResourceManager.cpp b/resource_manager/src/Res
              return -ENOENT;
          }
 diff --git a/session/src/Session.cpp b/session/src/Session.cpp
+index 0ae3708..85ef34e 100644
 --- a/session/src/Session.cpp
 +++ b/session/src/Session.cpp
 @@ -1591,7 +1591,7 @@ int dump_registers(const char *in_file_path, const char *regdump_out_file)
@@ -77,6 +81,7 @@ diff --git a/session/src/Session.cpp b/session/src/Session.cpp
  close_regdump_file:
      close(regdump_wr_fd);
 diff --git a/session/src/SessionAlsaPcm.cpp b/session/src/SessionAlsaPcm.cpp
+index e58d434..5eb9754 100644
 --- a/session/src/SessionAlsaPcm.cpp
 +++ b/session/src/SessionAlsaPcm.cpp
 @@ -2951,7 +2951,7 @@ int SessionAlsaPcm::write(Stream *s, int tag, struct pal_buffer *buf, int * size
@@ -98,6 +103,7 @@ diff --git a/session/src/SessionAlsaPcm.cpp b/session/src/SessionAlsaPcm.cpp
              status =  pcm_mmap_write(pcm, data,  sizeWritten);
              releaseAdmFocus(s);
 diff --git a/session/src/SessionAlsaUtils.cpp b/session/src/SessionAlsaUtils.cpp
+index 69d0709..776c87c 100644
 --- a/session/src/SessionAlsaUtils.cpp
 +++ b/session/src/SessionAlsaUtils.cpp
 @@ -912,7 +912,7 @@ int SessionAlsaUtils::rwACDBTunnel(Stream * streamHandle, std::shared_ptr<Resour
@@ -110,6 +116,7 @@ diff --git a/session/src/SessionAlsaUtils.cpp b/session/src/SessionAlsaUtils.cpp
              sizeof(pal_effect_custom_payload_t) +
              effectACDBPayload->num_kvs * sizeof(pal_key_value_pair_t)),
 diff --git a/session/src/SoundTriggerEngineGsl.cpp b/session/src/SoundTriggerEngineGsl.cpp
+index ed9d34e..e7d4c35 100644
 --- a/session/src/SoundTriggerEngineGsl.cpp
 +++ b/session/src/SoundTriggerEngineGsl.cpp
 @@ -234,7 +234,7 @@ int32_t SoundTriggerEngineGsl::StartBuffering(Stream *s) {
@@ -140,6 +147,7 @@ diff --git a/session/src/SoundTriggerEngineGsl.cpp b/session/src/SoundTriggerEng
  
      exit_buffering_ = false;
 diff --git a/stream/src/StreamHaptics.cpp b/stream/src/StreamHaptics.cpp
+index e1af630..36daf5c 100644
 --- a/stream/src/StreamHaptics.cpp
 +++ b/stream/src/StreamHaptics.cpp
 @@ -77,7 +77,7 @@ int32_t  StreamHaptics::setParameters(uint32_t param_id, void *payload)
