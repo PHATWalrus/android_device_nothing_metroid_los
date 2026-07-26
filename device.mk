@@ -6,15 +6,6 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota.mk)
 # Generic ramdisk - build init_boot from source (userdebug/permissive), per onyx
 $(call inherit-product, $(SRC_TARGET_DIR)/product/generic_ramdisk.mk)
 
-# Bring-up (2026-06-30): neutralize A16 keystore2 module-attestation boot-block (non-SELinux
-# post-system_server crash suspect) + force early adb for live observability.
-PRODUCT_PRODUCT_PROPERTIES += \
-#   init.svc_debug.no_fatal.keystore2=true \
-    init.svc_debug.no_fatal.boot-hal-1-2=true
-
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.adb.secure=0
-
 # Dalvik heap must land in /system/build.prop: on this device /vendor/build.prop is not loaded
 # before zygote, so vendor-hosted dalvik.vm.heapsize never reaches app_process and zygote runs on
 # the AndroidRuntime -Xmx16m default -> OutOfMemoryError at class preload. PRODUCT_SYSTEM_PROPERTIES
