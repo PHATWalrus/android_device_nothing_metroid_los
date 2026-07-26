@@ -227,7 +227,10 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     vendor/nothing/metroid/proprietary/vendor/etc/init/android.hardware.bluetooth@aidl-service-qti.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/android.hardware.bluetooth@aidl-service-qti.rc
 
-# BISECT 2026-07-25: ipacm, init.qti.display_boot.sh and vendor.qti.qspa-service REMOVED from this
+# BISECT 2026-07-25: init.qti.display_boot.sh and vendor.qti.qspa-service REMOVED from this
+# (ipacm RESTORED 2026-07-25: its Android.bp also ships the tetheroffload VINTF fragment, so
+#  removing the binary left android.hardware.tetheroffload IOffload/default DECLARED WITH NO
+#  SERVER -- a guaranteed servicemanager stall. Never drop a blob whose module owns a fragment.)
 # list -- they are absent from the known-booting vendor, and force-copying them in makes
 # previously-dangling services actually run (display_boot.sh alone sets ~25 vendor.display.* props).
 # NB: never comment a line out inside a `\` continuation list -- make joins lines first, so the '#'
@@ -236,6 +239,7 @@ PRODUCT_COPY_FILES += \
 # services whose .rc ships but binary didn't. ipacm=IPA tethering/offload, clearkey DRM,
 # qspa, hlosminkdaemon (TEE mink), display_boot script.
 PRODUCT_COPY_FILES += \
+    vendor/nothing/metroid/proprietary/vendor/bin/ipacm:$(TARGET_COPY_OUT_VENDOR)/bin/ipacm \
     vendor/nothing/metroid/proprietary/vendor/bin/hlosminkdaemon:$(TARGET_COPY_OUT_VENDOR)/bin/hlosminkdaemon \
     vendor/nothing/metroid/proprietary/vendor/bin/hw/android.hardware.drm-service.clearkey:$(TARGET_COPY_OUT_VENDOR)/bin/hw/android.hardware.drm-service.clearkey \
     vendor/nothing/metroid/proprietary/vendor/bin/init.qcom.sh:$(TARGET_COPY_OUT_VENDOR)/bin/init.qcom.sh \
