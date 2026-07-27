@@ -49,3 +49,10 @@
 # Persistent logging
 /vendor/bin/ntcap\.sh u:object_r:ntcap_exec:s0
 /(vendor|system/vendor)/bin/bootwatchdog\.sh   u:object_r:ntcap_exec:s0
+
+# Nothing's camera HAL shim had no label, so it inherited vendor_file and init exec'd it WITHOUT a
+# domain transition -- it ran as u:r:init:s0. Every binder call it made was then attributed to init,
+# which is where the ~630 "init -> servicemanager/cameraserver : binder" and
+# "init -> vendor_file : file : execute{,_no_trans}" denials came from. It is an ordinary camera
+# provider, so give it the standard AOSP camera HAL domain.
+/(vendor|system/vendor)/bin/hw/vendor\.noth\.hardware\.camera-service    u:object_r:hal_camera_default_exec:s0
