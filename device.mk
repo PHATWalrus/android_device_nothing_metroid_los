@@ -151,6 +151,8 @@ PRODUCT_COPY_FILES += \
 # Bring-up: persistent boot-log capture (dmesg + logcat -> /mnt/vendor/nt_log, survives ~29s reset; no USB)
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rootdir/etc/init.ntcap.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.ntcap.rc \
+    $(LOCAL_PATH)/rootdir/etc/init.bootwatchdog.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.bootwatchdog.rc \
+    $(LOCAL_PATH)/rootdir/bin/bootwatchdog.sh:$(TARGET_COPY_OUT_VENDOR)/bin/bootwatchdog.sh \
     $(LOCAL_PATH)/rootdir/bin/ntcap.sh:$(TARGET_COPY_OUT_VENDOR)/bin/ntcap.sh
 
 # gralloc mapper VINTF fragment (standalone, matches stock layout — NOT inlined into

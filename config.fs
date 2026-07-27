@@ -49,3 +49,26 @@ value:2916
 [AID_VENDOR_THALES_AUTHSECRET]
 value:2917
 
+# Mountpoint directories for rootdir/etc/fstab.qcom.
+# These are EMPTY dirs. build_image drives the image from fs_config, so an empty directory with no
+# fs_config entry is dropped -- the mount then fails silently, /vendor/firmware_mnt stays empty, the
+# adsp/cdsp/mss/wpss remoteprocs never find their .mdt firmware and never boot, and the device comes
+# up with NO wifi interface, 1 sensor and no baseband. The reference vendor image ships all three as
+# real directories. Declaring them here makes the image contain them.
+[vendor/firmware_mnt]
+mode: 0755
+user: AID_ROOT
+group: AID_ROOT
+caps: 0
+
+[vendor/dsp]
+mode: 0755
+user: AID_ROOT
+group: AID_ROOT
+caps: 0
+
+[vendor/bt_firmware]
+mode: 0755
+user: AID_ROOT
+group: AID_ROOT
+caps: 0

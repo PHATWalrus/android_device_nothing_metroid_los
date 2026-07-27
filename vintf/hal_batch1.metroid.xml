@@ -10,10 +10,6 @@
         <fqname>IPowerStats/default</fqname>
     </hal>
     <hal format="aidl">
-        <name>android.hardware.memtrack</name>
-        <fqname>IMemtrack/default</fqname>
-    </hal>
-    <hal format="aidl">
         <name>vendor.qti.hardware.sensorscalibrate</name>
         <fqname>ISensorsCalibrate/default</fqname>
     </hal>
@@ -49,8 +45,7 @@
         <fqname>IQspmhal/default</fqname>
     </hal>
     <hal format="aidl">
-        <name>android.hardware.health</name>
-        <version>4</version>
-        <fqname>IHealth/default</fqname>
+        <name>android.hardware.memtrack</name>
+        <fqname>IMemtrack/default</fqname>
     </hal>
 </manifest>

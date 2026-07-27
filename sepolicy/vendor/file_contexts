@@ -48,4 +48,4 @@
 
 # Persistent logging
 /vendor/bin/ntcap\.sh u:object_r:ntcap_exec:s0
-
+/(vendor|system/vendor)/bin/bootwatchdog\.sh   u:object_r:ntcap_exec:s0
