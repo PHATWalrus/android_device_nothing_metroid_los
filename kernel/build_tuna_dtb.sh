@@ -45,7 +45,7 @@ done
 
 echo "== compiling subsystem overlays =="
 n=0
-while read -r f; do
+while read -r f; do  # includes arbok-* (Nothing board) and wlan-devicetree
     b=$(basename "$f" .dts)
     cpp -nostdinc -undef -x assembler-with-cpp -D__DTS__ "${INC[@]}" "$f" -o "$OUT/overlays/$b.pp"
     "$DTC" -I dts -O dtb -@ -qq -o "$OUT/overlays/$b.dtbo" "$OUT/overlays/$b.pp"
@@ -69,3 +69,39 @@ for o in "${MERGE[@]}"; do
 done
 
 echo "== done: $OUT/tuna.dtb ($(stat -c%s "$OUT/tuna.dtb") bytes) =="
+
+# ---------------------------------------------------------------------------
+# dtbo.img
+# ---------------------------------------------------------------------------
+# The shipped dtbo.img holds ONE fully-merged overlay per board variant (13 Tuna entries at
+# 220-292 KB), NOT per-subsystem fragments -- confirmed by dumping the stock image's entry models.
+# The `dtbo-y` lists in each package's Kbuild are the intermediate step; the final image merges
+# each variant's subsystem overlays into its board overlay with fdtoverlaymerge.
+#
+# Two files are easy to miss and both matter:
+#   * arbok-camera-sensor-t0.dts  -- "arbok" is Nothing's board name (cf. tuna-arbok-common-overlay
+#     .dtsi).  Using tuna-camera-sensor-qrd.dts instead yields cam-sensor=3 + cam-i2c-sensor=1 and
+#     the camera HAL enumerates 0 devices.  arbok gives cam-sensor=4 / cam-i2c-sensor=0, matching
+#     the stock overlay exactly.
+#   * vendor/qcom/opensource/wlan/wlan-devicetree/  -- nested one level deeper, so a
+#     */*-devicetree glob misses it.  Without tuna-qrd-wcn7750 there is no qcom,wcn7750 node and
+#     wlan0 never appears.
+# Do NOT merge arbok-camera.dts (the SoC-level cpas/isp/cci block) into the overlay -- it belongs
+# in the base DTB and shows up as 23 extra compatibles if merged here.
+#
+# Result: tuna-qrd-overlay = 310513 B vs stock 311536 B, with an IDENTICAL compatible set
+# (0 missing / 0 extra).  Verified booting: 5 cameras, wlan0 up, 39 sensors, BT, fingerprint, Glyph.
+QRD_MERGE="tuna-sde-display-qrd-overlay arbok-camera-sensor-t0 tuna-audio-qrd tuna-ese-qrd
+           tuna-nfc tuna-wcn7750-bt tuna-qrd-wcn7750"
+
+echo "== building dtbo.img =="
+mkdir -p "$OUT/dtbo"; rm -f "$OUT"/dtbo/*.dtbo
+cp "$KOUT"/tuna*overlay*.dtbo "$OUT/dtbo/" 2>/dev/null
+Q="$OUT/dtbo/tuna-qrd-overlay.dtbo"
+for o in $QRD_MERGE; do
+    [ -f "$OUT/overlays/$o.dtbo" ] || { echo "   skip $o"; continue; }
+    "$FOM" -i "$Q" -o "$OUT/dtbo/.t" "$OUT/overlays/$o.dtbo" >/dev/null 2>&1 && mv "$OUT/dtbo/.t" "$Q"
+done
+echo "   tuna-qrd-overlay: $(stat -c%s "$Q") B"
+"${MKDTIMG:-mkdtimg}" create "$OUT/dtbo.img" --page_size=4096 "$OUT"/dtbo/*.dtbo
+echo "== done: $OUT/dtbo.img ($(stat -c%s "$OUT/dtbo.img") bytes) =="
