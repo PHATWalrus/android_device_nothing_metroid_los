@@ -1,0 +1,81 @@
+From 2bd1927e58fbc2dc5cf021cd031967caf5bb9abe Mon Sep 17 00:00:00 2001
+From: Metroid Bring-up <metroid@localhost>
+Date: Mon, 27 Jul 2026 22:50:00 +0530
+Subject: [PATCH] Aperture: allow devices to disable video stabilization
+
+Some vendor camera stacks advertise stabilization modes that cannot be used
+outside the stock OS. Let device overlays suppress stabilization requests and
+hide the unsupported preference.
+---
+ .../org/lineageos/aperture/SettingsActivity.kt     | 6 ++++++
+ .../aperture/repositories/OverlaysRepository.kt    | 5 +++++
+ .../aperture/viewmodels/CameraViewModel.kt         | 3 ++-
+ app/src/main/res/values/config.xml                 | 3 +++
+ 4 files changed, 16 insertions(+), 1 deletion(-)
+
+diff --git a/app/src/main/java/org/lineageos/aperture/SettingsActivity.kt b/app/src/main/java/org/lineageos/aperture/SettingsActivity.kt
+--- a/app/src/main/java/org/lineageos/aperture/SettingsActivity.kt
++++ b/app/src/main/java/org/lineageos/aperture/SettingsActivity.kt
+@@ -159,6 +159,9 @@ class SettingsActivity : AppCompatActivity(R.layout.activity_settings) {
+         }
+         private val saveLocation by lazy { findPreference<SwitchPreference>("save_location") }
+         private val shutterSound by lazy { findPreference<SwitchPreference>("shutter_sound") }
++        private val videoStabilization by lazy {
++            findPreference<SwitchPreference>("video_stabilization")
++        }
+ 
+         private val photoCaptureModePreferenceChangeListener =
+             Preference.OnPreferenceChangeListener { preference, newValue ->
+@@ -206,6 +209,9 @@ class SettingsActivity : AppCompatActivity(R.layout.activity_settings) {
+                     }
+             }
+             shutterSound?.isVisible = !CameraSoundsUtils.mustPlaySounds
++            videoStabilization?.isVisible =
++                (requireActivity().application as ApertureApplication)
++                    .overlaysRepository.enableVideoStabilization
+ 
+             // Photo capture mode
+             photoCaptureMode.onPreferenceChangeListener = photoCaptureModePreferenceChangeListener
+diff --git a/app/src/main/java/org/lineageos/aperture/repositories/OverlaysRepository.kt b/app/src/main/java/org/lineageos/aperture/repositories/OverlaysRepository.kt
+--- a/app/src/main/java/org/lineageos/aperture/repositories/OverlaysRepository.kt
++++ b/app/src/main/java/org/lineageos/aperture/repositories/OverlaysRepository.kt
+@@ -43,6 +43,11 @@ class OverlaysRepository(private val context: Context) {
+      */
+     val enableAuxCameras = getBoolean(R.bool.config_enableAuxCameras)
+ 
++    /**
++     * @see R.bool.config_enableVideoStabilization
++     */
++    val enableVideoStabilization = getBoolean(R.bool.config_enableVideoStabilization)
++
+     /**
+      * @see R.array.config_ignoredAuxCameraIds
+      */
+diff --git a/app/src/main/java/org/lineageos/aperture/viewmodels/CameraViewModel.kt b/app/src/main/java/org/lineageos/aperture/viewmodels/CameraViewModel.kt
+--- a/app/src/main/java/org/lineageos/aperture/viewmodels/CameraViewModel.kt
++++ b/app/src/main/java/org/lineageos/aperture/viewmodels/CameraViewModel.kt
+@@ -1723,7 +1723,8 @@ class CameraViewModel(application: Application) : ApertureViewModel(application)
+                 videoFrameRate = videoFrameRate,
+                 videoDynamicRange = videoDynamicRange,
+                 videoMirrorMode = preferencesRepository.videoMirrorMode.value,
+-                enableVideoStabilization = preferencesRepository.videoStabilization.value,
++                enableVideoStabilization = overlaysRepository.enableVideoStabilization &&
++                        preferencesRepository.videoStabilization.value,
+             )
+         }
+ 
+diff --git a/app/src/main/res/values/config.xml b/app/src/main/res/values/config.xml
+--- a/app/src/main/res/values/config.xml
++++ b/app/src/main/res/values/config.xml
+@@ -7,6 +7,9 @@
+     <!-- Enable auxiliary cameras selector. -->
+     <bool name="config_enableAuxCameras">false</bool>
+ 
++    <!-- Enable video stabilization controls and capture requests. -->
++    <bool name="config_enableVideoStabilization">true</bool>
++
+     <!-- List of ID of auxiliary cameras that must be ignored by the app. -->
+     <string-array name="config_ignoredAuxCameraIds">
+         <!-- No camera is ignored by default. -->
+-- 
+2.43.0

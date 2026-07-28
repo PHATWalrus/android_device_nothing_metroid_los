@@ -4,6 +4,14 @@
         <fqname>IBluetoothHci/default</fqname>
     </hal>
     <hal format="aidl">
+        <name>android.hardware.bluetooth.finder</name>
+        <fqname>IBluetoothFinder/default</fqname>
+    </hal>
+    <hal format="aidl">
+        <name>android.hardware.bluetooth.lmp_event</name>
+        <fqname>IBluetoothLmpEvent/default</fqname>
+    </hal>
+    <hal format="aidl">
         <name>vendor.qti.hardware.bluetooth_sar</name>
         <fqname>IBluetoothSar/default</fqname>
     </hal>

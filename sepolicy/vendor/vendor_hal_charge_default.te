@@ -1,0 +1,19 @@
+type vendor_hal_charge_default, domain;
+type vendor_hal_charge_default_exec, exec_type, vendor_file_type, file_type;
+type vendor_hal_noth_charge_service,
+    hal_service_type, protected_service, service_manager_type;
+
+init_daemon_domain(vendor_hal_charge_default)
+binder_call(vendor_hal_charge_default, servicemanager)
+add_service(vendor_hal_charge_default, vendor_hal_noth_charge_service)
+
+allow vendor_hal_charge_default vendor_proc_charger:file rw_file_perms;
+allow vendor_hal_charge_default vendor_proc_charger:dir search;
+allow vendor_hal_charge_default vendor_sysfs_qcom_battery:dir r_dir_perms;
+allow vendor_hal_charge_default vendor_sysfs_qcom_battery:file rw_file_perms;
+allow vendor_hal_charge_default vendor_sysfs_usb_supply:dir r_dir_perms;
+allow vendor_hal_charge_default vendor_sysfs_usb_supply:file rw_file_perms;
+allow vendor_hal_charge_default vendor_sysfs_battery_supply:dir r_dir_perms;
+allow vendor_hal_charge_default vendor_sysfs_battery_supply:file rw_file_perms;
+allow vendor_hal_charge_default sysfs_thermal:dir r_dir_perms;
+allow vendor_hal_charge_default sysfs_thermal:file r_file_perms;

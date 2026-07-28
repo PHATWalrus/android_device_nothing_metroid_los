@@ -7,6 +7,8 @@ vendor.camera.sensor. u:object_r:vendor_camera_sensor_prop:s0
 # Fingerprint
 persist.vendor.fpc. u:object_r:vendor_fp_prop:s0
 persist.vendor.goodix. u:object_r:vendor_fp_prop:s0
+persist.vendor.overlay.fp_model u:object_r:vendor_fp_prop:s0
+persist.vendor.overlay.fp_vendor u:object_r:vendor_fp_prop:s0
 persist.vendor.sys.fp. u:object_r:vendor_fp_prop:s0
 ro.hardware.fp. u:object_r:vendor_fp_prop:s0
 vendor.dtool. u:object_r:vendor_fp_prop:s0
@@ -27,3 +29,12 @@ ro.vendor.oem.sno u:object_r:vendor_sno_prop:s0
 # Thermal
 vendor.sys.thermal.bcl.boot_completed u:object_r:vendor_thermal_normal_prop:s0
 vendor.sys.thermal.data.path u:object_r:vendor_thermal_normal_prop:s0
+
+# Stability
+vendor.nt.battery_info u:object_r:vendor_stability_prop:s0
+
+# Vibrator
+persist.vendor.sfdc u:object_r:vendor_haptic_prop:s0
+persist.vendor.sfdc.result u:object_r:vendor_haptic_prop:s0
+vendor.haptic.calibrate.done u:object_r:vendor_haptic_prop:s0
+vendor.ics.sfdc.drift u:object_r:vendor_haptic_prop:s0

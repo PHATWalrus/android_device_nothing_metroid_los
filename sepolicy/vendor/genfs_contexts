@@ -1,7 +1,13 @@
 # Battery
 genfscon sysfs /class/qcom-battery u:object_r:vendor_sysfs_qcom_battery:s0
+genfscon proc /charger u:object_r:vendor_proc_charger:s0
+genfscon proc /TP_charger_flags u:object_r:vendor_proc_charger:s0
+genfscon proc /touchpanel/TP_charger_flags u:object_r:vendor_proc_charger:s0
 
 # Camera
+genfscon sysfs /devices/platform/soc/8c0000.qcom,qupv3_2_geni_se/880000.i2c/i2c-8/8-0012/fct_force_factory_coeff_signal u:object_r:vendor_sysfs_aw_sensor:s0
+genfscon sysfs /devices/virtual/aw_sensor/sensor_dev/touch_scanperiod u:object_r:vendor_sysfs_aw_sensor:s0
+genfscon sysfs /devices/virtual/aw_sensor/sensor_dev/log_timer u:object_r:vendor_sysfs_aw_sensor:s0
 
 # Extcon
 genfscon sysfs /devices/platform/soc/soc:spf_core_platform/soc:spf_core_platform:lpass-cdc/wcd9378-codec/extcon u:object_r:sysfs_extcon:s0
@@ -11,6 +17,12 @@ genfscon sysfs /kernel/hardware_info_to_dump/hardw_info u:object_r:vendor_sysfs_
 
 # Memory
 
+# Fingerprint
+genfscon proc /touchpanel/fod_mode u:object_r:vendor_proc_touchpanel_fod:s0
+genfscon sysfs /panel_feature/fp_status u:object_r:sysfs_panel_feature:s0
+
+# Power stats
+genfscon sysfs /module/qcom_stats/rpmh_stats/nt_master_stats u:object_r:vendor_sysfs_metroid_soc_sleep:s0
 # Wakeup (Nothing specific charging and fingerprint wakeup nodes)
 genfscon sysfs /devices/platform/soc/8c0000.qcom,qupv3_2_geni_se/88c000.i2c/i2c-11/11-0055/wakeup u:object_r:sysfs_wakeup:s0
 genfscon sysfs /devices/platform/soc/8c0000.qcom,qupv3_2_geni_se/88c000.i2c/i2c-11/11-006f/wakeup u:object_r:sysfs_wakeup:s0
@@ -25,6 +37,18 @@ genfscon sysfs /devices/platform/soc/soc:mca_business_charger/power_supply/usb/w
 genfscon sysfs /devices/platform/soc/soc:mca_business_charger/power_supply/wireless/wakeup u:object_r:sysfs_wakeup:s0
 genfscon sysfs /devices/platform/soc/soc:mca_business_charger/wakeup u:object_r:sysfs_wakeup:s0
 genfscon sysfs /devices/platform/soc/soc:qcom,dsi-display-primary/wakeup u:object_r:sysfs_wakeup:s0
+genfscon sysfs /devices/platform/soc/8c0000.qcom,qupv3_2_geni_se/888000.spi/spi_master/spi10/spi10.0/wakeup u:object_r:sysfs_wakeup:s0
+genfscon sysfs /devices/platform/soc/8c0000.qcom,qupv3_2_geni_se/880000.i2c/i2c-8/8-0012/wakeup u:object_r:sysfs_wakeup:s0
+genfscon sysfs /devices/platform/soc/soc:goodix_fp/wakeup u:object_r:sysfs_wakeup:s0
+
+# USB gadget state
+genfscon sysfs /devices/platform/soc/a600000.ssusb/a600000.dwc3/udc u:object_r:sysfs_udc:s0
+
+# Vibrator
+genfscon proc /haptic/f0 u:object_r:vendor_proc_haptic:s0
+genfscon proc /haptic/gpp u:object_r:vendor_proc_haptic:s0
+genfscon proc /haptic/lra_resistance u:object_r:vendor_proc_haptic:s0
+genfscon sysfs /devices/platform/soc/8c0000.qcom,qupv3_2_geni_se/89c000.i2c/i2c-15/15-005a/leds/vibrator_nt u:object_r:sysfs_leds:s0
 
 # Walt
 genfscon proc /sys/walt u:object_r:proc_walt:s0

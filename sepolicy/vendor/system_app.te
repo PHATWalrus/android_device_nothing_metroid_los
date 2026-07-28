@@ -1,0 +1,10 @@
+hal_client_domain(system_app, hal_fingerprint)
+get_prop(system_app, vendor_fp_prop)
+
+allow system_app sysfs_panel_feature:file r_file_perms;
+
+binder_call(system_app, vendor_hal_charge_default)
+allow system_app vendor_hal_noth_charge_service:service_manager find;
+
+binder_call(system_app, vendor_stability_default)
+allow system_app hal_stability_aidl_service:service_manager find;

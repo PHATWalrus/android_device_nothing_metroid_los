@@ -8,3 +8,6 @@ type vendor_fingerprint_device, dev_type;
 
 # Touchfeature
 type touchfeature_device, dev_type;
+
+# Vibrator
+type aac_richtap_device, dev_type;

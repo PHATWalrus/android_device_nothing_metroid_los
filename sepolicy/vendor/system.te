@@ -1,1 +1,9 @@
 # system_server policy rules
+binder_call(system_server, vendor_hal_charge_default)
+allow system_server vendor_hal_noth_charge_service:service_manager find;
+
+binder_call(system_server, vendor_sensor_extension_default)
+allow system_server hal_sensor_extension_aidl_service:service_manager find;
+
+binder_call(system_server, vendor_stability_default)
+allow system_server hal_stability_aidl_service:service_manager find;

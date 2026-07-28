@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: 2026 The LineageOS Project
+     SPDX-License-Identifier: Apache-2.0
+-->
+<resources>
+    <!-- Expose the auxiliary rear cameras reported by the provider. -->
+    <bool name="config_enableAuxCameras">true</bool>
+
+    <!-- The stock Morpho EIS backend traps during video pipeline setup. -->
+    <bool name="config_enableVideoStabilization">false</bool>
+</resources>

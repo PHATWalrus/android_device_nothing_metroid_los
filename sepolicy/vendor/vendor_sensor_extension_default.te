@@ -1,0 +1,11 @@
+type vendor_sensor_extension_default, domain;
+type vendor_sensor_extension_default_exec,
+    exec_type, vendor_file_type, file_type;
+type hal_sensor_extension_aidl_service,
+    hal_service_type, protected_service, service_manager_type;
+
+init_daemon_domain(vendor_sensor_extension_default)
+binder_call(vendor_sensor_extension_default, servicemanager)
+add_service(vendor_sensor_extension_default, hal_sensor_extension_aidl_service)
+
+allow vendor_sensor_extension_default self:qipcrtr_socket create_socket_perms_no_ioctl;

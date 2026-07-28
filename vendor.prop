@@ -1,4 +1,8 @@
 # Audio
+# Android 16's audio config lookup only searches /vendor/etc/audio on tuna
+# when this vendor capability is declared. The B4.1 interface file lives
+# there and is required to start QTI's AGM/PAL service graph.
+ro.vendor.qti.va_aosp.support=1
 aaudio.hw_burst_min_usec=2000
 aaudio.mmap_exclusive_policy=2
 aaudio.mmap_policy=2
@@ -58,6 +62,34 @@ vendor.wv.oemcrypto.debug.enable_hlos_data_path=true
 # Displayfeature
 ro.vendor.displayfeature.dump=true
 
+# Glyph Matrix
+ro.vendor.glyph.row=25
+ro.vendor.glyph.column=25
+ro.vendor.glyph.matrix_channels=625
+ro.vendor.glyph.channels=489
+ro.vendor.glyph.array.auto.lux=0,101,1001,2501
+ro.vendor.glyph.array.auto.backlight=200,900,2000,4095
+
+# Display brightness calibration (stock B4.1)
+ro.vendor.display.array.nits=8,8,15,30,50,70,80,86,96,110,132,165,195,220,252,280,330,410,450,500,680,800
+ro.vendor.display.array.lux=0,2,3,5,10,18,30,60,150,250,400,600,800,970,1250,1500,1900,2460,3000,4100,6000,8000
+ro.vendor.display.array.backlight=473,473,611,747,1002,1183,1264,1310,1381,1473,1602,1768,1904,2014,2147,2248,2424,2669,2778,2913,3349,3515
+ro.vendor.display.array.hbm.minlux=7000,18000,38000,58000
+ro.vendor.display.array.hbm.maxlux=8000,20000,40000,60000
+ro.vendor.display.array.hbm.backlight=3515,3635,3861,4079
+ro.vendor.display.array.auto.nits=8,8,15,30,50,70,80,86,96,110,132,165,195,220,252,280,330,410,450,500,680,800,900,1200,1600
+ro.vendor.display.array.auto.lux=0,2,3,5,10,18,30,60,150,250,400,600,800,970,1250,1500,1900,2460,3000,4100,6000,8000,20000,40000,60000
+ro.vendor.display.array.auto.backlight=473,473,611,747,1002,1183,1264,1310,1381,1473,1602,1768,1904,2014,2147,2248,2424,2669,2778,2913,3349,3515,3635,3861,4079
+ro.vendor.display.normal.maxbacklight=3515
+ro.vendor.display.normal.minbacklight=25
+ro.vendor.display.hbm.maxbacklight=4095
+ro.vendor.display.safe.backlight=2913
+ro.vendor.display.user.control.lux=0,100,1000,2500,4500,8000
+ro.vendor.display.low_brightness_threshold=0.344
+ro.vendor.display.thermal_limit_brightness=4095,3713,3515,3394,2913,2778,2637,2490,2321,2139,1928
+ro.vendor.display.brightness.extension.timeout=300000
+ro.vendor.display.game_mode.min.backlight=1928
+
 # DPM
 persist.vendor.dpm.vndr.feature=11
 persist.vendor.dpm.vndr.idletimer.mode=default
@@ -67,7 +99,6 @@ drm.service.enabled=true
 
 # fingerprint
 persist.vendor.fingerprint.type=udfps_optical
-persist.vendor.fingerprint.sensor_location=640|2518|105
 
 # FRP
 ro.frp.pst=/dev/block/bootdevice/by-name/frp

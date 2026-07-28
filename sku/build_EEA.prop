@@ -1,0 +1,5 @@
+ro.odm.build.fingerprint=Nothing/MetroidEEA/Metroid:15/AQ3A.250728.001/2606241457:user/release-keys
+ro.vendor.build.fingerprint=Nothing/MetroidEEA/Metroid:15/AQ3A.250728.001/2606241457:user/release-keys
+ro.product.odm.name=MetroidEEA
+ro.product.vendor.name=MetroidEEA
+ro.product.odm.model=A024

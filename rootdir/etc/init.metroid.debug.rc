@@ -1,9 +1,3 @@
-# Bring-up only: expose unauthenticated root ADB from early boot.
+# Bring-up only: expose unauthenticated root ADB without owning USB composition.
 on early-init && property:ro.debuggable=1
     setprop service.adb.root 1
-    setprop persist.sys.usb.config adb
-
-on boot && property:ro.debuggable=1
-    setprop persist.sys.usb.config adb
-    setprop sys.usb.config adb
-    start adbd

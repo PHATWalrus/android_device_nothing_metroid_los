@@ -1,0 +1,7 @@
+get_prop(platform_app, vendor_fp_prop)
+
+binder_call(platform_app, vendor_hal_charge_default)
+allow platform_app vendor_hal_noth_charge_service:service_manager find;
+
+binder_call(platform_app, vendor_sensor_extension_default)
+allow platform_app hal_sensor_extension_aidl_service:service_manager find;

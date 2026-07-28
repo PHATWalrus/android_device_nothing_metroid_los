@@ -1,0 +1,14 @@
+type vendor_stability_default, domain;
+type vendor_stability_default_exec, exec_type, vendor_file_type, file_type;
+type hal_stability_aidl_service,
+    hal_service_type, protected_service, service_manager_type;
+
+init_daemon_domain(vendor_stability_default)
+binder_call(vendor_stability_default, servicemanager)
+add_service(vendor_stability_default, hal_stability_aidl_service)
+
+allow vendor_stability_default block_device:dir search;
+allow vendor_stability_default nt_stability_block_device:blk_file rw_file_perms;
+allow vendor_stability_default vendor_ntfeature_file:file r_file_perms;
+get_prop(vendor_stability_default, vendor_stability_prop)
+set_prop(vendor_stability_default, vendor_stability_prop)

@@ -8,6 +8,9 @@ type vendor_hal_nothing_postproc_service,
 add_service(hal_camera_default, vendor_hal_noth_camera_service)
 add_service(hal_camera_default, vendor_hal_nothing_postproc_service)
 
+allow hal_camera_default nt_cam_device:chr_file rw_file_perms;
+allow hal_camera_default vendor_ntfeature_file:file r_file_perms;
+
 set_prop(hal_camera, vendor_camera_sensor_prop)
 set_prop(hal_camera_default, vendor_camera_p3enable_prop)
 set_prop(hal_camera_default, vendor_camera_xdrversion_prop)

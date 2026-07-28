@@ -1,0 +1,44 @@
+From dcb4e7107c22513ec3b5e1e8d26c20f6eefb9d27 Mon Sep 17 00:00:00 2001
+From: Metroid Bring-up <metroid@localhost>
+Date: Sat, 25 Jul 2026 23:45:00 +0530
+Subject: [PATCH] audio: pal: let device install PeripheralStateUtils
+
+The source library is an empty ABI stub. Nothing's camera and peripheral
+clients require callback symbols exported only by the stock implementation.
+
+Keep the source module available to satisfy build-time link dependencies, but
+allow Metroid to suppress its installed output and own the runtime file.
+---
+ peripheral_utils/Android.bp | 18 +++++++++++++++++-
+ 1 file changed, 17 insertions(+), 1 deletion(-)
+
+diff --git a/peripheral_utils/Android.bp b/peripheral_utils/Android.bp
+--- a/peripheral_utils/Android.bp
++++ b/peripheral_utils/Android.bp
+@@ -4,7 +4,23 @@ cc_library_headers {
+     export_include_dirs: ["inc"],
+ }
+ 
+-cc_library_shared {
++soong_config_module_type {
++    name: "metroid_peripheral_state_cc_library_shared",
++    module_type: "cc_library_shared",
++    config_namespace: "metroid",
++    bool_variables: ["use_stock_peripheral_state_utils"],
++    properties: ["installable"],
++}
++
++metroid_peripheral_state_cc_library_shared {
+     name: "libPeripheralStateUtils",
+     vendor: true,
++
++    soong_config_variables: {
++        use_stock_peripheral_state_utils: {
++            // Keep the source stub linkable, but let Metroid install the
++            // stock implementation that exports the runtime callback API.
++            installable: false,
++        },
++    },
+ }
+-- 
+2.43.0

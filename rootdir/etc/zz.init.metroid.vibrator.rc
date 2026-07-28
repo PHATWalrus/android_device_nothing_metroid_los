@@ -1,7 +1,75 @@
 on post-fs-data
     mkdir /mnt/vendor/persist/haptic 0770 system system
+    chown system system /mnt/vendor/persist/haptic
+    chmod 0770 /mnt/vendor/persist/haptic
+    chown system system /mnt/vendor/persist/haptic/cali_data
+    chmod 0660 /mnt/vendor/persist/haptic/cali_data
+    chown system system /mnt/vendor/persist/haptic/cali_gpp_data
+    chmod 0660 /mnt/vendor/persist/haptic/cali_gpp_data
+    chown system system /mnt/vendor/persist/haptic/sample_param
+    chmod 0660 /mnt/vendor/persist/haptic/sample_param
+    chown system system /mnt/vendor/persist/haptic/RT_sample_param
+    chmod 0660 /mnt/vendor/persist/haptic/RT_sample_param
+    chown system system /mnt/vendor/persist/haptic/sfdc
+    chmod 0660 /mnt/vendor/persist/haptic/sfdc
+    chown system system /dev/aw86927_haptic
+    chmod 0660 /dev/aw86927_haptic
+    chown system system /dev/ics_sfdc
+    chmod 0660 /dev/ics_sfdc
     chown system system /proc/haptic/f0
     chmod 0660 /proc/haptic/f0
+    chown system system /proc/haptic/gpp
+    chmod 0660 /proc/haptic/gpp
+    chown system system /proc/haptic/lra_resistance
+    chmod 0660 /proc/haptic/lra_resistance
+    chown system system /sys/class/leds/vibrator_nt/activate
+    chmod 0660 /sys/class/leds/vibrator_nt/activate
+    chown system system /sys/class/leds/vibrator_nt/brightness
+    chmod 0660 /sys/class/leds/vibrator_nt/brightness
+    chown system system /sys/class/leds/vibrator_nt/duration
+    chmod 0660 /sys/class/leds/vibrator_nt/duration
+    chown system system /sys/class/leds/vibrator_nt/f0_save
+    chmod 0660 /sys/class/leds/vibrator_nt/f0_save
+    chown system system /sys/class/leds/vibrator_nt/ram_cali
+    chmod 0660 /sys/class/leds/vibrator_nt/ram_cali
+    chown system system /sys/class/leds/vibrator_nt/cali
+    chmod 0660 /sys/class/leds/vibrator_nt/cali
+    chown system system /sys/class/leds/vibrator_nt/index
+    chmod 0660 /sys/class/leds/vibrator_nt/index
+    chown system system /sys/class/leds/vibrator_nt/reg
+    chmod 0660 /sys/class/leds/vibrator_nt/reg
+    chown system system /sys/class/leds/vibrator_nt/vmax
+    chmod 0660 /sys/class/leds/vibrator_nt/vmax
+    chown system system /sys/class/leds/vibrator_nt/gain
+    chmod 0660 /sys/class/leds/vibrator_nt/gain
+    chown system system /sys/class/leds/vibrator_nt/rtp
+    chmod 0660 /sys/class/leds/vibrator_nt/rtp
+    chown system system /sys/class/leds/vibrator_nt/state
+    chmod 0660 /sys/class/leds/vibrator_nt/state
+    chown system system /sys/class/leds/vibrator_nt/seq
+    chmod 0660 /sys/class/leds/vibrator_nt/seq
+    chown system system /sys/class/leds/vibrator_nt/loop
+    chmod 0660 /sys/class/leds/vibrator_nt/loop
+    chown system system /sys/class/leds/vibrator_nt/sample_param
+    chmod 0660 /sys/class/leds/vibrator_nt/sample_param
+    chown system system /sys/class/leds/vibrator_nt/golden_param
+    chmod 0660 /sys/class/leds/vibrator_nt/golden_param
+    chown system system /sys/class/leds/vibrator_nt/lk_f0
+    chmod 0660 /sys/class/leds/vibrator_nt/lk_f0
+    chown system system /sys/class/leds/vibrator_nt/gpp
+    chmod 0660 /sys/class/leds/vibrator_nt/gpp
+    chown system system /sys/class/leds/vibrator_nt/awrw
+    chmod 0660 /sys/class/leds/vibrator_nt/awrw
+    chown system system /sys/class/leds/vibrator_nt/haptic_interface_disable
+    chmod 0660 /sys/class/leds/vibrator_nt/haptic_interface_disable
+    chown system system /sys/class/leds/vibrator_nt/auto_brake
+    chmod 0660 /sys/class/leds/vibrator_nt/auto_brake
+
+on property:persist.vendor.sfdc=true
+    write /mnt/vendor/persist/haptic/sfdc 1
+
+on property:persist.vendor.sfdc=false
+    write /mnt/vendor/persist/haptic/sfdc 0
 
 service vendor.qti.vibrator /vendor/bin/hw/vendor.qti.hardware.vibrator.service
     override
@@ -11,3 +79,10 @@ service vendor.qti.vibrator /vendor/bin/hw/vendor.qti.hardware.vibrator.service
     group system input
     setenv RICHTAP_DEVICE_PATH /dev/aw86927_haptic
     setenv ENV_RICHTAP_CONFIG_PATH /odm/etc/aac_richtap.config
+
+on property:sys.boot_completed=1
+    chown system system /dev/aw86927_haptic
+    chmod 0660 /dev/aw86927_haptic
+    chown system system /dev/ics_sfdc
+    chmod 0660 /dev/ics_sfdc
+    setprop vendor.haptic.calibrate.done 1

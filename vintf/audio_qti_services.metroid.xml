@@ -12,4 +12,8 @@
         <version>2</version>
         <fqname>IPALEventNotifier/default</fqname>
     </hal>
+    <hal format="aidl">
+        <name>vendor.qti.hardware.ListenSoundModelAidl</name>
+        <fqname>IListenSoundModel/default</fqname>
+    </hal>
 </manifest>

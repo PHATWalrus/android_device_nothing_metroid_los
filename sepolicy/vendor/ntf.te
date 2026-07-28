@@ -1,0 +1,13 @@
+type vendor_ntf, domain;
+type vendor_ntf_exec, exec_type, vendor_file_type, file_type;
+
+init_daemon_domain(vendor_ntf)
+
+# ntf-service creates the regular /dev/ntfeature control file itself. Keep its
+# authority limited to that exact file, including replacement on a later boot.
+allow vendor_ntf device:dir { add_name remove_name search write };
+allow vendor_ntf vendor_ntfeature_file:file {
+    append create getattr ioctl lock map open read relabelto rename setattr
+    unlink watch watch_reads write
+};
+type_transition vendor_ntf device:file vendor_ntfeature_file "ntfeature";

@@ -14,6 +14,31 @@ from extract_utils.fixups_blob import (
 )
 from extract_utils.fixups_lib import lib_fixups
 
+METROID_VIBRATOR_MODULES = {
+    'libqtivibratoreffect': 'metroid_prebuilt_libqtivibratoreffect',
+    'libqtivibratoreffectoffload': 'metroid_prebuilt_libqtivibratoreffectoffload',
+    'vendor.qti.hardware.vibrator.impl': 'metroid_prebuilt_vendor_qti_hardware_vibrator_impl',
+    'vendor.qti.hardware.vibratorCL.impl': 'metroid_prebuilt_vendor_qti_hardware_vibratorCL_impl',
+    'vendor.qti.hardware.vibratorOL.impl': 'metroid_prebuilt_vendor_qti_hardware_vibratorOL_impl',
+    'vendor.qti.hardware.vibratorSel.impl': 'metroid_prebuilt_vendor_qti_hardware_vibratorSel_impl',
+}
+
+
+def fixup_metroid_vibrator_dependency(lib: str, partition: str) -> str:
+    if partition != 'vendor':
+        return lib
+
+    return METROID_VIBRATOR_MODULES.get(lib, lib)
+
+
+lib_fixups = {
+    **lib_fixups,
+    **{
+        lib: fixup_metroid_vibrator_dependency
+        for lib in METROID_VIBRATOR_MODULES
+    },
+}
+
 namespace_imports = [
     'hardware/qcom-caf/sm8750',
     'hardware/qcom-caf/wlan/qcwcn',
@@ -45,11 +70,17 @@ blob_fixups: blob_fixups_user_type = {
         'vendor/lib64/libsdmclient.so',
         'vendor/lib64/libstandbyfeature.so',
         'vendor/lib64/libvideooptfeature.so',
+        'vendor/lib64/libaudioeffecthal.qti.so',
         'vendor/lib64/soundfx/libquasar.so',
     ): blob_fixup().replace_needed(
         'libtinyxml2.so',
         'libtinyxml2-v35.so',
     ),
+    'vendor/bin/hw/android.hardware.wifi-service.metroid': blob_fixup()
+        .replace_needed(
+            'libwifi-hal.so',
+            'libwifi-hal-metroid.so',
+        ),
     (
         'vendor/lib64/libVoiceSdk.so',
         'vendor/lib64/libcapiv2uvvendor.so',
@@ -67,7 +98,38 @@ blob_fixups: blob_fixups_user_type = {
     'vendor/lib64/libntcamskia.so': blob_fixup()
         .add_needed('libnativewindow.so'),
     'vendor/lib64/libaudioserviceexampleimpl.so': blob_fixup()
-        .add_needed('libaudioutils_shim.so'),
+        .add_needed('libaudioutils_shim.so')
+        .replace_needed(
+            'libalsautilsv2.so',
+            'libalsautilsv2-metroid.so',
+        )
+        .replace_needed(
+            'libtinyalsav2.so',
+            'libtinyalsav2-metroid.so',
+        )
+        .replace_needed(
+            'android.hardware.bluetooth.audio-impl.so',
+            'android.hardware.bluetooth.audio-impl-metroid.so',
+        )
+        .replace_needed(
+            'libbluetooth_audio_session_aidl.so',
+            'libbluetooth_audio_session_aidl-metroid.so',
+        ),
+    'vendor/lib64/android.hardware.bluetooth.audio-impl-metroid.so': blob_fixup()
+        .replace_needed(
+            'libbluetooth_audio_session_aidl.so',
+            'libbluetooth_audio_session_aidl-metroid.so',
+        ),
+    'vendor/lib64/libalsautilsv2-metroid.so': blob_fixup()
+        .replace_needed(
+            'libtinyalsav2.so',
+            'libtinyalsav2-metroid.so',
+        ),
+    'vendor/lib64/soundfx/libhapticgenerator.so': blob_fixup()
+        .replace_needed(
+            'libvibratorutils.so',
+            'libvibratorutils-metroid.so',
+        ),
     (
         'vendor/lib64/com.nothing.camera.postproc@1.0-service-impl.so',
         'vendor/lib64/camera/components/com.qti.node.dewarp.so',
@@ -85,6 +147,14 @@ blob_fixups: blob_fixups_user_type = {
             r'(?ms)^on property:vold\.decrypt=trigger_restart_framework\n'
             r'\s+start vendor\.cnss_diag\n\n'
             r'service vendor\.cnss_diag .*?^\s+oneshot\n\n?',
+            '',
+        ),
+    'vendor/etc/init/init.nt_cit.rc': blob_fixup()
+        .regex_replace(
+            r'(?ms)^#spencer\.chen copy from byd/configs-sys/'
+            r'init\.factoryflag\.rc\n\n'
+            r'#add for cit PSN FSN color\n'
+            r'on post-fs-data\n.*?(?=^on property:sys\.boot_completed=1\n)',
             '',
         ),
     'vendor/etc/init/power.stats.rc': blob_fixup()

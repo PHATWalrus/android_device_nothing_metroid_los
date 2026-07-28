@@ -4,6 +4,12 @@ set_prop(vendor_init, vendor_qcc_prop)
 set_prop(vendor_init, vendor_radio_prop)
 set_prop(vendor_init, vendor_ssr_prop)
 set_prop(vendor_init, vendor_thermal_normal_prop)
-
+set_prop(vendor_init, vendor_haptic_prop)
 allow vendor_init minidump_data_file:dir create_dir_perms;
 allow vendor_init minidump_data_file:file create_file_perms;
+allow vendor_init aac_richtap_device:chr_file setattr;
+allow vendor_init sysfs_leds:file setattr;
+allow vendor_init vendor_persist_haptics_file:dir { add_name search setattr write };
+allow vendor_init vendor_persist_haptics_file:file { create getattr open setattr write };
+allow vendor_init vendor_proc_haptic:file setattr;
+allow vendor_init vendor_sysfs_aw_sensor:file rw_file_perms;

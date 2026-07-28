@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: 2026 The LineageOS Project
+     SPDX-License-Identifier: Apache-2.0
+-->
+<resources>
+    <!-- Metroid exposes physical 60, 90, and 120 Hz display modes. -->
+    <bool name="config_show_smooth_display">true</bool>
+</resources>

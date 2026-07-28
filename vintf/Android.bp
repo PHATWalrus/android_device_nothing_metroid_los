@@ -5,6 +5,12 @@ vintf_fragment {
     vendor: true,
 }
 
+vintf_fragment {
+    name: "hostapd.metroid.xml",
+    src: "hostapd.metroid.xml",
+    vendor: true,
+}
+
 // Audio
 vintf_fragment {
     name: "audio_bluetooth_core.metroid.xml",
@@ -25,6 +31,12 @@ vintf_fragment {
 }
 
 vintf_fragment {
+    name: "soundtrigger_qti.metroid.xml",
+    src: "soundtrigger_qti.metroid.xml",
+    vendor: true,
+}
+
+vintf_fragment {
     name: "audio_core_default.metroid.xml",
     src: "audio_core_default.metroid.xml",
     vendor: true,
@@ -41,6 +53,25 @@ vintf_fragment {
 vintf_fragment {
     name: "hal_batch1.metroid.xml",
     src: "hal_batch1.metroid.xml",
+    vendor: true,
+}
+
+// Nothing charge, sensor extension, and stability HALs
+vintf_fragment {
+    name: "vendor.noth.hardware.charge-service.xml",
+    src: "vendor.noth.hardware.charge-service.xml",
+    vendor: true,
+}
+
+vintf_fragment {
+    name: "vendor.noth.hardware.sensor.sensor_extension-service.xml",
+    src: "vendor.noth.hardware.sensor.sensor_extension-service.xml",
+    vendor: true,
+}
+
+vintf_fragment {
+    name: "vendor.noth.hardware.stability-service.xml",
+    src: "vendor.noth.hardware.stability-service.xml",
     vendor: true,
 }
 

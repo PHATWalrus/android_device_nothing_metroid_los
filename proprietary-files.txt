@@ -122,6 +122,9 @@ system_ext/app/NtThirdParty/NtThirdParty.apk;EXTRACT_ONLY
 # USB uevent daemon
 system_ext/bin/usbudev
 
+# Qualcomm framework performance service; stock camera/display clients use it.
+system_ext/bin/perfservice
+
 system_ext/etc/default-permissions/default-permissions-com.quicinc.voice.activation.xml
 system_ext/etc/dpm/dpm.conf
 system_ext/etc/hdr_config/ans_off/ans_config.txt
@@ -643,7 +646,6 @@ vendor/bin/hw/android.hardware.secure_element-service.qti
 vendor/bin/hw/android.hardware.security.keymint-service-qti
 vendor/bin/hw/android.hardware.weaver-service-spu-qti
 vendor/bin/hw/android.hardware.weaver-service.thales
-vendor/bin/hw/android.hardware.wifi-service:vendor/bin/hw/android.hardware.wifi-service.metroid
 vendor/bin/hw/hostapd
 vendor/bin/hw/qconfigservice
 vendor/bin/hw/qcrilNrd
@@ -671,7 +673,7 @@ vendor/bin/hw/vendor.qti.hardware.secureprocessor
 vendor/bin/hw/vendor.qti.hardware.sensorscalibrate-service
 vendor/bin/hw/vendor.qti.hardware.servicetrackeraidl-service
 vendor/bin/hw/vendor.qti.hardware.spu-service
-vendor/bin/hw/vendor.qti.hardware.vibrator.service
+vendor/bin/hw/vendor.qti.hardware.vibrator.service;MODULE=metroid_prebuilt_vendor_qti_hardware_vibrator_service
 vendor/bin/hw/vendor.qti.media.c2@1.0-service
 vendor/bin/hw/vendor.qti.media.c2audio@1.0-service
 vendor/bin/hw/vendor.qti.memory.pasrmanager-service
@@ -1192,7 +1194,6 @@ vendor/etc/init/hostapd.android.rc
 vendor/etc/init/hw/init.nt_product.rc
 vendor/etc/init/hw/init.qcom.factory.rc
 vendor/etc/init/hw/init.qcom.rc
-vendor/etc/init/hw/init.qcom.usb.rc
 vendor/etc/init/hw/init.qti.kernel.rc
 vendor/etc/init/hw/init.qti.kernel.target.rc
 vendor/etc/init/hw/init.qti.ufs.rc
@@ -2050,13 +2051,22 @@ vendor/lib/rfsa/adsp/libtfadsp_tx.so
 vendor/lib/rfsa/adsp/libtracker_6dof_skel_8450.so
 vendor/lib/rfsa/adsp/nlc.so
 vendor/lib64/android.hardware.common-V2-ndk_platform.so
+
+# Stock runtime overrides
+vendor/bin/hw/android.hardware.wifi-service:vendor/bin/hw/android.hardware.wifi-service.metroid
+vendor/etc/init/hw/init.qcom.usb.rc
+vendor/lib64/android.hardware.bluetooth.audio-impl.so:vendor/lib64/android.hardware.bluetooth.audio-impl-metroid.so;EXTRACT_ONLY;FIX_SONAME
+vendor/lib64/libbluetooth_audio_session_aidl.so:vendor/lib64/libbluetooth_audio_session_aidl-metroid.so;EXTRACT_ONLY;FIX_SONAME
+vendor/lib64/libalsautilsv2.so:vendor/lib64/libalsautilsv2-metroid.so;EXTRACT_ONLY;FIX_SONAME
+vendor/lib64/libtinyalsav2.so:vendor/lib64/libtinyalsav2-metroid.so;EXTRACT_ONLY;FIX_SONAME
+vendor/lib64/libwifi-hal.so:vendor/lib64/libwifi-hal-metroid.so;EXTRACT_ONLY;FIX_SONAME
+
 # Stock B4.1 proprietary audio runtime closure; packaged by proprietary/vendor/lib64/Android.bp.
 vendor/lib64/hw/libaudiocorehal.default.so:vendor/lib64/libaudiocorehal.default.so;EXTRACT_ONLY
 vendor/lib64/hw/libaudiocorehal.qti.so:vendor/lib64/libaudiocorehal.qti.so;EXTRACT_ONLY
 vendor/lib64/hw/libaudioeffecthal.qti.so:vendor/lib64/libaudioeffecthal.qti.so;EXTRACT_ONLY
 vendor/lib64/hw/android.hardware.bluetooth.audio_sw.so;EXTRACT_ONLY
-vendor/lib64/libalsautilsv2.so;EXTRACT_ONLY
-vendor/lib64/libtinyalsav2.so;EXTRACT_ONLY
+vendor/lib64/libPeripheralStateUtils.so;EXTRACT_ONLY
 vendor/lib64/soundfx/libbundleaidl.so;EXTRACT_ONLY
 vendor/lib64/soundfx/libbundlewrapper.so;EXTRACT_ONLY
 vendor/lib64/soundfx/libdownmix.so;EXTRACT_ONLY
@@ -2077,7 +2087,29 @@ vendor/lib64/soundfx/libqcomvisualizer.so;EXTRACT_ONLY
 vendor/lib64/soundfx/libqcomvoiceprocessing.so;EXTRACT_ONLY
 vendor/lib64/libaudioserviceexampleimpl.so;EXTRACT_ONLY
 vendor/lib64/libaudioplatformconverter.qti.so;EXTRACT_ONLY
+# Stock B4.1 AGM/PAL service graph. The HAL dynamically loads the servers and
+# plugins named by vendor_audio_interfaces.xml and card-defs.xml; Android 16
+# source-built variants are not a compatible mix.
+vendor/lib64/libagm.so;EXTRACT_ONLY
+vendor/lib64/libagm_compress_plugin.so;EXTRACT_ONLY
+vendor/lib64/libagm_mixer_plugin.so;EXTRACT_ONLY
+vendor/lib64/libagm_pcm_plugin.so;EXTRACT_ONLY
+vendor/lib64/libagmipcservice.so;EXTRACT_ONLY
+vendor/lib64/libpalclient.so;EXTRACT_ONLY
+vendor/lib64/libpaleventnotifier.so;EXTRACT_ONLY
+vendor/lib64/libpalipcservice.so;EXTRACT_ONLY
+
+# Remaining stock B4.1 proprietary audio runtime closure.
+vendor/lib64/libagmclient.so;EXTRACT_ONLY
 vendor/lib64/libar-pal.so;EXTRACT_ONLY
+vendor/lib64/libvui_intf.so;EXTRACT_ONLY
+vendor/lib64/libvibratorutils.so:vendor/lib64/libvibratorutils-metroid.so;EXTRACT_ONLY;FIX_SONAME
+vendor/lib64/libqtivibratoreffect.so;EXTRACT_ONLY
+vendor/lib64/libqtivibratoreffectoffload.so;EXTRACT_ONLY
+vendor/lib64/vendor.qti.hardware.vibrator.impl.so;EXTRACT_ONLY
+vendor/lib64/vendor.qti.hardware.vibratorCL.impl.so;EXTRACT_ONLY
+vendor/lib64/vendor.qti.hardware.vibratorOL.impl.so;EXTRACT_ONLY
+vendor/lib64/vendor.qti.hardware.vibratorSel.impl.so;EXTRACT_ONLY
 vendor/lib64/libeffects.so;EXTRACT_ONLY
 vendor/lib64/bm5a73v04s13n00.bin
 vendor/lib64/bm5a73v04s13n01.bin

@@ -3,8 +3,12 @@ type audio_socket, file_type;
 
 # Battery
 type vendor_sysfs_qcom_battery, fs_type, sysfs_type;
+type vendor_proc_charger, fs_type, proc_type;
 
 # Camera
+type nt_cam_device, dev_type;
+type vendor_ntfeature_file, file_type;
+type vendor_sysfs_aw_sensor, fs_type, sysfs_type;
 
 # Diag
 type minidump_data_file, data_file_type, file_type;
@@ -14,6 +18,16 @@ type vendor_sysfs_hardwareinfo, fs_type, sysfs_type;
 
 # Memory
 
+# Fingerprint
+type vendor_proc_touchpanel_fod, fs_type, proc_type;
+type sysfs_panel_feature, fs_type, sysfs_type;
+
+# Stability
+type nt_stability_block_device, dev_type;
+
+# Power stats
+type vendor_sysfs_metroid_soc_sleep, fs_type, sysfs_type;
+
 # Sensor
 type vendor_aon_vendor_data_file, data_file_type, file_type;
 
@@ -21,6 +35,9 @@ type vendor_aon_vendor_data_file, data_file_type, file_type;
 type sys_thermal_wifi_limit, fs_type, sysfs_type;
 type sysfs_power_save, fs_type, sysfs_type;
 type thermal_data_file, data_file_type, file_type;
+
+# Vibrator
+type vendor_proc_haptic, fs_type, proc_type;
 
 # Walt
 type proc_walt, fs_type, proc_type;

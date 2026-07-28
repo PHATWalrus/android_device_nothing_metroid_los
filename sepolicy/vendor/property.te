@@ -12,3 +12,9 @@ vendor_public_prop(vendor_sno_prop)
 
 # Thermal
 vendor_public_prop(vendor_thermal_normal_prop)
+
+# Stability
+vendor_internal_prop(vendor_stability_prop)
+
+# Vibrator
+vendor_internal_prop(vendor_haptic_prop)

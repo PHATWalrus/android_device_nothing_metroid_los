@@ -1,0 +1,13 @@
+type vendor_noth_bsp_daemon, domain;
+type vendor_noth_bsp_daemon_exec, exec_type, vendor_file_type, file_type;
+
+init_daemon_domain(vendor_noth_bsp_daemon)
+
+r_dir_file(vendor_noth_bsp_daemon, mnt_vendor_file)
+r_dir_file(vendor_noth_bsp_daemon, vendor_persist_sensors_file)
+allow vendor_noth_bsp_daemon vendor_ntfeature_file:file r_file_perms;
+# The three AW controls below retain their own type; only traversal of their
+# stock sysfs parents is necessary.
+allow vendor_noth_bsp_daemon sysfs:dir search;
+allow vendor_noth_bsp_daemon vendor_sysfs_aw_sensor:file rw_file_perms;
+set_prop(vendor_noth_bsp_daemon, vendor_sensors_prop)

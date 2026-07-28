@@ -6,11 +6,19 @@
 
 # Block devices
 /dev/block/by-name/charger u:object_r:vendor_charge_block_device:s0
+/dev/block/by-name/binfo u:object_r:nt_stability_block_device:s0
+/dev/block/by-name/nt_reserve1 u:object_r:nt_stability_block_device:s0
 /dev/block/platform/soc/1d84000.ufshc/by-name/countrycode_[ab] u:object_r:vendor_custom_ab_block_device:s0
 /dev/block/platform/soc/1d84000.ufshc/by-name/idmanager_[ab]      u:object_r:vendor_custom_ab_block_device:s0
 /dev/block/platform/soc/1d84000.ufshc/by-name/modemfirmware_[ab] u:object_r:vendor_modem_block_device:s0
+/dev/block/platform/soc/1d84000.ufshc/by-name/binfo u:object_r:nt_stability_block_device:s0
+/dev/block/platform/soc/1d84000.ufshc/by-name/nt_reserve1 u:object_r:nt_stability_block_device:s0
 
 # Camera
+/dev/nt_cam_dev u:object_r:nt_cam_device:s0
+/dev/ntfeature u:object_r:vendor_ntfeature_file:s0
+/(vendor|system/vendor)/bin/ntf-service u:object_r:vendor_ntf_exec:s0
+/(vendor|system/vendor)/bin/noth_bsp_daemon u:object_r:vendor_noth_bsp_daemon_exec:s0
 /(vendor|system/vendor)/bin/hw/vendor\.noth\.hardware\.camera-service u:object_r:hal_camera_default_exec:s0
 
 # Diag
@@ -42,11 +50,21 @@
 # Sensors
 /vendor/bin/hw/android\.hardware\.sensors-service\.multihal u:object_r:hal_sensors_default_exec:s0
 
+# Nothing HALs
+/(vendor|system/vendor)/bin/hw/vendor\.noth\.hardware\.charge-service u:object_r:vendor_hal_charge_default_exec:s0
+/(vendor|system/vendor)/bin/hw/vendor\.noth\.hardware\.sensor\.sensor_extension-service u:object_r:vendor_sensor_extension_default_exec:s0
+/(vendor|system/vendor)/bin/hw/vendor\.noth\.hardware\.stability-service u:object_r:vendor_stability_default_exec:s0
+
 # Thermal
 /data/vendor/thermal(/.*)? u:object_r:thermal_data_file:s0
 /sys/class/thermal/thermal_message/wifi_limit u:object_r:sys_thermal_wifi_limit:s0
 /sys/devices/virtual/thermal/thermal_message/wifi_limit u:object_r:sys_thermal_wifi_limit:s0
 /sys/powersave(/.*)? u:object_r:sysfs_power_save:s0
+
+# Vibrator
+/dev/aw86927_haptic u:object_r:aac_richtap_device:s0
+/dev/ics_sfdc u:object_r:aac_richtap_device:s0
+/mnt/vendor/persist/haptic(/.*)? u:object_r:vendor_persist_haptics_file:s0
 
 # WLAN
 /data/vendor/mac_addr(/.*)? u:object_r:vendor_mac_vendor_data_file:s0

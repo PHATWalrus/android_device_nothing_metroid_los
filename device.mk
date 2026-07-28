@@ -106,12 +106,18 @@ PRODUCT_PACKAGES += \
     firmware_WCNSS_qcom_cfg.ini_symlink \
     firmware_wlan_mac.bin_symlink \
     firmware_wlanmdsp.otaupdate_symlink \
+    hostapd.metroid.xml \
+    IPACM_cfg.xml \
+    IPACM_Filter_cfg.xml \
+    ipacm \
     libxml2.vendor \
     wpa_cli \
-    wpa_supplicant
+    wpa_supplicant \
+    wpa_supplicant.conf
 
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rootdir/etc/android.hardware.wifi-service.metroid.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/android.hardware.wifi-service.metroid.rc \
+    $(LOCAL_PATH)/rootdir/etc/zz.init.metroid.nfc.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/zz.init.metroid.nfc.rc \
     $(LOCAL_PATH)/rootdir/etc/zz.init.metroid.vibrator.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/zz.init.metroid.vibrator.rc
 
 # Display
@@ -160,8 +166,32 @@ PRODUCT_PACKAGES += \
     GlyphNotification \
     Leveler \
     Magicball \
-    NothingToy \
-    NtThirdParty
+    NothingToy
+
+# eUICC. EuiccPolicy enables a user-supplied Google LPA only when GMS and
+# eUICC hardware are both present; NothingEsimSwitcher selects SIM2 type.
+PRODUCT_PACKAGES += \
+    EuiccPolicy \
+    NothingEsimSwitcher
+
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/permissions/privapp-permissions-google-euicc.xml:$(TARGET_COPY_OUT_PRODUCT)/etc/permissions/privapp-permissions-google-euicc.xml
+
+# Preserve stock regional identities. ROW uses the generic Metroid identity.
+PRODUCT_COPY_FILES += \
+    frameworks/native/data/etc/android.hardware.telephony.euicc.xml:$(TARGET_COPY_OUT_ODM)/etc/permissions/android.hardware.telephony.euicc.xml
+
+$(foreach sku, EEA IND JPN ROW TUR, \
+    $(eval PRODUCT_COPY_FILES += \
+        $(LOCAL_PATH)/sku/build_$(sku).prop:$(TARGET_COPY_OUT_ODM)/etc/build_$(sku).prop))
+
+# FeliCa/eSE is exposed only by Japanese hardware.
+PRODUCT_PACKAGES += NothingFelicaDisabler
+
+PRODUCT_COPY_FILES += \
+    frameworks/native/data/etc/android.hardware.nfc.ese.xml:$(TARGET_COPY_OUT_ODM)/etc/permissions/sku_JPN/android.hardware.nfc.ese.xml \
+    frameworks/native/data/etc/android.hardware.se.omapi.ese.xml:$(TARGET_COPY_OUT_ODM)/etc/permissions/sku_JPN/android.hardware.se.omapi.ese.xml \
+    frameworks/native/data/etc/android.hardware.se.omapi.uicc.xml:$(TARGET_COPY_OUT_ODM)/etc/permissions/sku_JPN/android.hardware.se.omapi.uicc.xml
 
 # Vendor fstab
 PRODUCT_COPY_FILES += \
@@ -171,10 +201,11 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rootdir/etc/init.metroid.bootlog.rc:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/init/init.metroid.bootlog.rc
 
-ifneq ($(filter eng userdebug,$(TARGET_BUILD_VARIANT)),)
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rootdir/etc/init.metroid.debug.rc:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/init/init.metroid.debug.rc
-endif
+
+PRODUCT_SYSTEM_PROPERTIES += \
+    ro.adb.secure=0
 
 # Audio policy configurations
 PRODUCT_COPY_FILES += \
@@ -188,6 +219,7 @@ PRODUCT_PACKAGES += \
     audio_bluetooth_core.metroid.xml \
     bluetooth_audio.metroid.xml \
     audio_qti_services.metroid.xml \
+    soundtrigger_qti.metroid.xml \
     audio_effects.metroid.xml \
     audio_core_default.metroid.xml \
     camera_provider.metroid.xml \
@@ -198,6 +230,9 @@ PRODUCT_PACKAGES += \
     media_c2.metroid.xml \
     qti_services.metroid.xml \
     vendor.noth.hardware.camera-service.xml \
+    vendor.noth.hardware.charge-service.xml \
+    vendor.noth.hardware.sensor.sensor_extension-service.xml \
+    vendor.noth.hardware.stability-service.xml \
     vendor.qti.camera.aon-impl.xml \
     vendor.qti.camera.offlinecamera-impl.xml \
     wifi-service.metroid.xml
@@ -236,8 +271,20 @@ PRODUCT_PACKAGES += \
     android.media.audio.common.types-V3-ndk.vendor \
     vendor.qti.hardware.agm-V1-ndk \
     vendor.qti.hardware.pal-V1-ndk \
-    vendor.qti.hardware.paleventnotifier-V2-ndk \
+    vendor.qti.hardware.paleventnotifier-V2-ndk.vendor \
+    libagm \
+    libagm_compress_plugin \
+    libagm_mixer_plugin \
+    libagm_pcm_plugin \
+    libagmclient \
+    libagmipcservice \
+    libsndcardparser \
     libar-pal \
+    libpalclient \
+    libpaleventnotifier \
+    libpalipcservice \
+    libvui_intf \
+    metroid_stock_libvibratorutils \
     libaudiocorehal.default \
     libaudiocorehal.qti \
     libaudioeffecthal.qti
@@ -248,10 +295,37 @@ PRODUCT_PACKAGES += libaudio_aidl_conversion_common_ndk.vendor libaudioaidlcommo
 
 PRODUCT_PACKAGES += \
     metroid_stock_android_hardware_bluetooth_audio_sw \
-    libalsautilsv2 \
-    libtinyalsav2
+    metroid_stock_android_hardware_bluetooth_audio_impl \
+    metroid_stock_libbluetooth_audio_session_aidl \
+    metroid_stock_libalsautilsv2 \
+    metroid_stock_libPeripheralStateUtils \
+    metroid_stock_libtinyalsav2 \
+    libmediautils_vendor.vendor \
+    libmemunreachable.vendor \
+    libnbaio_mono \
+    libwifi-hal-metroid
 
-DEVICE_PACKAGE_OVERLAYS += device/nothing/metroid/overlay
-# The stock Morpho EIS library faults on this userspace; use the QTI GME path.
+# Essential Button keylayout. Scan code 250 maps to ASSIST; Lineage's existing
+# hardware-key settings own short/long press behavior.
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/gpio-keys.kl:$(TARGET_COPY_OUT_VENDOR)/usr/keylayout/gpio-keys.kl
+
+# Overlays
+DEVICE_PACKAGE_OVERLAYS += \
+    $(LOCAL_PATH)/overlay \
+    $(LOCAL_PATH)/overlay-lineage
+
+# The stock Morpho backend faults with SIGILL; use the QTI GME implementation.
 PRODUCT_VENDOR_PROPERTIES += \
-    persist.vendor.morpho.eis.force_gmenode=1
+    persist.vendor.morpho.eis.force_gmenode=1 \
+    persist.vendor.sfdc=true
+
+# Stock B4.1 vibrator runtime. Keep the Qualcomm module names private while
+# retaining the filenames selected by the stock service at runtime.
+PRODUCT_PACKAGES += \
+    metroid_prebuilt_libqtivibratoreffect \
+    metroid_prebuilt_libqtivibratoreffectoffload \
+    metroid_prebuilt_vendor_qti_hardware_vibrator_impl \
+    metroid_prebuilt_vendor_qti_hardware_vibratorCL_impl \
+    metroid_prebuilt_vendor_qti_hardware_vibratorOL_impl \
+    metroid_prebuilt_vendor_qti_hardware_vibratorSel_impl

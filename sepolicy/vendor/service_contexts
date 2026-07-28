@@ -4,3 +4,8 @@ vendor.noth.hardware.camera.INtCamService/default u:object_r:vendor_hal_noth_cam
 
 # Fingerprint
 vendor.goodix.hardware.biometrics.fingerprint.IGoodixFingerprintDaemon/default u:object_r:vendor_hal_fingerprint_service_nothing:s0
+
+# Nothing HALs
+vendor.noth.hardware.charge.ICharge/default u:object_r:vendor_hal_noth_charge_service:s0
+vendor.noth.hardware.sensor.sensor_extension.ISensorExtension/default u:object_r:hal_sensor_extension_aidl_service:s0
+vendor.noth.hardware.stability.IStability/default u:object_r:hal_stability_aidl_service:s0

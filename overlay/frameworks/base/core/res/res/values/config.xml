@@ -22,6 +22,24 @@
     <bool name="config_enableUdcSysfsUsbStateUpdate">true</bool>
     <!-- Default to gestural navigation (no setup wizard runs to set it) -->
     <integer name="config_navBarInteractionMode">2</integer>
+    <!-- The invisible navigation-bar window owns EdgeBackGestureHandler. -->
+    <bool name="config_showNavigationBar">true</bool>
+
+    <!-- RM692J0 exposes physical 60/90/120 Hz modes. A zero default lets the
+         configured peak act as the default while preserving mode switching. -->
+    <integer name="config_defaultRefreshRate">0</integer>
+    <integer name="config_defaultPeakRefreshRate">120</integer>
+
+    <!-- Values from stock B4.1 FrameworksResCommon_Sys_Metroid.apk. -->
+    <item name="config_screenBrightnessDimFloat" format="float" type="dimen">0.05</item>
+    <item name="config_screenBrightnessDozeFloat" format="float" type="dimen">0.05</item>
+    <item name="config_screenBrightnessSettingDefaultFloat" format="float" type="dimen">0.4</item>
+    <item name="config_screenBrightnessSettingMaximumFloat" format="float" type="dimen">1.0</item>
+    <item name="config_screenBrightnessSettingMinimumFloat" format="float" type="dimen">0.0</item>
+
+    <bool name="config_dozeAlwaysOnDisplayAvailable">true</bool>
+    <string name="config_dozeComponent" translatable="false">com.android.systemui/com.android.systemui.doze.DozeService</string>
+    <string name="config_dozeTapSensorType" translatable="false">com.google.sensor.single_touch</string>
 
     <!-- Display cutout (top-center punch hole) + display shape, extracted 2026-07-10 from stock
          B4.0 FrameworksResCommon_Sys_Metroid.apk. Without these the status bar is default height

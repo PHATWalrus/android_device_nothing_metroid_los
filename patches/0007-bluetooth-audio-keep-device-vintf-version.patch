@@ -1,0 +1,30 @@
+From 3ce54d4df55aab60f4b6513d448a3c4e69468d9d Mon Sep 17 00:00:00 2001
+From: Metroid Bring-up <metroid@localhost>
+Date: Sat, 25 Jul 2026 22:30:00 +0530
+Subject: [PATCH] bluetooth: audio: let device own the VINTF version
+
+Nothing Phone (3) stock B4.1 registers the Bluetooth audio provider as
+AIDL version 4 from audiohalservice.qti. The source implementation installs
+an AIDL version 5 fragment for the same instance, causing a conflicting
+FqInstance when both are selected.
+
+Keep the source library available, but let the device-specific stock v4
+fragment be the sole manifest owner.
+---
+ bluetooth/audio/aidl/default/Android.bp | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/bluetooth/audio/aidl/default/Android.bp b/bluetooth/audio/aidl/default/Android.bp
+--- a/bluetooth/audio/aidl/default/Android.bp
++++ b/bluetooth/audio/aidl/default/Android.bp
+@@ -10,7 +10,6 @@ package {
+ cc_library_shared {
+     name: "android.hardware.bluetooth.audio-impl",
+     vendor: true,
+-    vintf_fragments: ["bluetooth_audio.xml"],
+     defaults: [
+         "aconfig_lib_cc_static_link.defaults",
+         "latest_android_hardware_bluetooth_audio_ndk_shared",
+-- 
+2.43.0
+

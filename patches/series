@@ -4,3 +4,6 @@ system/update_engine 0003-update-engine-remove-stale-target-partitions.patch
 hardware/qcom-caf/sm8750/audio/pal 0004-qcom-pal-fix-format-specifiers.patch
 hardware/qcom-caf/sm8750/display/hal 0005-qcom-display-use-stock-composer.patch
 hardware/lineage/compat 0006-lineage-compat-use-audio-headers.patch
+hardware/interfaces 0007-bluetooth-audio-keep-device-vintf-version.patch
+hardware/qcom-caf/sm8750/audio/pal 0008-qcom-pal-let-device-install-peripheral-state-utils.patch
+packages/apps/Aperture 0009-aperture-allow-devices-to-disable-video-stabilization.patch
