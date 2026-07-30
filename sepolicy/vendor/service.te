@@ -1,0 +1,7 @@
+# Vendor AIDL services that ship as Nothing/Goodix blobs and have no type upstream. Without these
+# they land on default_android_service, and AOSP has
+# `neverallow ... default_android_service:service_manager { add find list }` — so the build fails
+# rather than the boot. Found while bringing SELinux to enforcing, 2026-07-28.
+type vendor_nothing_camera_postproc_service, hal_service_type, protected_service, service_manager_type;
+type vendor_goodix_fingerprint_service, hal_service_type, protected_service, service_manager_type;
+type vendor_nothing_ntcam_service, hal_service_type, protected_service, service_manager_type;

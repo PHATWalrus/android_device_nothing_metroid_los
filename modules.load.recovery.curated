@@ -1,0 +1,37 @@
+# Kernel modules for RECOVERY.
+#
+# Curated from OrangeFox R11.3 for metroid, which boots reliably on this device. We previously
+# shipped BOARD_RECOVERY_KERNEL_MODULES = the whole 341-module vendor_ramdisk set, and recovery
+# bootlooped. OrangeFox ships 29. All 29 are in our source-built set.
+#
+# Touch drivers for every panel variant are included deliberately (atmel/focaltech/goodix/st_fts)
+# — the same reason OrangeFox ships them all: no way to know the panel before probing.
+adsp_loader_dlkm.ko
+altmode-glink.ko
+atmel_mxt_ts.ko
+charger-ulog-glink.ko
+focaltech_tp.ko
+glink_pkt.ko
+glink_probe.ko
+goodix_fp.ko
+goodix_ts.ko
+haptic.ko
+hwmon.ko
+leds-qpnp-vibrator-ldo.ko
+panel_event_notifier.ko
+pmic-glink-debug.ko
+q6_dlkm.ko
+qcom_glink.ko
+qcom_glink_smem.ko
+qcom_glink_spss.ko
+qcom_q6v5.ko
+qcom_q6v5_pas.ko
+qcom_sysmon.ko
+qti_battery_charger.ko
+qti-glink-adc.ko
+qti_pmic_glink.ko
+qts.ko
+rproc_qcom_common.ko
+st_fts.ko
+touchpanel_event_notify.ko
+ucsi_qti_glink.ko

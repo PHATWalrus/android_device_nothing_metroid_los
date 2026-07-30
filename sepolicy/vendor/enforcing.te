@@ -1,0 +1,165 @@
+# Rules needed to run SELinux enforcing, derived from the denials collected on the first
+# enforcing boot (2026-07-28). 187 denials, 24 distinct rules.
+#
+# Collected with:
+#   adb shell 'logcat -d -b main,events,system | grep "avc: *denied"'
+# dmesg shows none of these — the kernel audit buffer is not readable by shell here, so use
+# logcat, not dmesg, when iterating on this device.
+
+###############################################################################
+# tee (qseecomd) — THE boot blocker.
+#
+# qseecomd reads the partition table and the XBL/boot partitions to verify the secure image
+# set. Blocking it takes down the TEE, which takes down keymint -> gatekeeper -> system_server,
+# and the device never reaches boot_completed. Everything else in this file is cosmetic by
+# comparison.
+###############################################################################
+allow tee vendor_gpt_block_device:blk_file r_file_perms;
+allow tee vendor_xbl_block_device:blk_file r_file_perms;
+allow tee boot_block_device:blk_file r_file_perms;
+# qseecomd also pokes an unlabeled char device ("0:0:0:0" on tmpfs) while enumerating storage.
+# `neverallow domain device:chr_file { read write open }` forbids granting this, and the node has
+# no stable ueventd path to label. The blk_file reads above are what the TEE actually needs;
+# this probe failing is not fatal, so silence it.
+dontaudit tee device:chr_file rw_file_perms;
+
+###############################################################################
+# Camera HAL
+###############################################################################
+# get_prop(), not allow ...:file r_file_perms — r_file_perms includes ioctl and lock, and
+# AOSP has `neverallow domain property_type:file { ioctl lock }`.
+get_prop(hal_camera_default, camera_config_prop)
+allow hal_camera_default fwk_camera_service:service_manager find;
+# com.nothing.camera.postproc.IPostProcService — typed in service_contexts, not left on
+# default_android_service (which AOSP neverallows).
+add_service(hal_camera_default, vendor_nothing_camera_postproc_service)
+
+###############################################################################
+# Fingerprint HAL
+###############################################################################
+# vendor.goodix...IGoodixFingerprintDaemon — same reasoning.
+add_service(hal_fingerprint_default, vendor_goodix_fingerprint_service)
+allow hal_fingerprint_default proc:file rw_file_perms;
+# gf.debug.fp_serial, persist.vendor.overlay.fp_{model,vendor} — given their own type in
+# property_contexts. Allowing default_prop/overlay_prop here instead trips an AOSP neverallow.
+set_prop(hal_fingerprint_default, vendor_fingerprint_prop)
+# gf.debug.fp_serial is a goodix debug prop in the system namespace — same reasoning as above.
+dontaudit hal_fingerprint_default default_prop:property_service set;
+dontaudit hal_fingerprint_default overlay_prop:property_service set;
+
+###############################################################################
+# Light HAL — walks /mnt/vendor for the Glyph/backlight calibration blob
+###############################################################################
+allow hal_light_default mnt_vendor_file:dir search;
+
+###############################################################################
+# vendor_init
+###############################################################################
+# system.face.DumpPath / system.face.debug are face-unlock DEBUG knobs in the system namespace.
+# They cannot be labelled from vendor property_contexts (vendor may only label vendor-prefixed
+# names), and granting vendor access to default_prop trips an AOSP neverallow. They are debug-only
+# — reading them fails and the HAL falls back to defaults — so silence rather than grant.
+dontaudit vendor_init default_prop:file read;
+allow vendor_init sysfs:lnk_file setattr;
+# vendor_init touching system_data_file is forbidden by
+# `neverallow ... system_data_file:file { write create setattr ... }` in domain.te — vendor init
+# has no business writing /data. Silence it rather than fight the neverallow; nothing has been
+# observed to depend on it.
+dontaudit vendor_init system_data_file:file { write setattr };
+
+###############################################################################
+# init
+###############################################################################
+allow init proc_pressure_cpu:file setattr;
+allow init proc_pressure_io:file setattr;
+allow init sysfs:file setattr;
+allow init debugfs_bootreceiver_tracing:dir write;
+allow init debugfs_tracing_debug:dir mounton;
+
+###############################################################################
+# Noise — deliberately silenced rather than allowed.
+# fsck stat'ing sysfs and shell poking at props/firmware dirs are harmless and would otherwise
+# bury the denials that matter on the next pass.
+###############################################################################
+dontaudit fsck sysfs:file getattr;
+dontaudit shell boottime_prop:file read;
+dontaudit shell vendor_firmware_file:dir search;
+
+###############################################################################
+# Second enforcing pass (2026-07-28). The first pass took 187 denials -> 3, but the device still
+# hung on the boot animation, so these are the ones that actually mattered.
+###############################################################################
+# vendor_modprobe needs sys_nice to set the priority of module-load worker threads. Without it
+# module loading stalls, which is enough to keep the boot animation spinning forever.
+allow vendor_modprobe self:capability sys_nice;
+
+# qcom-system-daemon
+allow vendor_qcomsysd self:capability sys_admin;
+
+# Light HAL reads the per-unit LED calibration from /mnt/vendor/persist (dev sda2, file "color").
+# The dir search was already allowed in the first pass; it needs to read the file too.
+allow hal_light_default mnt_vendor_file:file r_file_perms;
+
+# init creating /sys/kernel/tracing/instances/bootreceiver/enable
+allow init debugfs_bootreceiver_tracing:dir add_name;
+allow init debugfs_bootreceiver_tracing:file { create write open };
+
+# Fingerprint HAL sysfs access (goodix reads panel/touch state)
+allow hal_fingerprint_default sysfs:file r_file_perms;
+
+###############################################################################
+# Third enforcing pass (2026-07-29), after the unlabeled-binary fix let boot complete.
+# Denials collected with dontaudit STRIPPED (secilc -D), so this is the worst case; several of
+# these are ones AOSP normally silences and are re-silenced here rather than granted.
+###############################################################################
+
+# Nothing's second camera AIDL service. Typed in service_contexts like the other two.
+add_service(hal_camera_default, vendor_nothing_ntcam_service)
+allow hal_camera_default proc:file write;
+
+# NOT FIXED HERE — system_suspend reading wakeup stats from sysfs (40 denials, the loudest
+# remaining set). Two reasons this is deferred rather than bodged:
+#   1. system_suspend is a PLATFORM domain; vendor policy cannot reference it at all
+#      ("unknown type system_suspend" from checkpolicy).
+#   2. The right fix is a genfs label, not an allow: these are wakeup-source stats
+#      (name, active_count, event_count, total_time_ms ...) that AOSP labels sysfs_wakeup, and
+#      system_suspend is already allowed to read that type. genfs_contexts here already labels
+#      ~10 specific wakeup nodes; the remaining ones just need enumerating from
+#      /sys/class/wakeup on a PERMISSIVE boot (shell cannot read them under enforcing).
+# Impact: read-only wakeup accounting only. Does not block boot or suspend.
+
+# Small, specific grants
+allow hal_power_stats_default sysfs:file r_file_perms;
+allow hal_fingerprint_default sysfs:file rw_file_perms;
+allow hal_audio_default debugfs:dir r_dir_perms;
+allow vendor_hal_gnss_qti property_socket:sock_file write;
+# init opens /sys/devices/platform/soc/1d84000.ufshc/.../block/sda/mq/0/nr_tags. Granting
+# `allow init sysfs:file open` is refused by AOSP —
+# "neverallow init sysfs:file { open write }: Init should not access sysfs node that are not
+# explicitly labeled" — so the node is labelled in genfs_contexts instead, which is the fix AOSP
+# is steering you toward.
+allow vendor_modprobe self:key write;
+
+# getcplc reads a system-namespace prop; it is a diagnostic tool, so silence rather than grant
+# vendor access to default_prop (which AOSP neverallows anyway).
+dontaudit vendor_getcplc default_prop:file read;
+
+# AOSP dontaudits these upstream; they only appeared because we built with secilc -D.
+dontaudit crash_dump keystore:process ptrace;
+dontaudit vendor_modprobe kernel:process setsched;
+dontaudit kernel system_data_file:file read;
+dontaudit servicemanager hal_vibrator_default:binder call;
+
+###############################################################################
+# Fourth pass (2026-07-29). Boot completes and all hardware works; these are the last few.
+###############################################################################
+# Now that the UFS block nodes are explicitly labelled sysfs_devices_block (see genfs_contexts),
+# granting access is legal — the AOSP neverallow only covers unlabelled `sysfs`.
+allow init sysfs_devices_block:file r_file_perms;
+allow fsck sysfs_devices_block:dir search;
+
+# Camera HAL needs read as well as write on /proc (it was granted write only in pass 3).
+allow hal_camera_default proc:file rw_file_perms;
+
+# Audio HAL reads the boot-status property.
+get_prop(hal_audio_default, boot_status_prop)

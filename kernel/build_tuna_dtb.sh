@@ -36,21 +36,32 @@ cd "$KSRC"
 
 # Include roots: kernel include/, the arch dts dirs, plus every opensource package that carries
 # dt-bindings/ (camera-kernel, synx-kernel) or include/ (audio-kernel) or is a *-devicetree pkg.
+# NOTE the second glob level: wlan ships its DT as vendor/qcom/opensource/wlan/wlan-devicetree/,
+# one directory deeper than every other package, so a plain */*-devicetree glob misses it.
 INC=(-I include -I arch/arm64/boot/dts/vendor -I arch/arm64/boot/dts/vendor/qcom)
-for d in vendor/qcom/opensource/*/; do
+for d in vendor/qcom/opensource/*/ vendor/qcom/opensource/*/*/; do
     [ -d "${d}dt-bindings" ] && INC+=(-I "${d%/}")
     [ -d "${d}include" ]     && INC+=(-I "${d}include")
     case "$d" in *-devicetree/) INC+=(-I "${d%/}");; esac
 done
 
 echo "== compiling subsystem overlays =="
+# Two things this find MUST pick up, both of which a naive `*-devicetree -name "tuna*.dts"`
+# silently drops — and dropping them is not a build error, you just get a device with no cameras
+# and no wlan0:
+#   * arbok-*.dts       — "arbok" is Nothing's board name, so the camera sensor overlay does not
+#                         start with "tuna" at all.
+#   * */*-devicetree/   — wlan is nested a level deeper (see the include note above).
+# This was wrong here until 2026-07-28: the loop comment claimed both were included, the find
+# did not, and the emitted tuna-qrd-overlay came out 288912 B instead of the verified 310513 B.
 n=0
-while read -r f; do  # includes arbok-* (Nothing board) and wlan-devicetree
+while read -r f; do
     b=$(basename "$f" .dts)
     cpp -nostdinc -undef -x assembler-with-cpp -D__DTS__ "${INC[@]}" "$f" -o "$OUT/overlays/$b.pp"
     "$DTC" -I dts -O dtb -@ -qq -o "$OUT/overlays/$b.dtbo" "$OUT/overlays/$b.pp"
     n=$((n+1))
-done < <(find vendor/qcom/opensource/*-devicetree -name "tuna*.dts" | sort)
+done < <(find vendor/qcom/opensource/*-devicetree vendor/qcom/opensource/*/*-devicetree \
+              \( -name "tuna*.dts" -o -name "arbok*.dts" \) 2>/dev/null | sort)
 echo "   $n overlays compiled"
 
 # SoC-level overlays -> merged into the base DTB (matches the shipped partitioning).

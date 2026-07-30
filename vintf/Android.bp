@@ -1,11 +1,6 @@
 // gralloc mapper VINTF fragment (standalone, matches stock layout — NOT inlined into
 // manifest.xml, since AOSP libui's openDeclaredPassthroughHal only resolves standalone
 // fragments under etc/vintf/manifest/, per PLAYBOOK_FROM_OPUS_20260706_MAPPER_VINTF_FIX.md)
-vintf_fragment {
-    name: "mapper.qti.xml",
-    src: "mapper.qti.xml",
-    vendor: true,
-}
 
 // wifi HAL VINTF fragment for the stock blob android.hardware.wifi-service (2026-07-09)
 vintf_fragment {
@@ -104,15 +99,5 @@ vintf_fragment {
 vintf_fragment {
     name: "android.hardware.radio.voice.metroid4.xml",
     src: "android.hardware.radio.voice.xml",
-    vendor: true,
-}
-vintf_fragment {
-    name: "android.hardware.drm-service.clearkey.metroid4.xml",
-    src: "android.hardware.drm-service.clearkey.xml",
-    vendor: true,
-}
-vintf_fragment {
-    name: "vendor.qti.qspa-service.metroid4.xml",
-    src: "vendor.qti.qspa-service.xml",
     vendor: true,
 }

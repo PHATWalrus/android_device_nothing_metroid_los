@@ -48,6 +48,13 @@ PRODUCT_PACKAGES += \
     android.hardware.fastboot@1.1-impl-mock \
     fastbootd
 
+# AIDL fastboot HAL (recovery-only), matching stock recovery layout
+PRODUCT_PACKAGES += \
+    android.hardware.fastboot-service.example_recovery
+
+PRODUCT_COPY_FILES += \
+    hardware/interfaces/fastboot/aidl/default/android.hardware.fastboot-service.example_recovery.rc:recovery/root/system/etc/init/android.hardware.fastboot-service.example_recovery.rc
+
 # Health (AIDL — HIDL @2.1 is deprecated at FCM 202404 and fails VINTF)
 PRODUCT_PACKAGES += \
     android.hardware.health-service.qti \
@@ -55,15 +62,84 @@ PRODUCT_PACKAGES += \
 
 # Partitions
 PRODUCT_USE_DYNAMIC_PARTITIONS := true
-PRODUCT_BUILD_VENDOR_BOOT_IMAGE := false
+
+# vendor_boot IS built (2026-07-28). This was `false` while the tree shipped a prebuilt
+# vendor_boot.img; leaving it false now is actively harmful, not merely redundant. With
+# BUILDING_VENDOR_BOOT_IMAGE unset, build/make/core/Makefile folds
+# BOARD_VENDOR_RAMDISK_KERNEL_MODULES into BOARD_GENERIC_RAMDISK_KERNEL_MODULES ("if there is no
+# vendor boot partition, store vendor ramdisk kernel modules in the boot ramdisk") — all 341
+# modules land in the generic ramdisk and init_boot.img fails at 18 MB against an 8 MB partition.
+PRODUCT_BUILD_VENDOR_BOOT_IMAGE := true
 
 # Soong namespaces
 PRODUCT_SOONG_NAMESPACES += \
     $(LOCAL_PATH)
 
+# The build generates modules.load/dep/alias/softdep for the vendor_boot ramdisk, but not
+# modules.blocklist — and first-stage init reads it. The shipped ramdisk carries one (60 entries,
+# mostly QCOM reference-board drivers that must not auto-load); without it they would.
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/kernel/vendor_dlkm-meta/modules.blocklist:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/lib/modules/modules.blocklist
+
+# fstab.default is REQUIRED in the first-stage ramdisks, and fstab.qcom is not enough.
+# The bootloader sets androidboot.fstab_suffix=default (confirmed on device:
+# `getprop ro.boot.fstab_suffix` -> default), so first-stage init reads fstab.default and never
+# looks at fstab.qcom, despite androidboot.hardware=qcom. Shipping only fstab.qcom means there is
+# no fstab at first stage, /vendor and /system never mount, and the device hangs on the Nothing
+# logo with no init FATAL to catch it — which is exactly what happened on 2026-07-28 when
+# vendor_boot first got built from source instead of repacked from the stock image.
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/rootdir/etc/fstab.default:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.default \
+    $(LOCAL_PATH)/rootdir/etc/fstab.emmc:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.emmc \
+    $(LOCAL_PATH)/rootdir/etc/fstab.default:$(TARGET_COPY_OUT_RAMDISK)/first_stage_ramdisk/fstab.default \
+    $(LOCAL_PATH)/rootdir/etc/fstab.emmc:$(TARGET_COPY_OUT_RAMDISK)/first_stage_ramdisk/fstab.emmc
+
+# vendor.img MUST contain the firmware mount-point directories, or nothing mounts there.
+# mount_all cannot mount onto a directory that does not exist, and /vendor is read-only ext4, so
+# init cannot mkdir them at runtime — they have to be baked into the image. A source-built
+# vendor.img only creates directories that hold at least one file. Symptom when missing
+# (seen 2026-07-28): /vendor/firmware_mnt, /vendor/dsp and /vendor/bt_firmware never mount,
+# ueventd spams "firmware: attempted /vendor/firmware_mnt/image/ipa_fws.mdt, open failed", the
+# ADSP/SLPI never start, and you get 1 sensor instead of 39 and no wlan0 — while the device
+# otherwise boots and looks healthy.
+#
+# These are prebuilt_root modules in Android.bp, NOT PRODUCT_COPY_FILES: soong's fsgen turns
+# PRODUCT_COPY_FILES into prebuilt_etc modules, which install under <partition>/etc and cannot
+# escape upward, so a vendor/firmware_mnt/... destination fails with
+# "Path is outside directory: ../firmware_mnt".
+# WLAN firmware symlinks. These install_symlink modules were declared in Android.bp but never
+# referenced by PRODUCT_PACKAGES, so they were dead code and never installed — /vendor/firmware/
+# wlan/qca_cld/wcn7750/wlan_mac.bin and /vendor/firmware/wlanmdsp.otaupdate were simply absent,
+# while stock ships both. libwifi-hal reads the MAC through that path; without it the driver load
+# fails with "Failed to load WiFi driver" / "Failed to initialize firmware mode controller" and
+# wlan0 never appears (found 2026-07-28).
+# NOTE: firmware_WCNSS_qcom_cfg.ini_symlink is deliberately NOT added — a real WCNSS_qcom_cfg.ini
+# is already installed at that path from the blob list, and both would collide.
+PRODUCT_PACKAGES += \
+    firmware_wlan_mac.bin_symlink \
+    firmware_wlanmdsp.otaupdate_symlink
+
+PRODUCT_PACKAGES += \
+    metroid_mountpoint_firmware_mnt \
+    metroid_mountpoint_dsp \
+    metroid_mountpoint_bt_firmware
+
 # Recovery init scripts
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rootdir/etc/init.recovery.qcom.rc:recovery/root/init.recovery.qcom.rc
+
+# Recovery touch. The controller keeps running without an upgrade file, but placing the stock
+# firmware in the vendor ramdisk lets the source-built FocalTech driver verify/update it at probe.
+PRODUCT_COPY_FILES += \
+    vendor/nothing/metroid/proprietary/vendor/firmware/focaltech_ts_fw_boe.bin:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/lib/firmware/focaltech_ts_fw_boe.bin
+
+# NOTE on recovery adb authorization (2026-07-30): recovery's /adb_keys is a symlink to
+# /product/etc/security/adb_keys, which does not exist (PRODUCT_ADB_KEYS is unset) and /product is
+# not mounted in recovery mode — so recovery adb is always "unauthorized". Do NOT "fix" that with
+# PRODUCT_ADB_KEYS or a PRODUCT_COPY_FILES of a developer key: this is a userdebug product, so the
+# key would ship inside the public OTA zip and let that one machine adb into every user's recovery.
+# For local debugging, repack the built recovery.img with a real /adb_keys instead — see
+# DIAGNOSE_SIDELOAD_FAILURE.sh. Sideload itself does not need authorization.
 
 # === b19: QCOM HAL services whose .rc is shipped as a Nothing blob but whose BINARY is
 # NOT in proprietary-files.txt (init had a dangling .rc -> service never started).
@@ -129,9 +205,18 @@ $(call inherit-product-if-exists, vendor/nothing/metroid/metroid-vendor.mk)
 # Bring-up build21: no_fatal blanket for observability (keep device up past ~29s for adb)
 PRODUCT_COPY_FILES += $(LOCAL_PATH)/rootdir/etc/init.bringup_nofatal.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.bringup_nofatal.rc
 
-# Bring-up build23: copy fstab.qcom to vendor partition and ramdisks (first-stage mount)
+# /vendor/etc/fstab.default is REQUIRED, not just the ramdisk copy.
+#
+# /data is a `latemount`, so it is mounted by VOLD, not by first-stage init — and vold reads
+# /vendor/etc/fstab.<ro.boot.fstab_suffix>, i.e. /vendor/etc/fstab.default. Until 2026-07-29 this
+# tree only installed fstab.qcom there, so vold fell back to a stale blob copy with no encryption
+# directives and reported ro.crypto.state=unsupported, even though the first-stage ramdisk fstab
+# had the correct fileencryption= flags and /data was mounted with inlinecrypt. The FBE settings
+# have to be in BOTH places.
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rootdir/etc/fstab.qcom:$(TARGET_COPY_OUT_VENDOR)/etc/fstab.qcom \
+    $(LOCAL_PATH)/rootdir/etc/fstab.default:$(TARGET_COPY_OUT_VENDOR)/etc/fstab.default \
+    $(LOCAL_PATH)/rootdir/etc/fstab.emmc:$(TARGET_COPY_OUT_VENDOR)/etc/fstab.emmc \
     $(LOCAL_PATH)/rootdir/etc/fstab.qcom:$(TARGET_COPY_OUT_RAMDISK)/fstab.qcom \
     $(LOCAL_PATH)/rootdir/etc/fstab.qcom:$(TARGET_COPY_OUT_RAMDISK)/first_stage_ramdisk/fstab.qcom \
     vendor/nothing/metroid/proprietary/vendor/lib64/libkeymaster_messages.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libkeymaster_messages.so \
@@ -148,12 +233,8 @@ PRODUCT_COPY_FILES += \
     vendor/nothing/metroid/proprietary/vendor/etc/audio/sku_tuna/default_volume_tables.xml:$(TARGET_COPY_OUT_VENDOR)/etc/default_volume_tables.xml
 
 
-# Bring-up: persistent boot-log capture (dmesg + logcat -> /mnt/vendor/nt_log, survives ~29s reset; no USB)
-PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/rootdir/etc/init.ntcap.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.ntcap.rc \
-    $(LOCAL_PATH)/rootdir/etc/init.bootwatchdog.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.bootwatchdog.rc \
-    $(LOCAL_PATH)/rootdir/bin/bootwatchdog.sh:$(TARGET_COPY_OUT_VENDOR)/bin/bootwatchdog.sh \
-    $(LOCAL_PATH)/rootdir/bin/ntcap.sh:$(TARGET_COPY_OUT_VENDOR)/bin/ntcap.sh
+# (bring-up ntcap/bootwatchdog boot-log capture removed 2026-07-28 — it was the single
+# largest source of SELinux denials (~5000) and is not wanted in a build people flash)
 
 # gralloc mapper VINTF fragment (standalone, matches stock layout — NOT inlined into
 # manifest.xml, since AOSP libui's openDeclaredPassthroughHal only resolves standalone
@@ -163,9 +244,12 @@ PRODUCT_COPY_FILES += \
 # mapper.qti.xml dropped 2026-07-10: qcom-caf gralloc source (mapper.qti) now provides the
 # same fragment -> fsgen packaging conflict; the standalone-fragment fix was proven ineffective
 # anyway (see metroid-mapper-vintf-fix-attempt-20260706).
-PRODUCT_PACKAGES += wifi-service.metroid.xml audio_qti_services.metroid.xml audio_effects.metroid.xml hal_batch1.metroid.xml hal_batch2.metroid.xml hal_batch3.metroid.xml camera_provider.metroid.xml
-# batch 4 (2026-07-10, live-verified): radio HALs + clearkey + qspa VINTF declarations
-PRODUCT_PACKAGES += android.hardware.radio.config.metroid4.xml android.hardware.radio.data.metroid4.xml android.hardware.radio.messaging.metroid4.xml android.hardware.radio.modem.metroid4.xml android.hardware.radio.network.metroid4.xml android.hardware.radio.sim.metroid4.xml android.hardware.radio.voice.metroid4.xml android.hardware.drm-service.clearkey.metroid4.xml vendor.qti.qspa-service.metroid4.xml
+PRODUCT_PACKAGES += hal_batch1.metroid.xml hal_batch2.metroid.xml hal_batch3.metroid.xml camera_provider.metroid.xml
+# batch 4 (2026-07-10, live-verified): radio HALs + qspa VINTF declarations.
+# clearkey dropped 2026-07-29: AOSP's own clearkey service already installs this exact fragment
+# (frameworks/av/drm/mediadrm/plugins/clearkey/aidl), so ours was a duplicate installing to the
+# same path. BUILD_BROKEN_DUP_RULES had been hiding it.
+PRODUCT_PACKAGES += android.hardware.radio.config.metroid4.xml android.hardware.radio.data.metroid4.xml android.hardware.radio.messaging.metroid4.xml android.hardware.radio.modem.metroid4.xml android.hardware.radio.network.metroid4.xml android.hardware.radio.sim.metroid4.xml android.hardware.radio.voice.metroid4.xml
 
 # Force copy missing proprietary files
 $(call inherit-product-if-exists, device/nothing/metroid/proprietary_force_copy.mk)

@@ -204,7 +204,6 @@ PRODUCT_COPY_FILES += \
     vendor/nothing/metroid/proprietary/vendor/lib64/libaudioaidlcommon.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libaudioaidlcommon.so \
     vendor/nothing/metroid/proprietary/vendor/lib64/libaudio_aidl_conversion_common_ndk.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libaudio_aidl_conversion_common_ndk.so \
     vendor/nothing/metroid/proprietary/vendor/lib64/libbluetooth_audio_session_aidl.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libbluetooth_audio_session_aidl.so \
-    vendor/nothing/metroid/proprietary/vendor/lib64/libclang_rt.ubsan_standalone-aarch64-android.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libclang_rt.ubsan_standalone-aarch64-android.so \
     vendor/nothing/metroid/proprietary/vendor/lib64/libflatbuffers-cpp.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libflatbuffers-cpp.so \
     vendor/nothing/metroid/proprietary/vendor/lib64/libmediautils_vendor.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libmediautils_vendor.so \
     vendor/nothing/metroid/proprietary/vendor/lib64/libmemunreachable.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libmemunreachable.so \

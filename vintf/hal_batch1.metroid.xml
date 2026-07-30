@@ -36,16 +36,7 @@
         <fqname>IDspService/default</fqname>
     </hal>
     <hal format="aidl">
-        <name>android.hardware.sensors</name>
-        <version>2</version>
-        <fqname>ISensors/default</fqname>
-    </hal>
-    <hal format="aidl">
         <name>vendor.qti.qspmhal</name>
         <fqname>IQspmhal/default</fqname>
-    </hal>
-    <hal format="aidl">
-        <name>android.hardware.memtrack</name>
-        <fqname>IMemtrack/default</fqname>
     </hal>
 </manifest>

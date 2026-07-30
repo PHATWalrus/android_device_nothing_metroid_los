@@ -12,3 +12,8 @@ vendor_public_prop(vendor_sno_prop)
 
 # Thermal
 vendor_public_prop(vendor_thermal_normal_prop)
+
+# metroid 2026-07-28: props hit while bringing SELinux to enforcing. These MUST have their own
+# types — AOSP has a neverallow forbidding vendor domains from touching default_prop, so
+# set_prop(hal_fingerprint_default, default_prop) fails the build rather than the boot.
+vendor_internal_prop(vendor_fingerprint_prop)

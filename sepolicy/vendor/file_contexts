@@ -47,8 +47,6 @@
 /data/vendor/mbnconfig(/.*)? u:object_r:vendor_firmware_data_file:s0
 
 # Persistent logging
-/vendor/bin/ntcap\.sh u:object_r:ntcap_exec:s0
-/(vendor|system/vendor)/bin/bootwatchdog\.sh   u:object_r:ntcap_exec:s0
 
 # Nothing's camera HAL shim had no label, so it inherited vendor_file and init exec'd it WITHOUT a
 # domain transition -- it ran as u:r:init:s0. Every binder call it made was then attributed to init,
@@ -56,3 +54,19 @@
 # "init -> vendor_file : file : execute{,_no_trans}" denials came from. It is an ordinary camera
 # provider, so give it the standard AOSP camera HAL domain.
 /(vendor|system/vendor)/bin/hw/vendor\.noth\.hardware\.camera-service    u:object_r:hal_camera_default_exec:s0
+
+# HAL/vendor binaries that shipped with NO SELinux label (2026-07-29).
+#
+# Unlabeled binaries inherit vendor_file, and under ENFORCING init refuses to exec them:
+#   "Could not start service 'vendor.power.stats-default' as part of class 'hal': File
+#    /vendor/bin/hw/android.hardware.power.stats-service (labeled "u:object_r:vendor_file:s0")
+#    has incorrect label or no domain transition from u:r:init:s0"
+# Under permissive they silently ran as u:r:init:s0, so nothing looked wrong.
+#
+# power.stats is the one that actually blocked boot: with no IPowerStats, system_server retried
+# it as a lazy AIDL service forever and crash-looped (sys.system_server.crash=1), so
+# sys.boot_completed was never set. AOSP labels this domain already — it just does not match
+# Nothing's binary name (AOSP expects *-service.example / @1.0-service).
+/(vendor|system/vendor)/bin/hw/android\.hardware\.power\.stats-service    u:object_r:hal_power_stats_default_exec:s0
+/(vendor|system/vendor)/bin/ft_diag_test    u:object_r:vendor_ft_diag_test_exec:s0
+/(vendor|system/vendor)/bin/st_getcplc      u:object_r:vendor_getcplc_exec:s0

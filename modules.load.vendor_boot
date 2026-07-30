@@ -115,3 +115,17 @@ nothing_virtual_ntc.ko
 qrtr.ko
 qrtr-gunyah.ko
 ipclite.ko
+touchpanel_event_notify.ko
+panel_event_notifier.ko
+nt_display_notifier.ko
+sync_fence.ko
+msm_hw_fence.ko
+msm-mmrm.ko
+synx-driver.ko
+drm_display_helper.ko
+drm_dp_aux_bus.ko
+msm_ext_display.ko
+wl28681-regulator.ko
+qti-fixed-regulator.ko
+qcom-amoled-regulator.ko
+msm_drm.ko

@@ -28,3 +28,8 @@ genfscon sysfs /devices/platform/soc/soc:qcom,dsi-display-primary/wakeup u:objec
 
 # Walt
 genfscon proc /sys/walt u:object_r:proc_walt:s0
+
+# UFS block-queue nodes. init reads .../block/sda/mq/0/nr_tags at boot; unlabeled it falls back to
+# plain sysfs, which init is neverallow'd from opening. sysfs_devices_block is the type AOSP uses
+# for /devices/virtual/block.
+genfscon sysfs /devices/platform/soc/1d84000.ufshc/host0/target0:0:0/0:0:0:0/block u:object_r:sysfs_devices_block:s0

@@ -1347,8 +1347,6 @@ vendor/etc/felica/mfs.cfg
 vendor/etc/first_zramwriteback.fstab
 vendor/etc/fs_config_dirs
 vendor/etc/fs_config_files
-vendor/etc/fstab.default
-vendor/etc/fstab.emmc
 vendor/etc/ftm_test_config
 vendor/etc/ftm_test_config_kera-mtp-qmp-snd-card
 vendor/etc/ftm_test_config_kera-mtp-snd-card
@@ -3036,7 +3034,6 @@ vendor/lib64/libchilog.so
 vendor/lib64/libchinodeevautils.so
 vendor/lib64/libchinodehmeutils.so
 vendor/lib64/libchrome.so
-vendor/lib64/libclang_rt.ubsan_standalone-aarch64-android.so
 vendor/lib64/libcld80211.so
 vendor/lib64/libclstc_algorithm_adapter.so
 vendor/lib64/libclstc_gcp_adapter.so
@@ -3345,8 +3342,6 @@ vendor/lib64/libprocessgroup.so
 vendor/lib64/libprocomp.so
 vendor/lib64/libproj_qmot_tracker.so
 vendor/lib64/libproj_sot.so
-vendor/lib64/libprotobuf-cpp-full-21.12.so
-vendor/lib64/libprotobuf-cpp-lite-21.12.so
 vendor/lib64/libpsi.so
 vendor/lib64/libpsmoptfeature.so
 vendor/lib64/libq-perflog.so

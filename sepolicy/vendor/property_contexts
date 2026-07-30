@@ -27,3 +27,10 @@ ro.vendor.oem.sno u:object_r:vendor_sno_prop:s0
 # Thermal
 vendor.sys.thermal.bcl.boot_completed u:object_r:vendor_thermal_normal_prop:s0
 vendor.sys.thermal.data.path u:object_r:vendor_thermal_normal_prop:s0
+
+# Fingerprint HAL (goodix) — set at runtime by hal_fingerprint_default.
+# Only the persist.vendor.* names can live here: vendor property_contexts may label ONLY
+# vendor-prefixed properties (check_prop_prefix, enforced by VTS). gf.debug.fp_serial and
+# system.face.* are not vendor-namespaced and are handled with dontaudit in enforcing.te.
+persist.vendor.overlay.fp_model u:object_r:vendor_fingerprint_prop:s0
+persist.vendor.overlay.fp_vendor u:object_r:vendor_fingerprint_prop:s0

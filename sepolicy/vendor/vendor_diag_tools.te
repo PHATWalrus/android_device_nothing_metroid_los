@@ -1,0 +1,17 @@
+# Two vendor tools that ship with no SELinux label, found while bringing the device to enforcing
+# (2026-07-29). Neither blocks boot — unlike vendor.power.stats-default — but with no domain init
+# refuses to exec them under enforcing, so they would silently never run.
+#
+#   ft_diag_test     /vendor/bin/ft_diag_test   factory diag test
+#   getcplc_service  /vendor/bin/st_getcplc     ST secure-element CPLC reader (ST54L eSE)
+#
+# Minimal domains: enough to exec and log. Anything else they need will show up as a denial and
+# can be added deliberately, rather than granting broad access up front.
+
+type vendor_ft_diag_test, domain;
+type vendor_ft_diag_test_exec, exec_type, vendor_file_type, file_type;
+init_daemon_domain(vendor_ft_diag_test)
+
+type vendor_getcplc, domain;
+type vendor_getcplc_exec, exec_type, vendor_file_type, file_type;
+init_daemon_domain(vendor_getcplc)

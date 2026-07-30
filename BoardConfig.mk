@@ -43,16 +43,10 @@ QCOM_BOARD_PLATFORMS := $(TARGET_SOC)
 TARGET_BOARD_PLATFORM_GPU := Adreno-825
 
 # Display
-TW_THEME := portrait_hdpi
 TARGET_SCREEN_DENSITY := 460
 TARGET_SCREEN_HEIGHT := 1260
 TARGET_SCREEN_WIDTH := 2800
-TW_MAX_BRIGHTNESS := 4500
-TW_DEFAULT_BRIGHTNESS := 2000
 TARGET_USES_VULKAN := true
-TW_FRAMERATE := 144
-TARGET_RECOVERY_PIXEL_FORMAT := "RGBX_8888"
-TW_BRIGHTNESS_PATH := "/sys/class/backlight/panel0-backlight/brightness"
 
 # Board
 BOARD_USES_QCOM_HARDWARE := true
@@ -61,7 +55,27 @@ BOARD_NO_RADIOIMAGE := true
 # Allow prebuilt ELF .so blobs shipped via PRODUCT_COPY_FILES
 BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
 
-# Allow partition-specific selinux overrides (odm selinux auto-generation collision)
+# BUILD_BROKEN_DUP_RULES: still needed, but ONLY because of an AOSP-side duplicate.
+#
+# Turning it off on 2026-07-29 surfaced six real duplicate-install bugs in this tree, all now
+# fixed (see below). After those, the only remaining collision is inside AOSP itself —
+# system_ext/etc/aconfig/flag.info, defined by both build/make/core/Makefile:146 and
+# build/make/core/packaging/flags.mk:169 — which is not ours to fix, so the flag goes back on.
+#
+# Real bugs it had been hiding, all fixed:
+#   1. stock fstab.default blob shadowed the device-tree copy -> vold saw no fileencryption and
+#      FBE silently fell back to plaintext (ro.crypto.state=unsupported)
+#   2. stock fstab.emmc blob, same pattern
+#   3. our hand-made android.hardware.drm-service.clearkey.xml duplicated AOSP's own fragment
+#   4. our mapper.qti.xml duplicated the one from hardware/qcom-caf/.../gralloc (this one had
+#      already been "dropped" in a comment on 07-10 but the module was never actually removed)
+#   5. our vendor.qti.qspa-service.xml duplicated core-utils-vendor's
+#   6. libprotobuf-cpp-{full,lite}-21.12 and libclang_rt.ubsan_standalone shipped as blobs while
+#      the platform builds the same sonames from source
+#
+# Periodically re-test by commenting this out and running a build; anything new it catches is a
+# genuine bug, not noise. Duplicate destinations are how the sepolicy clobber (07-25) and the FBE
+# failure (07-29) both hid in plain sight.
 BUILD_BROKEN_DUP_RULES := true
 
 # Allow missing required modules (e.g. prebuilt_libqcomfm_jni:64 required by FM2)
@@ -79,34 +93,70 @@ BOARD_KERNEL_OFFSET := 0x00008000
 BOARD_RAMDISK_OFFSET := 0x01000000
 BOARD_TAGS_OFFSET := 0x00000100
 BOARD_DTB_OFFSET := 0x01f00000
-# androidboot.init_fatal_reboot_target=recovery: an init FATAL then boots RECOVERY (which has adb)
-# instead of dropping to fastboot or hanging with no USB. Without it a failed bring-up boot is
-# unrecoverable without physically holding buttons, and unreadable. Re-added 2026-07-25 after two
-# such hangs. Keep this for bring-up; drop it for release builds.
-BOARD_KERNEL_CMDLINE := bootopt=64S3,32N2,64N2 erofs.reserved_pages=64 nosoftlockup log_buf_len=1M ignore_loglevel printk.devkmsg=on androidboot.init_fatal_reboot_target=recovery androidboot.selinux=permissive
+# androidboot.init_fatal_reboot_target=recovery: REMOVED 2026-07-29. It was a bring-up aid (an init
+# FATAL booted recovery, which has adb, instead of dropping to fastboot). It caused THREE recovery
+# bootloops before being identified: in recovery mode a fatal init error reboots to recovery, which
+# fails again, forever. It does this to ANY recovery image — a known-good OrangeFox build looped
+# identically, which is what finally isolated it. Init's default target is "bootloader", so without
+# this flag a failing recovery lands in fastboot on its own: recoverable AND diagnosable.
+# Do not re-add it. Use a per-boot `fastboot boot` override if a bring-up aid is ever needed again.
+#
+# selinux: androidboot.selinux=permissive was removed from BOTH this line and BOARD_BOOTCONFIG on
+# 2026-07-28. It was set in two places, so removing only one had no effect.
+#
+# The first three tokens are NOT optional and were missing until 2026-07-28. For boot header v4
+# this string becomes the *vendor_boot* cmdline, but vendor_boot used to be a prebuilt, so this
+# variable only ever fed boot.img and nobody noticed it did not match. The stock/known-good
+# vendor_boot cmdline carries:
+#     video=vfb:640x400,bpp=32,memsize=3072000   framebuffer geometry
+#     qcom_geni_serial.con_enabled=0             this board has no usable UART
+#     console=ttynull                            with ignore_loglevel + printk.devkmsg=on and no
+#                                                console, boot stalls before init
+# Building vendor_boot from source without them hangs on the Nothing logo.
+BOARD_KERNEL_CMDLINE := video=vfb:640x400,bpp=32,memsize=3072000 qcom_geni_serial.con_enabled=0 console=ttynull bootopt=64S3,32N2,64N2 erofs.reserved_pages=64 nosoftlockup log_buf_len=1M ignore_loglevel printk.devkmsg=on androidboot.load_modules_parallel=false
 BOARD_KERNEL_IMAGE_NAME := Image
 
 # Bootconfig
+#
+# load_modules_parallel: the stock bootconfig says true, but the vendor_boot image that is known
+# to boot on this device overrides it to false on its kernel cmdline. With 341 ramdisk modules,
+# matching the known-good value is not worth gambling on.
+# NOTE: no comments inside the list below — this is a plain Make variable, so anything in it is
+# concatenated verbatim into the image's bootconfig.
 BOARD_BOOTCONFIG := \
     androidboot.hardware=qcom \
     androidboot.memcg=1 \
     androidboot.usbcontroller=a600000.dwc3 \
-    androidboot.load_modules_parallel=true \
+    androidboot.load_modules_parallel=false \
     androidboot.hypervisor.protected_vm.supported=true \
     androidboot.vendor.qspa=true \
     androidboot.serialconsole=0 \
-    androidboot.selinux=permissive \
-    androidboot.init_fatal_reboot_target=recovery
+    androidboot.selinux=enforcing
 
-# Kernel - prebuilt
+# Kernel
+#
+# The GKI Image is a genuine Google prebuilt (6.6.102-android15-8, ab14350911), which the charter
+# permits for GKI devices. EVERYTHING else — 311 of the 313 vendor_dlkm modules, the whole
+# vendor_boot ramdisk module set, dtb.img and dtbo.img — is generated from the Nothing GPL kernel
+# source by kernel/stage_kernel_artifacts.sh into kernel/out/ (gitignored). See kernel/gki/README.md
+# for why the GKI modules stay prebuilt, and kernel/prebuilt-modules/README.md for the 2 ST NFC
+# modules Nothing has not published. Source tree is upstream/kernel_nothingoss_b16 (NOT
+# kernel_nothingoss — that one is 6.6.57 and its modules are rejected at first stage).
+#
+# kernel/out/ must exist before a build: run kernel/stage_kernel_artifacts.sh first.
 TARGET_KERNEL_VERSION := 6.6
 TARGET_FORCE_PREBUILT_KERNEL := true
-TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/prebuilt/kernel
-TARGET_PREBUILT_DTB := $(DEVICE_PATH)/prebuilt/dtb.img
+TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/kernel/gki/Image
+TARGET_PREBUILT_DTB := $(DEVICE_PATH)/kernel/out/dtb.img
 TARGET_PREBUILT_KERNEL_HEADERS := $(DEVICE_PATH)/prebuilt/kernel-headers.tar.gz
-BOARD_PREBUILT_DTBOIMAGE := device/nothing/metroid-kernel/dtbo.img
-BOARD_PREBUILT_INIT_BOOT_IMAGE := device/nothing/metroid-kernel/init_boot.img
-BOARD_PREBUILT_VENDOR_BOOTIMAGE := device/nothing/metroid-kernel/vendor_boot.img
+BOARD_PREBUILT_DTBOIMAGE := $(DEVICE_PATH)/kernel/out/dtbo.img
+
+# vendor_boot and init_boot are BUILT, not pinned. The prebuilt pins that used to live here
+# (metroid-kernel/{vendor_boot,init_boot}.img) meant the ramdisk module set could never change
+# without hand-repacking an image.
+BOARD_VENDOR_RAMDISK_KERNEL_MODULES := $(wildcard $(DEVICE_PATH)/kernel/out/vendor_ramdisk/*.ko)
+BOARD_VENDOR_RAMDISK_KERNEL_MODULES_LOAD := $(shell cat $(DEVICE_PATH)/modules.load.vendor_boot 2>/dev/null)
+BOARD_VENDOR_RAMDISK_RECOVERY_KERNEL_MODULES_LOAD := $(shell cat $(DEVICE_PATH)/modules.load.recovery 2>/dev/null)
 
 BOARD_MKBOOTIMG_ARGS += --dtb $(TARGET_PREBUILT_DTB)
 BOARD_MKBOOTIMG_ARGS += --header_version $(BOARD_BOOT_HEADER_VERSION)
@@ -182,42 +232,53 @@ TARGET_VENDOR_PROP += $(DEVICE_PATH)/vendor.prop
 
 # Recovery
 BOARD_EXCLUDE_KERNEL_FROM_RECOVERY_IMAGE := true
-TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/rootdir/etc/fstab.qcom
+# NOTE: TARGET_RECOVERY_FSTAB is set once, below, to recovery.fstab. It used to be set
+# here as well (to rootdir/etc/fstab.qcom) and silently overridden — last assignment wins.
 TARGET_RECOVERY_QCOM_RTC_FIX := true
 BOARD_HAS_LARGE_FILESYSTEM := true
 BOARD_USES_GENERIC_KERNEL_IMAGE := true
-BOARD_HAS_NO_SELECT_BUTTON := true
+# BOARD_HAS_NO_SELECT_BUTTON removed 2026-07-30: dead TWRP-era variable (zero references in
+# build/, bootable/, vendor/lineage/ or system/core/), and it made the recovery key handling look
+# configured when nothing read it. This device DOES have a select button — POWER, on pmic_pwrkey.
+# The real reason recovery keys did not work was minui's MAX_DEVICES cap; see minui/events.cpp.
 BOARD_SUPPRESS_SECURE_ERASE := true
 RECOVERY_SDCARD_ON_DATA := true
 TARGET_RECOVERY_PIXEL_FORMAT := RGBX_8888
 TARGET_USERIMAGES_USE_EXT4 := true
 TARGET_USERIMAGES_USE_F2FS := true
 
-# Recovery kernel modules
-BOARD_RECOVERY_KERNEL_MODULES := \
-    $(wildcard device/nothing/metroid-kernel/vendor_dlkm/*.ko)
+# Recovery kernel modules: NONE — deliberately (2026-07-30).
+#
+# Every recovery that has ever booted on this device ships ZERO modules in the recovery ramdisk:
+# stock, OrangeFox R11.3 (its 29 modules load from its own scripts, not first-stage), and our own
+# June-era LOS recovery (extracted_20260620, booted with working UI/keys). Our broken builds were
+# the only ones shipping first-stage modules (earlier 341, then 29 "curated" incl. qcom_q6v5_pas
+# remoteproc and touch drivers). In recovery mode the recovery ramdisk's modules.dep also
+# OVERWRITES the vendor_boot ramdisk's during ramdisk merge, corrupting first-stage module
+# resolution. First-stage modules come from the vendor_boot ramdisk alone, as on stock.
+# Do NOT re-add BOARD_RECOVERY_KERNEL_MODULES.
 
 
 # Verified Boot
 BOARD_AVB_ENABLE := true
 BOARD_AVB_MAKE_VBMETA_IMAGE_ARGS += --flags 3
-BOARD_AVB_ALGORITHM := SHA256_RSA2048
-BOARD_AVB_KEY_PATH := external/avb/test/data/testkey_rsa2048.pem
+BOARD_AVB_ALGORITHM := SHA256_RSA4096
+BOARD_AVB_KEY_PATH := vendor/lineage-priv/keys/avb.pem
 BOARD_MOVE_GSI_AVB_KEYS_TO_VENDOR_BOOT := true
 
-BOARD_AVB_BOOT_KEY_PATH := external/avb/test/data/testkey_rsa2048.pem
-BOARD_AVB_BOOT_ALGORITHM := SHA256_RSA2048
+BOARD_AVB_BOOT_KEY_PATH := vendor/lineage-priv/keys/avb.pem
+BOARD_AVB_BOOT_ALGORITHM := SHA256_RSA4096
 BOARD_AVB_BOOT_ROLLBACK_INDEX := $(PLATFORM_SECURITY_PATCH_TIMESTAMP)
 BOARD_AVB_BOOT_ROLLBACK_INDEX_LOCATION := 3
 
-BOARD_AVB_RECOVERY_KEY_PATH := external/avb/test/data/testkey_rsa2048.pem
-BOARD_AVB_RECOVERY_ALGORITHM := SHA256_RSA2048
+BOARD_AVB_RECOVERY_KEY_PATH := vendor/lineage-priv/keys/avb.pem
+BOARD_AVB_RECOVERY_ALGORITHM := SHA256_RSA4096
 BOARD_AVB_RECOVERY_ROLLBACK_INDEX := $(PLATFORM_SECURITY_PATCH_TIMESTAMP)
 BOARD_AVB_RECOVERY_ROLLBACK_INDEX_LOCATION := 1
 
 BOARD_AVB_VBMETA_SYSTEM := system system_ext product
-BOARD_AVB_VBMETA_SYSTEM_KEY_PATH := external/avb/test/data/testkey_rsa2048.pem
-BOARD_AVB_VBMETA_SYSTEM_ALGORITHM := SHA256_RSA2048
+BOARD_AVB_VBMETA_SYSTEM_KEY_PATH := vendor/lineage-priv/keys/avb.pem
+BOARD_AVB_VBMETA_SYSTEM_ALGORITHM := SHA256_RSA4096
 BOARD_AVB_VBMETA_SYSTEM_ROLLBACK_INDEX := $(PLATFORM_SECURITY_PATCH_TIMESTAMP)
 BOARD_AVB_VBMETA_SYSTEM_ROLLBACK_INDEX_LOCATION := 2
 
@@ -229,8 +290,8 @@ BOARD_AVB_VBMETA_SYSTEM_ROLLBACK_INDEX_LOCATION := 2
 # This replaces the out-of-tree scripts/build_dlkmfix.sh, which hand-rolled the same vbmeta with
 # `avbtool make_vbmeta_image --include_descriptors_from_image`.
 BOARD_AVB_VBMETA_VENDOR := vendor vendor_dlkm system_dlkm odm
-BOARD_AVB_VBMETA_VENDOR_KEY_PATH := external/avb/test/data/testkey_rsa2048.pem
-BOARD_AVB_VBMETA_VENDOR_ALGORITHM := SHA256_RSA2048
+BOARD_AVB_VBMETA_VENDOR_KEY_PATH := vendor/lineage-priv/keys/avb.pem
+BOARD_AVB_VBMETA_VENDOR_ALGORITHM := SHA256_RSA4096
 BOARD_AVB_VBMETA_VENDOR_ROLLBACK_INDEX := $(PLATFORM_SECURITY_PATCH_TIMESTAMP)
 BOARD_AVB_VBMETA_VENDOR_ROLLBACK_INDEX_LOCATION := 4
 
@@ -242,57 +303,32 @@ BOARD_AVB_SYSTEM_DLKM_ADD_HASHTREE_FOOTER_ARGS += --hash_algorithm sha256
 #PLATFORM_SECURITY_PATCH := 2099-12-31
 #VENDOR_SECURITY_PATCH := 2099-12-31
 #PLATFORM_VERSION := 12
-TW_INCLUDE_CRYPTO := false
-TW_INCLUDE_CRYPTO_FBE := false
 BOARD_USES_QCOM_FBE_DECRYPTION := true
-TW_INCLUDE_FBE_METADATA_DECRYPT := true
 BOARD_USES_METADATA_PARTITION := true
 
-# TWRP Configs
-TW_EXCLUDE_APEX := true
-TW_EXTRA_LANGUAGES := true
-TW_THEME := portrait_hdpi
 TARGET_USES_MKE2FS := true
-TW_NO_BIND_SYSTEM := true
-TW_NO_HAPTICS := true
-TW_USE_NEW_MINADBD := true
-TW_SCREEN_BLANK_ON_BOOT := true
-TW_USE_MODEL_HARDWARE_ID_FOR_DEVICE_ID := true
-TW_DEVICE_VERSION := SavedByLight Metroid
-TW_BACKUP_EXCLUSIONS := /data/fonts
-TW_USE_TOOLBOX := true
 TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/recovery.fstab
 
 # Tools
-TW_INCLUDE_FB2PNG := true
-TW_INCLUDE_NTFS_3G := true
-TW_INCLUDE_REPACKTOOLS := true
-TW_INCLUDE_RESETPROP := true
-TW_INCLUDE_LPTOOLS := true
-TW_INCLUDE_LPDUMP := true
-TW_INCLUDE_LIBRESETPROP := true
-TW_EXCLUDE_DEFAULT_USB_INIT := true
 
 # log
-TWRP_EVENT_LOGGING := true
-TWRP_INCLUDE_LOGCAT := true
 TARGET_USES_LOGD := true
 
 # vendor_boot
-TW_LOAD_VENDOR_BOOT_MODULES := true
 
 # Statusbar icons flags
-TW_STATUS_ICONS_ALIGN := center
-TW_CUSTOM_CPU_POS := 580
-TW_CUSTOM_CLOCK_POS := 50
-TW_CUSTOM_BATTERY_POS := 800
 
 # Treble
 PRODUCT_ENFORCE_VINTF_MANIFEST := true
 PRODUCT_FULL_TREBLE := true
 
 # VINTF
-DEVICE_MANIFEST_FILE := device/nothing/metroid/configs/hidl/manifest.xml hardware/qcom-caf/sm8750/audio/primary-hal/hal/core/manifest_audiocoreservices_qti.xml
+# manifest_audiocoreservices_qti.xml removed 2026-07-29: the audio core HAL package installs its
+# own fragment (manifest_audiocorehal_default.xml), so listing it here declared
+# android.hardware.audio.core IConfig/IModule twice and checkvintf rejected the whole device
+# manifest ("Conflicting FqInstance"). Only `bacon` runs checkvintf — plain image builds do not —
+# which is why this only surfaced when packaging the release zip.
+DEVICE_MANIFEST_FILE := device/nothing/metroid/configs/hidl/manifest.xml
 
 # Vendor board config (generated by setup-makefiles.sh)
 -include vendor/nothing/metroid/BoardConfigVendor.mk

@@ -8,6 +8,9 @@ $(call inherit-product, vendor/lineage/config/common_full_phone.mk)
 # Inherit from metroid device
 $(call inherit-product, device/nothing/metroid/device.mk)
 
+# Sign with our own release keys, not AOSP's public testkey (anyone can forge updates for that).
+$(call inherit-product-if-exists, vendor/lineage-priv/keys/keys.mk)
+
 PRODUCT_NAME := lineage_metroid
 PRODUCT_DEVICE := metroid
 PRODUCT_MANUFACTURER := Nothing

@@ -28,3 +28,30 @@ install_symlink {
     symlink_target: "/vendor/etc/wifi/wcn7750/WCNSS_qcom_cfg.ini",
 }
 
+
+// Empty mount-point directories for the firmware partitions. See device.mk for why these exist.
+// install_symlink is used purely to force the directory into vendor.img — soong has no way to
+// declare an empty dir for the vendor partition (fsgen only sets Dirs for system/ramdisk/recovery),
+// prebuilt_root refuses relative_install_path, and PRODUCT_COPY_FILES becomes a prebuilt_etc that
+// cannot escape <partition>/etc. The symlink itself is meaningless and is shadowed the moment the
+// real partition mounts over it.
+install_symlink {
+    name: "metroid_mountpoint_firmware_mnt",
+    vendor: true,
+    installed_location: "firmware_mnt/.mountpoint",
+    symlink_target: "/dev/null",
+}
+
+install_symlink {
+    name: "metroid_mountpoint_dsp",
+    vendor: true,
+    installed_location: "dsp/.mountpoint",
+    symlink_target: "/dev/null",
+}
+
+install_symlink {
+    name: "metroid_mountpoint_bt_firmware",
+    vendor: true,
+    installed_location: "bt_firmware/.mountpoint",
+    symlink_target: "/dev/null",
+}
