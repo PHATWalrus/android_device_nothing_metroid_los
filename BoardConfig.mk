@@ -17,7 +17,10 @@ AB_OTA_PARTITIONS += \
     odm \
     recovery \
     product \
-    dtbo
+    dtbo \
+    vbmeta \
+    vbmeta_system \
+    vbmeta_vendor
 
 # Architecture
 TARGET_ARCH := arm64
@@ -261,7 +264,6 @@ TARGET_USERIMAGES_USE_F2FS := true
 
 # Verified Boot
 BOARD_AVB_ENABLE := true
-BOARD_AVB_MAKE_VBMETA_IMAGE_ARGS += --flags 3
 BOARD_AVB_ALGORITHM := SHA256_RSA4096
 BOARD_AVB_KEY_PATH := vendor/lineage-priv/keys/avb.pem
 BOARD_MOVE_GSI_AVB_KEYS_TO_VENDOR_BOOT := true
