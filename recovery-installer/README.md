@@ -15,6 +15,11 @@ Nothing OS B4.1 firmware baseline. The scripts:
 - activate slot A, clear stale recovery commands from `misc`, and reboot to
   Lineage Recovery.
 
+Treat the bootstrap as one uninterrupted operation. Both slots are updated so
+the boot and AVB chain remains coherent regardless of the slot selected by the
+subsequent A/B OTA. If any fastboot command fails or the cable disconnects, do
+not reboot Android; stop and use the documented stock recovery procedure.
+
 Do not mix a bootstrap bundle with a ROM ZIP from another build. Do not reboot
 Android after bootstrapping until the matching full OTA has installed
 successfully from Lineage Recovery.

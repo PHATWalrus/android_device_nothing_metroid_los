@@ -28,11 +28,18 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          fail() { echo "ERROR: $*" >&2; exit 1; }
+          tag_type="$(git cat-file -t "refs/tags/${GITHUB_REF_NAME}")"
+          [[ "${tag_type}" == tag ]] || fail "${GITHUB_REF_NAME} must be an annotated tag"
           tag_message="$(git for-each-ref "refs/tags/${GITHUB_REF_NAME}" --format='%(contents)')"
-          base_url="$(printf '%s\n' "${tag_message}" | sed -n 's/^asset-base-url=//p' | tail -1)"
-          manifest_sha256="$(printf '%s\n' "${tag_message}" | sed -n 's/^manifest-sha256=//p' | tail -1)"
-          [[ "${base_url}" == https://* ]]
-          [[ "${manifest_sha256}" =~ ^[0-9a-f]{64}$ ]]
+          mapfile -t base_urls < <(printf '%s\n' "${tag_message}" | sed -n 's/^asset-base-url=//p')
+          mapfile -t manifest_hashes < <(printf '%s\n' "${tag_message}" | sed -n 's/^manifest-sha256=//p')
+          [[ "${#base_urls[@]}" -eq 1 ]] || fail "tag message must contain exactly one asset-base-url= line"
+          [[ "${#manifest_hashes[@]}" -eq 1 ]] || fail "tag message must contain exactly one manifest-sha256= line"
+          base_url="${base_urls[0]}"
+          manifest_sha256="${manifest_hashes[0]}"
+          [[ "${base_url}" == https://* ]] || fail "asset-base-url must use HTTPS"
+          [[ "${manifest_sha256}" =~ ^[0-9a-f]{64}$ ]] || fail "manifest-sha256 must be 64 lowercase hexadecimal characters"
           echo "ASSET_BASE_URL=${base_url%/}" >> "${GITHUB_ENV}"
           echo "MANIFEST_SHA256=${manifest_sha256}" >> "${GITHUB_ENV}"
 
@@ -48,8 +55,8 @@ jobs:
             | sha256sum -c -
 
           while read -r expected filename; do
-            [[ "${expected}" =~ ^[0-9a-f]{64}$ ]]
-            [[ "${filename}" =~ ^[A-Za-z0-9._-]+$ ]]
+            [[ "${expected}" =~ ^[0-9a-f]{64}$ ]] || { echo "ERROR: malformed asset digest" >&2; exit 1; }
+            [[ "${filename}" =~ ^[A-Za-z0-9._-]+$ ]] || { echo "ERROR: unsafe asset filename: ${filename}" >&2; exit 1; }
             curl --fail --location --retry 8 --retry-all-errors \
               --output "release-assets/${filename}" \
               "${ASSET_BASE_URL}/${filename}"
