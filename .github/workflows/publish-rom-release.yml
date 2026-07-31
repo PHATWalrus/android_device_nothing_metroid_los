@@ -1,0 +1,68 @@
+name: Publish ROM release
+
+on:
+  push:
+    tags:
+      - "lineage-23.0-*"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: "release-${{ github.ref_name }}"
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    env:
+      GH_TOKEN: "${{ github.token }}"
+    steps:
+      - name: Check out tagged source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Read pinned asset source from annotated tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag_message="$(git for-each-ref "refs/tags/${GITHUB_REF_NAME}" --format='%(contents)')"
+          base_url="$(printf '%s\n' "${tag_message}" | sed -n 's/^asset-base-url=//p' | tail -1)"
+          manifest_sha256="$(printf '%s\n' "${tag_message}" | sed -n 's/^manifest-sha256=//p' | tail -1)"
+          [[ "${base_url}" == https://* ]]
+          [[ "${manifest_sha256}" =~ ^[0-9a-f]{64}$ ]]
+          echo "ASSET_BASE_URL=${base_url%/}" >> "${GITHUB_ENV}"
+          echo "MANIFEST_SHA256=${manifest_sha256}" >> "${GITHUB_ENV}"
+
+      - name: Download and verify release assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir release-assets
+          curl --fail --location --retry 8 --retry-all-errors \
+            --output release-assets/release-assets.sha256 \
+            "${ASSET_BASE_URL}/release-assets.sha256"
+          printf '%s  %s\n' "${MANIFEST_SHA256}" release-assets/release-assets.sha256 \
+            | sha256sum -c -
+
+          while read -r expected filename; do
+            [[ "${expected}" =~ ^[0-9a-f]{64}$ ]]
+            [[ "${filename}" =~ ^[A-Za-z0-9._-]+$ ]]
+            curl --fail --location --retry 8 --retry-all-errors \
+              --output "release-assets/${filename}" \
+              "${ASSET_BASE_URL}/${filename}"
+          done < release-assets/release-assets.sha256
+
+          (cd release-assets && sha256sum -c release-assets.sha256)
+
+      - name: Create GitHub prerelease
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release create "${GITHUB_REF_NAME}" release-assets/* \
+            --verify-tag \
+            --prerelease \
+            --title "LineageOS 23 for Nothing Phone (3) - ${GITHUB_REF_NAME}" \
+            --notes-file RELEASE_NOTES.md
