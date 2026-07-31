@@ -1,0 +1,80 @@
+From ee4f85c5dfee0d6feaa10a39536269b88d04a5c7 Mon Sep 17 00:00:00 2001
+From: logix727 <logix727@users.noreply.github.com>
+Date: Thu, 30 Jul 2026 16:51:43 -0400
+Subject: [PATCH] frameworks: carry metroid bring-up compatibility fixes
+
+Apply the UDFPS coordinate override and keep system_server boot-safe when
+audio policy or the disabled USB gadget HAL is unavailable.
+
+Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+Change-Id: I65cd9f86aeb1c505fcc2c83d0f7a22c2c01f266f
+---
+ .../sensors/fingerprint/aidl/FingerprintProvider.java        | 12 ++++++++++++
+ ...r_soundtrigger_middleware_ExternalCaptureStateTracker.cpp |  2 +-
+ .../com/android/server/usb/hal/gadget/UsbGadgetAidl.java     |  4 ++--
+ 3 files changed, 15 insertions(+), 3 deletions(-)
+
+diff --git a/services/core/java/com/android/server/biometrics/sensors/fingerprint/aidl/FingerprintProvider.java b/services/core/java/com/android/server/biometrics/sensors/fingerprint/aidl/FingerprintProvider.java
+index 1fd07aebd..0fb1cb0ac 100644
+--- a/services/core/java/com/android/server/biometrics/sensors/fingerprint/aidl/FingerprintProvider.java
++++ b/services/core/java/com/android/server/biometrics/sensors/fingerprint/aidl/FingerprintProvider.java
+@@ -948,6 +948,18 @@ public class FingerprintProvider implements IBinder.DeathRecipient, ServiceProvi
+     private List<SensorLocationInternal> getWorkaroundSensorProps(@NonNull Context context) {
+         final List<SensorLocationInternal> sensorLocations = new ArrayList<>();
+ 
++        // metroid: allow overriding the UDFPS location for AIDL HALs that report coordinates
++        // in the wrong display-resolution space (Nothing fp HAL reports 1080p-space values).
++        // Uses the HIDL-style int array [x, y, radius]; deliberately NOT config_sfps_sensor_props,
++        // which SystemUI's SideFps OverlapDetector also consumes (crashes on it).
++        final int[] udfpsProps = context.getResources().getIntArray(
++                com.android.internal.R.array.config_udfps_sensor_props);
++        if (udfpsProps.length == 3) {
++            sensorLocations.add(new SensorLocationInternal(
++                    "" /* default display */, udfpsProps[0], udfpsProps[1], udfpsProps[2]));
++            return sensorLocations;
++        }
++
+         final TypedArray sfpsProps = context.getResources().obtainTypedArray(
+                 com.android.internal.R.array.config_sfps_sensor_props);
+         for (int i = 0; i < sfpsProps.length(); i++) {
+diff --git a/services/core/jni/com_android_server_soundtrigger_middleware_ExternalCaptureStateTracker.cpp b/services/core/jni/com_android_server_soundtrigger_middleware_ExternalCaptureStateTracker.cpp
+index ae6cb187f..e9496c0e8 100644
+--- a/services/core/jni/com_android_server_soundtrigger_middleware_ExternalCaptureStateTracker.cpp
++++ b/services/core/jni/com_android_server_soundtrigger_middleware_ExternalCaptureStateTracker.cpp
+@@ -72,7 +72,7 @@ void connect(JNIEnv* env, jobject obj) {
+     sp<AudioSystem::CaptureStateListener> listener(new Listener(env, obj));
+     status_t status =
+         AudioSystem::registerSoundTriggerCaptureStateListener(listener);
+-    LOG_ALWAYS_FATAL_IF(status != NO_ERROR);
++    (void)status;
+ }
+ 
+ const JNINativeMethod gMethods[] = {
+diff --git a/services/usb/java/com/android/server/usb/hal/gadget/UsbGadgetAidl.java b/services/usb/java/com/android/server/usb/hal/gadget/UsbGadgetAidl.java
+index b7f7c43ea..5866addae 100644
+--- a/services/usb/java/com/android/server/usb/hal/gadget/UsbGadgetAidl.java
++++ b/services/usb/java/com/android/server/usb/hal/gadget/UsbGadgetAidl.java
+@@ -63,6 +63,7 @@ public final class UsbGadgetAidl implements UsbGadgetHal {
+                 throw new RemoteException("IUsb not initialized yet");
+             }
+         }
++
+         Slog.i(TAG, "USB Gadget HAL AIDL version: GADGET_HAL_V2_0");
+         return GADGET_HAL_V2_0;
+     }
+@@ -93,7 +94,7 @@ public final class UsbGadgetAidl implements UsbGadgetHal {
+ 
+     static boolean isServicePresent(IndentingPrintWriter pw) {
+         try {
+-            return ServiceManager.isDeclared(USB_GADGET_AIDL_SERVICE);
++            return ServiceManager.checkService(USB_GADGET_AIDL_SERVICE) != null;
+         } catch (NoSuchElementException e) {
+             logAndPrintException(pw, "connectToProxy: usb gadget Aidl hal service not found.", e);
+         }
+@@ -249,4 +250,3 @@ public final class UsbGadgetAidl implements UsbGadgetHal {
+         }
+     }
+ }
+-
+-- 
+2.43.0

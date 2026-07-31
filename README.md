@@ -1,67 +1,75 @@
 # LineageOS 23 device tree — Nothing Phone (3) `metroid`
 
-Unofficial port of LineageOS 23 (Android 16) for the Nothing Phone (3) —
+Unofficial early build of LineageOS 23 (Android 16) for the Nothing Phone (3) —
 codename `metroid`, Qualcomm **SM8735**.
 
-**Status: BETA** — boots to a usable daily-driver UI with most major subsystems
-working. **Camera is not working yet** (HAL linker-namespace issue — see
-[Known issues](#known-issues)). See [`BRINGUP_GUIDE.md`](BRINGUP_GUIDE.md) for
-the full technical story.
+**Status: alpha / active bring-up.** A release-key full Virtual A/B OTA was
+built and offline-verified on 2026-07-31. Its recovery sideload transferred
+successfully, but post-install target-slot boot and hardware acceptance are not
+yet recorded. Do not describe that binary as device-tested until this gate is
+closed. See [`BRINGUP_GUIDE.md`](BRINGUP_GUIDE.md) for the technical history.
 
-## What works
-| Feature | Status |
-|---------|--------|
-| Boot to LineageOS UI | ✅ Working |
-| Display + touch | ✅ Working |
-| Wi-Fi (2.4 GHz + 5 GHz) | ✅ Working |
-| Audio (speaker, earpiece, mic) | ✅ Working |
-| Cellular / RIL (calls, SMS, data) | ✅ Working |
-| Bluetooth | ✅ Working |
-| GNSS / GPS | ✅ Working |
-| NFC | ✅ Working |
-| Sensors (accel, gyro, proximity…) | ✅ Working |
-| adb / USB debugging | ✅ Working |
-| Storage / /data | ✅ Working |
-| Camera | ❌ Not working (HAL link failure) |
-| Fingerprint (in-display) | ❌ Not working (HAL crash-loop) |
+## Current release gate
+
+| Gate | State |
+|---|---|
+| Full LineageOS `bacon` build and VINTF check | PASS |
+| Payload images match target-files | PASS |
+| Complete release-key AVB graph, root flags `0` | PASS |
+| Matching Lineage Recovery sideload transfer | PASS |
+| Post-install target-slot boot | PENDING |
+| Automated hardware sweep and second reboot | PENDING |
+| Public tester release | BLOCKED |
+
+The previous clean-install baseline reached the LineageOS UI with display,
+touch, ADB, Enforcing SELinux, file-based encryption, and a stable
+`system_server`. That baseline reproduced audio/Bluetooth, camera, NFC, and
+fingerprint defects. The current source adds the first three corresponding
+build fixes; on-device acceptance is still required.
 
 ## What this repo is
-The **device tree** (`device/nothing/metroid`) plus the **framework patches**,
-build/flash **scripts**, and the **bring-up guide**. It does **not** contain
-proprietary vendor blobs (extract those from your own device) or the kernel /
-prebuilt boot chain.
+The **device tree** (`device/nothing/metroid`), required framework/recovery
+patches, recovery-installer source, prebuilt kernel/DTB/module artifacts used by
+the current port, and the bring-up guide. It does **not** contain proprietary
+vendor blobs, release private keys, modem firmware, or bootloader firmware.
 
 ## Building
 1. Set up a LineageOS 23 source tree.
-2. Add a local manifest (see [`manifest/metroid.xml`](manifest/metroid.xml)) that
-   pulls this device tree (and your kernel/prebuilt repo).
-3. Extract proprietary blobs from a running stock device:
-   `./device/nothing/metroid/extract-files.sh` (blobs are **not** redistributed).
-4. **Apply the framework patches** (required to reach boot):
+2. Copy [`manifest/metroid.xml`](manifest/metroid.xml) into
+  `.repo/local_manifests/`, then sync.
+3. Extract proprietary blobs from your own B4.1 stock dump:
+  `./device/nothing/metroid/extract-files.py /path/to/stock/dump`.
+4. Apply the required source patches:
    ```bash
-   cd frameworks/base
-   git am /path/to/device/nothing/metroid/patches/*.patch
+  git -C frameworks/base am \
+    ../../device/nothing/metroid/patches/frameworks_base/*.patch
+  git -C bootable/recovery am \
+    ../../device/nothing/metroid/patches/bootable_recovery/*.patch
    ```
-   - `0001-soundtrigger-...` — SoundTrigger tolerates audio policy being down
-   - `0002-usb-gadget-hal-...` — UsbService doesn't block `finishBooting` on a disabled gadget HAL
 5. Build:
    ```bash
    source build/envsetup.sh
    lunch lineage_metroid-bp2a-userdebug
-   m
+  m bacon
    ```
 
+See [`patches/README.md`](patches/README.md) for the exact source revisions.
+
 ## Flashing landmines (read before flashing)
-- **Slot A only.** `fastboot set_active a` + `fastboot erase misc` before every flash.
+- Use [`INSTALL.md`](INSTALL.md) and the matched recovery bootstrap bundle. Do
+  not manually force the full OTA target slot; Update Engine selects it.
 - **Never** disable verity/verification on the **root** vbmeta.
 - vendor must be **ext4**; vendor_boot page_size **0x1000**; make `vbmeta_vendor`
   coherently from the images.
 - `fastboot boot` hangs — always flash + reboot.
 
 ## Known issues
-- **Camera** — camera HAL `CANNOT LINK` (`android.frameworks.cameraservice.common-V1-ndk.so`);
-  linker-namespace / `ld.config.txt` problem. **This is the primary outstanding issue.**
-- **Fingerprint** — HAL crash-loops; in-display fingerprint not working.
+- The exact 2026-07-31 candidate still needs post-install boot and hardware
+  acceptance. Current hardware claims intentionally remain unpublished.
+- The prior clean baseline failed audio/Bluetooth, camera, NFC, and fingerprint.
+  The current source packages the audio vendor extension, declares the served
+  Nothing camera interface in VINTF, and satisfies the clean-start NFC gate.
+- Fingerprint remains an open acceptance item.
 - **Slow first boot (~5-7 min)** — runtime is imageless (odsign/boot-level key);
   fixable with `WITH_DEXPREOPT`; subsequent boots are normal speed.
 - Minor cosmetic HAL noise: `memtrack`, `lights`, `power.stats` log

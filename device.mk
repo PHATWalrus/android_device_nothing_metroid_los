@@ -34,7 +34,7 @@ AB_OTA_POSTINSTALL_CONFIG += \
 AB_OTA_POSTINSTALL_CONFIG += \
     RUN_POSTINSTALL_vendor=true \
     POSTINSTALL_PATH_vendor=bin/checkpoint_gc \
-    FILESYSTEM_TYPE_vendor=erofs \
+    FILESYSTEM_TYPE_vendor=ext4 \
     POSTINSTALL_OPTIONAL_vendor=true
 
 PRODUCT_PACKAGES += \
@@ -70,6 +70,7 @@ PRODUCT_USE_DYNAMIC_PARTITIONS := true
 # vendor boot partition, store vendor ramdisk kernel modules in the boot ramdisk") — all 341
 # modules land in the generic ramdisk and init_boot.img fails at 18 MB against an 8 MB partition.
 PRODUCT_BUILD_VENDOR_BOOT_IMAGE := true
+PRODUCT_BUILD_PVMFW_IMAGE := true
 
 # Soong namespaces
 PRODUCT_SOONG_NAMESPACES += \
@@ -294,7 +295,9 @@ PRODUCT_SYSTEM_PROPERTIES += \
 # DO NOT comment this out again: manifest_audiocorehal_default.xml (a vintf_fragment of
 # libaudiocorehal.default.so) declares android.hardware.audio.core with no server without it,
 # and the failure only shows up once the prebuilt-vendor pin is gone. 2026-07-24.
-PRODUCT_PACKAGES += audiohalservice.qti
+PRODUCT_PACKAGES += \
+    audiohalservice.qti \
+    qtiaudiohalvendorextn
 
 DEVICE_PACKAGE_OVERLAYS += device/nothing/metroid/overlay
 

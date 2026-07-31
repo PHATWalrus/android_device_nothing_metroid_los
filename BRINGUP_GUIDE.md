@@ -4,9 +4,46 @@
 **Target:** LineageOS 23 (Android 16 / ART)
 **Result:** Full userspace boot — `sys.boot_completed=1`, LineageOS Setup Wizard on screen.
 
-This is a **bring-up log / guide**: not a polished "flash this ZIP" tutorial, but the actual ordered set of fixes that took the port from *bootloops forever* to *boots to the setup wizard*, plus the **method** that found each one. If you are porting LOS to another SM8735 / recent-Snapdragon device, the *method* matters more than the specific fixes.
+This is a **bring-up log / guide** for an early unofficial LineageOS 23 build.
+The device is now bootable and mostly functional, but **camera** and **in-display fingerprint** remain unresolved. The focus here is the actual ordered set of fixes that took the port from *bootloops forever* to *boots to the setup wizard*, plus the **method** that found each one.
 
-> ⚠️ This is a WIP bring-up. Audio, RIL (cellular), camera and NFC are **not** working yet (see [Known issues](#known-issues)). This document is about reaching first boot.
+> ⚠️ This is an early unofficial build. Most core functionality is now working, but **camera** and **in-display fingerprint** remain unresolved (see [Known issues](#known-issues)). This document is about the bring-up process and the fixes that got the device bootable.
+
+## Current OTA and hardware roadmap - 2026-07-30
+
+The release-key-signed Virtual A/B OTA is proven to install from Lineage Recovery and
+boot its target slot with `sys.boot_completed=1`, one stable `system_server`, SELinux
+Enforcing, and file-based encryption. The immutable rollback candidate is SHA-256
+`ec308ab0d1711b421d22dba43ce19e27447d46303ace46f9e9e57de905f9b0dd`.
+
+An explicitly authorized clean wipe of `userdata` and `metadata` reproduced the remaining
+camera, audio/Bluetooth, and NFC failures, proving they were build configuration defects
+rather than stale user data. The first post-clean fix slice is image-validated:
+
+- package the existing `qtiaudiohalvendorextn` service and libraries in `system_ext`;
+- declare only the served Nothing camera extension in the installed camera VINTF fragment;
+- seed the stock ST NFC init gate through `persist.vendor.nfc_getcplc_completed=1`.
+
+Kati-aware `vendorimage` and `systemextimage` builds pass. The vendor image is clean ext4;
+the built camera declaration, NFC property, audio executable, rc, and libraries are present.
+The full OTA build, VINTF check, offline AVB/payload audit, and recovery sideload transfer
+now pass for candidate SHA-256
+`679af36352e7cd454cb23d65b94504df29bb211fa5139a3d60f662f5c97effc5`. The
+complete payload image directory verifies as one release-key AVB graph, including `pvmfw`,
+and root vbmeta flags remain `0`. The phone has not yet re-enumerated after recovery's
+auto-reboot, so target-slot boot and hardware acceptance remain blocked rather than
+inferred from a successful host transfer.
+
+| Release gate | State |
+|---|---|
+| Recovery sideload and target-slot boot | PASS |
+| Clean-install core boot, Enforcing, FBE | PASS |
+| Audio/camera/NFC affected image builds | PASS |
+| Full signed OTA and offline audit | PASS |
+| Recovery sideload transfer | PASS |
+| Target-slot boot | PENDING - no post-reboot USB state yet |
+| Device hardware acceptance and second reboot | PENDING |
+| Publication package | NOT READY |
 
 ---
 

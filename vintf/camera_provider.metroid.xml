@@ -4,4 +4,9 @@
         <version>2</version>
         <fqname>ICameraProvider/vendor_qti/0</fqname>
     </hal>
+    <hal format="aidl">
+        <name>vendor.noth.hardware.camera</name>
+        <version>1</version>
+        <fqname>INtCamService/default</fqname>
+    </hal>
 </manifest>

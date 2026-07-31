@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
-  <!-- Example local manifest. Adjust remotes/revisions to your setup. -->
-  <project name="YOURUSER/android_device_nothing_metroid" path="device/nothing/metroid" remote="github" revision="lineage-23" />
-  <!-- kernel + prebuilt boot chain / DLKM images (NOT in this repo): -->
-  <!-- <project name="YOURUSER/android_device_nothing_metroid-kernel" path="device/nothing/metroid-kernel" remote="github" revision="lineage-23" /> -->
-  <!-- proprietary blobs: extract from your own device with extract-files.sh; do not redistribute -->
+  <remote name="github-logix727" fetch="https://github.com/" />
+  <project name="logix727/android_device_nothing_metroid"
+           path="device/nothing/metroid"
+           remote="github-logix727"
+           revision="master" />
+  <!-- Extract proprietary blobs from your own B4.1 stock dump. -->
 </manifest>

@@ -1,0 +1,31 @@
+From 42ea725381c1b67fb2cee6b5f7d87a7d39d3f3fa Mon Sep 17 00:00:00 2001
+From: logix727 <logix727@users.noreply.github.com>
+Date: Thu, 30 Jul 2026 16:51:43 -0400
+Subject: [PATCH] recovery: support devices with more input nodes
+
+Raise minui input capacity so metroid registers its PMIC power and volume-down
+keys after the many squeeze-sensor event nodes.
+
+Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+Change-Id: I3e7085ac2c0be9e37d8f6f490a1f1c5b6e5aefcf
+---
+ minui/events.cpp | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/minui/events.cpp b/minui/events.cpp
+index 30ddbc89..ca022b04 100644
+--- a/minui/events.cpp
++++ b/minui/events.cpp
+@@ -39,7 +39,9 @@
+ 
+ constexpr const char* INPUT_DEV_DIR = "/dev/input";
+ 
+-constexpr size_t MAX_DEVICES = 16;
++// Metroid exposes more than AOSP's default 16 input devices. Leave room for every eligible device
++// regardless of the filesystem enumeration order.
++constexpr size_t MAX_DEVICES = 32;
+ constexpr size_t MAX_MISC_FDS = 16;
+ 
+ constexpr size_t BITS_PER_LONG = sizeof(unsigned long) * 8;
+-- 
+2.43.0

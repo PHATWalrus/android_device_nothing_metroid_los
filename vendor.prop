@@ -79,6 +79,9 @@ persist.sys.fuse.passthrough.enable=true
 vendor.gatekeeper.disable_spu=true
 vendor.gatekeeper.is_security_level_spu=0
 
+# NFC
+persist.vendor.nfc_getcplc_completed=1
+
 # GPS
 persist.backup.ntpServer=0.pool.ntp.org
 

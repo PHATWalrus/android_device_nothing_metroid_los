@@ -1,16 +1,15 @@
 [ROM][UNOFFICIAL][ALPHA][16] LineageOS 23 for Nothing Phone (3) [metroid]
 
+DO NOT POST YET: replace the validation placeholders after the final device sweep.
+
 =====================================================================
   LineageOS 23 — Nothing Phone (3) — UNOFFICIAL / ALPHA / BRING-UP
 =====================================================================
 
   /* Disclaimer */
-  Your warranty is now void. This is an EARLY BRING-UP build, not a daily
-  driver. It BOOTS to the Setup Wizard — but audio, cellular (calls/data),
-  camera and NFC DO NOT WORK yet. Flash it only if you want to help test
-  and know how to recover with fastboot. I am not responsible for bricked
-  devices, dead SD cards, thermonuclear war, or you getting fired because
-  the alarm app failed. YOU chose to make these modifications.
+  Your warranty is now void. This is an EARLY ALPHA for experienced testers,
+  not a daily driver. Unlocking and flashing erase data and can leave the phone
+  unbootable. Keep a complete stock restore path. You accept all risk.
 
 
 ===========================
@@ -19,36 +18,35 @@
 This is an unofficial, work-in-progress port of LineageOS 23 (Android 16)
 to the Nothing Phone (3), codename "metroid" (Qualcomm SM8735).
 
-It is posted as an ALPHA / bring-up milestone: the OS boots to a usable UI
-(Setup Wizard, launcher, Settings), but several major subsystems are still
-being brought up. If you are a developer or tester, a full technical
-bring-up write-up is linked below — contributions welcome.
+This release is a release-key-signed full Virtual A/B OTA installed through
+Lineage Recovery. The payload includes the complete boot/AVB chain, pvmfw,
+dynamic partitions, recovery, and DLKM images. It has passed offline payload
+and AVB verification. Device validation status must be copied from the final
+test report before this post goes live.
 
 
 ===========================
-  What works
+  What is proven
 ===========================
-- Boots to the LineageOS Setup Wizard / launcher (boot_completed)
+- Lineage Recovery, ADB, and ADB sideload
+- Full A/B OTA installation and target-slot activation
+- Boots to Setup Wizard / launcher (`sys.boot_completed=1`)
 - Display + touch
-- adb
-- Core Android framework / system services
-- Keystore / KeyMint (secure boot state)
-- Storage / /data
+- Enforcing SELinux
+- File-based encryption and `/data`
+- Stable system_server across clean boots
+- Sensors, charging, and core Android services
+
+Final hardware sweep for this exact ZIP: << insert tested results >>
 
 
 ===========================
-  What does NOT work (yet)
+  Known issues
 ===========================
-- AUDIO — no sound at all (ADSP audio-DSP / sound card not up)
-- CELLULAR (RIL) — no calls, SMS or mobile data (HAL link failure)
-- CAMERA — camera HAL not starting (HAL link failure)
-- NFC / Secure Element
-- Fingerprint (HAL crash-loops)
-- First boot is SLOW (~5-7 min) — runtime is currently "imageless"
-  (ART boot image not generated); this will be fixed.
-- Assorted vendor HAL noise (memtrack/lights/power.stats) — cosmetic
-
-Basically: treat this as "does it POST and show a UI", not as a phone.
+- << replace from final hardware sweep; do not infer untested functions >>
+- Cellular calls/SMS/data require a physical SIM test and may remain unverified.
+- First boot can take several minutes while Android initializes.
+- This is unofficial and not endorsed by the LineageOS project.
 
 
 ===========================
@@ -56,31 +54,54 @@ Basically: treat this as "does it POST and show a UI", not as a phone.
 ===========================
 PREREQUISITES
 - Unlocked bootloader.
-- Platform-tools (adb/fastboot) on your PC.
-- A full stock backup / the ability to restore stock via fastboot. DO THIS
-  FIRST. You WILL need it.
-- Custom recovery for metroid (OrangeFox / TWRP for this device).
+- Current Google platform-tools (`adb` and `fastboot`).
+- Nothing OS B4.1 (`Metroid_B4.1-260414-1846`) firmware. This ROM does not
+  redistribute modem/bootloader firmware. Restore/update stock first if needed.
+- A complete stock restore package and a known-good recovery procedure.
+- The ROM ZIP and the matching metroid Lineage Recovery bootstrap bundle from
+  the same release. Do not mix artifacts from different builds.
 
 IMPORTANT device-specific notes (please read):
-- Use slot A. Before flashing:  fastboot set_active a  and  fastboot erase misc
-- Do NOT disable verity/verification on the ROOT vbmeta.
-- This build ships a prebuilt boot chain (boot/init_boot/vendor_boot/dtbo);
-  flash the ones included with the package, not mismatched stock ones.
+- Do NOT use `--disable-verity` or `--disable-verification` on root vbmeta.
+- Do NOT manually force an OTA target slot. Update Engine selects it.
+- `fastboot boot` is not supported on this device. Flash the matched bootstrap
+  bundle, then reboot to recovery.
+- The bootstrap installer writes the matched boot, init_boot, vendor_boot,
+  dtbo, pvmfw, recovery, and vbmeta chain to both slots. Review the included
+  script before running it.
 
-STEPS
-1. Back up stock. Seriously.
-2. Reboot to bootloader:            adb reboot bootloader
-3. fastboot set_active a
-4. fastboot erase misc
-5. Flash the images from the package (boot, init_boot, vendor_boot, dtbo,
-   vbmeta*, super) exactly as documented in the package README.
-6. fastboot erase userdata  &&  fastboot erase metadata   (clean first boot)
-7. fastboot reboot
-8. Wait. First boot takes several minutes (it is compiling on-device).
-   If it sits on the boot animation for 5+ minutes that can be NORMAL for
-   this alpha — give it up to ~8 min before assuming it failed.
+CLEAN INSTALL FROM LINEAGE RECOVERY
+1. Back up everything. Unlocking/factory reset erases apps, accounts, settings,
+   encryption metadata, and internal storage.
+2. Extract the matching recovery bootstrap bundle on your computer.
+3. Reboot to bootloader:
+       adb reboot bootloader
+4. Verify the serial with `fastboot devices`, then run the included script:
+       Windows:  flash-lineage-recovery.bat
+       Linux:    ./flash-lineage-recovery.sh
+   The script does not disable AVB. It flashes the matched chain to both slots,
+   clears only the stale recovery BCB in `misc`, and reboots to Lineage Recovery.
+5. In Lineage Recovery select:
+       Factory reset -> Format data / factory reset
+6. Return to the main menu and select:
+       Apply update -> Apply from ADB
+7. On the computer run:
+       adb sideload lineage-23.0-20260731-UNOFFICIAL-metroid.zip
+   The host often stops near 47% for an A/B OTA; this is normal. Wait for the
+   phone to report installation success. Do not disconnect it during device-side
+   verification or postinstall.
+8. If recovery asks about installing additional packages, choose No for the
+   first test. Untested add-ons can obscure ROM defects.
+9. Select Reboot system now. Allow up to about 8 minutes for first boot.
 
-If it bootloops or hangs: restore your stock backup via fastboot.
+UPDATING FROM AN EARLIER BUILD SIGNED WITH THE SAME RELEASE KEY
+1. Reboot to Lineage Recovery.
+2. Apply update -> Apply from ADB.
+3. `adb sideload <new ZIP>`.
+4. Do not factory reset unless the release notes require it.
+
+If recovery or Android fails, stop and collect logs before changing slots. Use
+the documented stock restore path; do not repeatedly flash random vbmeta flags.
 
 
 ===========================
@@ -92,7 +113,7 @@ Full device tree + framework patches are on GitHub (link below).
 - Extract proprietary blobs from your own device (extract-files.sh) — blobs
   are NOT redistributed.
 - Apply the two frameworks/base patches in patches/.
-- lunch lineage_metroid-bp2a-userdebug  &&  m
+- lunch lineage_metroid-bp2a-userdebug && m bacon
 
 A complete "how it was brought up" guide (every fix + the debugging method)
 is in the repo: BRINGUP_GUIDE.md.
@@ -101,15 +122,17 @@ is in the repo: BRINGUP_GUIDE.md.
 ===========================
   Downloads
 ===========================
-- ROM package:    << add your link (GitHub Releases / AndroidFileHost) >>
-- (No OTA yet — this is a manual-flash alpha.)
+- ROM ZIP:                 << add download link >>
+- Recovery bootstrap:     << add download link >>
+- SHA-256 checksums:       << add download link >>
+- Installation guide:     included in the bootstrap bundle
 
 
 ===========================
   Sources
 ===========================
 - Device tree:        github.com/<your-username>/android_device_nothing_metroid
-- Kernel / prebuilts: << link >>
+- Kernel source:       github.com/NothingOSS/android_kernel_msm-6.6_nothing_sm8735
 - LineageOS:          github.com/LineageOS
 - Framework patches:  in the device-tree repo under patches/
 
@@ -120,10 +143,12 @@ sources and this device tree are linked above.
 ===========================
   Known bugs / reporting
 ===========================
-This is bring-up — most things are "known broken" (see list above). If you
-hit something NOT on the list, post: a logcat (adb logcat -b all > log.txt),
-dmesg, and what you did. Please don't report "audio doesn't work" — it's
-known.
+When reporting a bug include the exact ZIP SHA-256, clean/upgrade install,
+firmware version, reproduction steps, and logs:
+  adb logcat -b all -d > logcat.txt
+  adb shell dmesg > dmesg.txt
+Do not report issues after installing an unlisted kernel, root module, or add-on
+without reproducing on the clean ROM first.
 
 
 ===========================
@@ -142,5 +167,5 @@ known.
 ROM OS Version: Android 16 (LineageOS 23)
 ROM Kernel: Linux 6.6
 Based On: LineageOS
-Status: ALPHA / Bring-up
-Created: 2026-xx-xx
+Status: ALPHA / Testing
+Created: 2026-07-31
