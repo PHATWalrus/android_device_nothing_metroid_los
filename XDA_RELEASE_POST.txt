@@ -107,12 +107,13 @@ the documented stock restore path; do not repeatedly flash random vbmeta flags.
 ===========================
   How to build from source
 ===========================
-Full device tree + framework patches are on GitHub (link below).
+Full device tree plus framework and recovery patches are on GitHub (link below).
 - Sync a LineageOS 23 tree.
 - Add the metroid device tree + a local manifest (see repo README).
 - Extract proprietary blobs from your own device (extract-files.sh) — blobs
   are NOT redistributed.
-- Apply the two frameworks/base patches in patches/.
+- Apply the required `frameworks/base` and `bootable/recovery` patches in
+  `patches/`.
 - lunch lineage_metroid-bp2a-userdebug && m bacon
 
 A complete "how it was brought up" guide (every fix + the debugging method)
@@ -131,8 +132,8 @@ is in the repo: BRINGUP_GUIDE.md.
 ===========================
   Sources
 ===========================
-- Device tree:        github.com/<your-username>/android_device_nothing_metroid
-- Kernel source:       github.com/NothingOSS/android_kernel_msm-6.6_nothing_sm8735
+- Device tree:        github.com/logix727/android_device_nothing_metroid
+- Kernel source:       github.com/logix727/android_kernel_msm-6.6_nothing_sm8735
 - LineageOS:          github.com/LineageOS
 - Framework patches:  in the device-tree repo under patches/
 
