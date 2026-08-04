@@ -6,7 +6,7 @@ codename `metroid`, Qualcomm **SM8735**.
 **Status: alpha / active testing.** The 2026-08-04 release-key Virtual A/B OTA
 was recovery-sideloaded and booted on the target slot. See
 [`release/20260804-test1.md`](release/20260804-test1.md) for tested behavior and
-known issues, and [`BRINGUP_GUIDE.md`](BRINGUP_GUIDE.md) for technical history.
+known issues. The installed source lock is recorded in [`BASELINE.md`](BASELINE.md).
 
 ## Current release gate
 
@@ -20,16 +20,13 @@ known issues, and [`BRINGUP_GUIDE.md`](BRINGUP_GUIDE.md) for technical history.
 | Core hardware/service sweep | PASS with disclosed gaps |
 | Public tester source | READY |
 
-The previous clean-install baseline reached the LineageOS UI with display,
-touch, ADB, Enforcing SELinux, file-based encryption, and a stable
-`system_server`. That baseline reproduced audio/Bluetooth, camera, NFC, and
-fingerprint defects. The current source adds the first three corresponding
-build fixes; on-device acceptance is still required.
+The installed tester baseline reaches the LineageOS UI with display, touch,
+ADB, Enforcing SELinux, file-based encryption, and a stable `system_server`.
 
 ## What this repo is
 The **device tree** (`device/nothing/metroid`), required framework/recovery
-patches, recovery-installer source, prebuilt kernel/DTB/module artifacts used by
-the current port, and the bring-up guide. It does **not** contain proprietary
+patches, recovery-installer source, and prebuilt kernel/DTB/module artifacts used
+by the current port. It does **not** contain proprietary
 vendor blobs, release private keys, modem firmware, or bootloader firmware.
 
 ## Building
@@ -38,12 +35,12 @@ vendor blobs, release private keys, modem firmware, or bootloader firmware.
   `.repo/local_manifests/`, then sync.
 3. Extract proprietary blobs from your own B4.1 stock dump:
   `./device/nothing/metroid/extract-files.py /path/to/stock/dump`.
-4. Apply the required source patches:
+4. Apply the required source patches in `patches/series.conf`; see
+   [`patches/README.md`](patches/README.md).
    ```bash
-  git -C frameworks/base am \
-    ../../device/nothing/metroid/patches/frameworks_base/*.patch
-  git -C bootable/recovery am \
-    ../../device/nothing/metroid/patches/bootable_recovery/*.patch
+   # Example; apply every ordered entry from patches/series.conf.
+   git -C frameworks/base am \
+     ../../device/nothing/metroid/patches/frameworks_base/*.patch
    ```
 5. Build:
    ```bash
@@ -52,7 +49,7 @@ vendor blobs, release private keys, modem firmware, or bootloader firmware.
   m bacon
    ```
 
-See [`patches/README.md`](patches/README.md) for the exact source revisions.
+See [`BASELINE.md`](BASELINE.md) for exact source revisions.
 
 ## Flashing landmines (read before flashing)
 - Use [`INSTALL.md`](INSTALL.md) and the matched recovery bootstrap bundle. Do

@@ -205,7 +205,7 @@ BOARD_VENDORIMAGE_FILE_SYSTEM_TYPE := ext4
 # The actual regression was /vendor/bin/hw/audiohalservice.qti going missing because
 # `PRODUCT_PACKAGES += audiohalservice.qti` got commented out in device.mk, while its .rc and
 # the audio.core VINTF fragment still shipped -> audioserver dies -> system_server crash loop
-# (the exact chain already documented in BRINGUP_GUIDE.md). The pin masked it because the
+# The pin masked the source-build dependency chain because the
 # pinned image was a Jul 8 build made while that line was still live.
 
 TARGET_COPY_OUT_SYSTEM := system

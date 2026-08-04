@@ -32,6 +32,10 @@ The framework patch carries the UDFPS coordinate override and two
 device capacity so the PMIC power and volume-down keys are registered after
 the phone's squeeze-sensor input nodes.
 
-The vendor tree is proprietary and must not be published. Its text-only
-configuration replay is under `patches/vendor_nothing_metroid/`; apply it only
-to a private vendor tree populated from your own stock dump.
+Additional build-compatibility patches are listed in `series.conf`. Apply the
+series in order to clean upstream checkouts, or use the matching maintainer
+forks once published.
+
+The vendor tree is proprietary and must not be published. Populate it from your
+own stock dump with `extract-files.py`; private vendor revisions are recorded in
+`BASELINE.md` only for local reproducibility.

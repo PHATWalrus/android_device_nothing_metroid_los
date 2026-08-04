@@ -222,8 +222,6 @@ PRODUCT_PACKAGES +=     android.hardware.boot-service.qti     android.hardware.b
 $(call inherit-product-if-exists, vendor/nothing/metroid/metroid-vendor.mk)
 
 # Bring-up build21: no_fatal blanket for observability (keep device up past ~29s for adb)
-PRODUCT_COPY_FILES += $(LOCAL_PATH)/rootdir/etc/init.bringup_nofatal.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.bringup_nofatal.rc
-
 # /vendor/etc/fstab.default is REQUIRED, not just the ramdisk copy.
 #
 # /data is a `latemount`, so it is mounted by VOLD, not by first-stage init — and vold reads

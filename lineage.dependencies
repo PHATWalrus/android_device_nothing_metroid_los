@@ -1,0 +1,8 @@
+[
+  {
+    "repository": "android_kernel_msm-6.6_nothing_sm8735",
+    "target_path": "kernel/nothing/sm8735",
+    "branch": "sm8735/v/mr",
+    "remote": "logix727"
+  }
+]
