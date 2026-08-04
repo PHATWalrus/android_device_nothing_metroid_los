@@ -1,0 +1,238 @@
+From e3d66ba62335ee9ac95ea183d0b1ebf6e611734c Mon Sep 17 00:00:00 2001
+From: Your Name <your.email@example.com>
+Date: Tue, 4 Aug 2026 08:10:20 -0400
+Subject: [PATCH] Aperture: support metroid camera topology
+
+Change-Id: I40ee909fe43d6edcd99082878dc60983c0dc97d2
+---
+ .../lineageos/aperture/ApertureApplication.kt | 40 ++++++++++-
+ .../aperture/repositories/CameraRepository.kt |  7 ++
+ .../aperture/viewmodels/CameraViewModel.kt    | 67 ++++++++++++++++---
+ 3 files changed, 104 insertions(+), 10 deletions(-)
+
+diff --git a/app/src/main/java/org/lineageos/aperture/ApertureApplication.kt b/app/src/main/java/org/lineageos/aperture/ApertureApplication.kt
+index bed49d6..2a98af4 100644
+--- a/app/src/main/java/org/lineageos/aperture/ApertureApplication.kt
++++ b/app/src/main/java/org/lineageos/aperture/ApertureApplication.kt
+@@ -7,7 +7,14 @@ package org.lineageos.aperture
+ 
+ import android.annotation.SuppressLint
+ import android.app.Application
++import android.os.Build
++import androidx.camera.camera2.Camera2Config
+ import androidx.camera.camera2.internal.CameraIdUtil
++import androidx.camera.core.CameraXConfig
++import androidx.camera.core.impl.MutableOptionsBundle
++import androidx.camera.core.impl.UseCaseConfig
++import androidx.camera.core.impl.UseCaseConfigFactory
++import androidx.camera.core.impl.stabilization.StabilizationMode
+ import com.google.android.material.color.DynamicColors
+ import kotlinx.coroutines.MainScope
+ import org.lineageos.aperture.repositories.CameraRepository
+@@ -15,7 +22,7 @@ import org.lineageos.aperture.repositories.MediaRepository
+ import org.lineageos.aperture.repositories.OverlaysRepository
+ import org.lineageos.aperture.repositories.PreferencesRepository
+ 
+-class ApertureApplication : Application() {
++class ApertureApplication : Application(), CameraXConfig.Provider {
+     private val coroutineScope = MainScope()
+ 
+     val cameraRepository by lazy { CameraRepository(this, coroutineScope, overlaysRepository) }
+@@ -23,6 +30,37 @@ class ApertureApplication : Application() {
+     val overlaysRepository by lazy { OverlaysRepository(this) }
+     val preferencesRepository by lazy { PreferencesRepository(this, coroutineScope) }
+ 
++    @SuppressLint("RestrictedApi")
++    override fun getCameraXConfig(): CameraXConfig {
++        val defaultConfig = Camera2Config.defaultConfig()
++        if (Build.DEVICE != "metroid") {
++            return defaultConfig
++        }
++
++        val defaultFactoryProvider = checkNotNull(
++            defaultConfig.getUseCaseConfigFactoryProvider(null)
++        )
++
++        return CameraXConfig.Builder.fromConfig(defaultConfig)
++            .setUseCaseConfigFactoryProvider { context ->
++                val defaultFactory = defaultFactoryProvider.newInstance(context)
++
++                UseCaseConfigFactory { captureType, captureMode ->
++                    val useCaseConfig = defaultFactory.getConfig(captureType, captureMode)
++                        ?: return@UseCaseConfigFactory null
++                    MutableOptionsBundle.from(
++                        useCaseConfig
++                    ).apply {
++                        insertOption(
++                            UseCaseConfig.OPTION_VIDEO_STABILIZATION_MODE,
++                            StabilizationMode.OFF,
++                        )
++                    }
++                }
++            }
++            .build()
++    }
++
+     @SuppressLint("RestrictedApi")
+     override fun onCreate() {
+         super.onCreate()
+diff --git a/app/src/main/java/org/lineageos/aperture/repositories/CameraRepository.kt b/app/src/main/java/org/lineageos/aperture/repositories/CameraRepository.kt
+index de8e6bd..9420625 100644
+--- a/app/src/main/java/org/lineageos/aperture/repositories/CameraRepository.kt
++++ b/app/src/main/java/org/lineageos/aperture/repositories/CameraRepository.kt
+@@ -7,6 +7,7 @@ package org.lineageos.aperture.repositories
+ 
+ import android.Manifest
+ import android.content.Context
++import android.os.Build
+ import androidx.camera.camera2.interop.Camera2CameraInfo
+ import androidx.camera.camera2.interop.ExperimentalCamera2Interop
+ import androidx.camera.core.CameraInfo
+@@ -64,6 +65,8 @@ class CameraRepository(
+ 
+     val mainBackCamera by lazy {
+         internalCameras.firstOrNull { camera ->
++            Build.DEVICE == "metroid" && camera.cameraId == "4"
++        } ?: internalCameras.firstOrNull { camera ->
+             camera.cameraFacing == CameraFacing.BACK
+         }
+     }
+@@ -74,6 +77,10 @@ class CameraRepository(
+         }
+     }
+ 
++    fun getCamera(cameraId: String) = internalCameras.firstOrNull {
++        it.cameraId == cameraId
++    }
++
+     /**
+      * List of external cameras. These will change once the user connects or disconnects a camera.
+      */
+diff --git a/app/src/main/java/org/lineageos/aperture/viewmodels/CameraViewModel.kt b/app/src/main/java/org/lineageos/aperture/viewmodels/CameraViewModel.kt
+index 323283f..7da112d 100644
+--- a/app/src/main/java/org/lineageos/aperture/viewmodels/CameraViewModel.kt
++++ b/app/src/main/java/org/lineageos/aperture/viewmodels/CameraViewModel.kt
+@@ -78,6 +78,7 @@ import org.lineageos.aperture.models.DistortionCorrectionMode
+ import org.lineageos.aperture.models.EdgeMode
+ import org.lineageos.aperture.models.Event
+ import org.lineageos.aperture.models.FlashMode
++import org.lineageos.aperture.models.FrameRate
+ import org.lineageos.aperture.models.GridMode
+ import org.lineageos.aperture.models.HardwareKey
+ import org.lineageos.aperture.models.HotPixelMode
+@@ -1449,10 +1450,13 @@ class CameraViewModel(application: Application) : ApertureViewModel(application)
+ 
+             preferencesRepository.videoQuality.value = videoQuality
+ 
+-            cameraConfiguration.copy(
+-                videoQuality = videoQuality,
+-                videoFrameRate = videoFrameRate,
+-                videoDynamicRange = videoDynamicRange,
++            createInitialCameraConfiguration(
++                camera = getMetroidVideoCamera(
++                    cameraConfiguration.camera.cameraFacing,
++                    videoQuality,
++                    videoFrameRate,
++                ) ?: cameraConfiguration.camera,
++                cameraMode = CameraMode.VIDEO,
+             )
+         }
+ 
+@@ -1473,8 +1477,13 @@ class CameraViewModel(application: Application) : ApertureViewModel(application)
+ 
+             preferencesRepository.videoFrameRate.value = videoFrameRate
+ 
+-            cameraConfiguration.copy(
+-                videoFrameRate = videoFrameRate,
++            createInitialCameraConfiguration(
++                camera = getMetroidVideoCamera(
++                    cameraConfiguration.camera.cameraFacing,
++                    cameraConfiguration.videoQuality,
++                    videoFrameRate,
++                ) ?: cameraConfiguration.camera,
++                cameraMode = CameraMode.VIDEO,
+             )
+         }
+ 
+@@ -1543,13 +1552,16 @@ class CameraViewModel(application: Application) : ApertureViewModel(application)
+      * @param zoomRatio The zoom ratio to apply
+      */
+     fun smoothZoom(zoomRatio: Float) {
++        val zoomState = zoomState.value ?: run {
++            cameraController.setZoomRatio(zoomRatio)
++            return
++        }
++
+         val acquired = zoomGestureMutex.tryLock()
+         if (!acquired) {
+             return
+         }
+ 
+-        val zoomState = zoomState.value ?: return
+-
+         ValueAnimator.ofFloat(
+             zoomState.zoomRatio,
+             zoomRatio.coerceIn(zoomState.minZoomRatio, zoomState.maxZoomRatio)
+@@ -1631,6 +1643,23 @@ class CameraViewModel(application: Application) : ApertureViewModel(application)
+         cameraMode: CameraMode,
+         cameraFacing: CameraFacing,
+     ): Camera? {
++        if (cameraMode == CameraMode.VIDEO) {
++            getMetroidVideoCamera(
++                cameraFacing,
++                preferencesRepository.videoQuality.value,
++                preferencesRepository.videoFrameRate.value,
++            )?.takeIf { it.supportsCameraMode(cameraMode) }?.let { return it }
++        }
++
++        val preferredCamera = when (cameraFacing) {
++            CameraFacing.BACK -> cameraRepository.mainBackCamera
++            CameraFacing.FRONT -> cameraRepository.mainFrontCamera
++            else -> null
++        }
++        if (preferredCamera?.supportsCameraMode(cameraMode) == true) {
++            return preferredCamera
++        }
++
+         val compatibleCameras = cameraRepository.cameras.first()
+             .filter { camera ->
+                 camera.supportsCameraMode(cameraMode)
+@@ -1641,6 +1670,25 @@ class CameraViewModel(application: Application) : ApertureViewModel(application)
+         } ?: compatibleCameras.firstOrNull()
+     }
+ 
++    private fun getMetroidVideoCamera(
++        cameraFacing: CameraFacing,
++        videoQuality: Quality,
++        videoFrameRate: FrameRate?,
++    ): Camera? {
++        if (Build.DEVICE != "metroid" || cameraFacing != CameraFacing.BACK) {
++            return null
++        }
++
++        val cameraId = if (
++            videoQuality == Quality.UHD || videoFrameRate == FrameRate.FPS_60
++        ) {
++            "0"
++        } else {
++            "4"
++        }
++        return cameraRepository.getCamera(cameraId)
++    }
++
+     @androidx.annotation.OptIn(ExperimentalZeroShutterLag::class)
+     private fun createInitialCameraConfiguration(
+         camera: Camera,
+@@ -1723,7 +1771,8 @@ class CameraViewModel(application: Application) : ApertureViewModel(application)
+                 videoFrameRate = videoFrameRate,
+                 videoDynamicRange = videoDynamicRange,
+                 videoMirrorMode = preferencesRepository.videoMirrorMode.value,
+-                enableVideoStabilization = preferencesRepository.videoStabilization.value,
++                enableVideoStabilization = Build.DEVICE != "metroid" &&
++                        preferencesRepository.videoStabilization.value,
+             )
+         }
+ 
+-- 
+2.43.0
+

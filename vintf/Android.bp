@@ -63,6 +63,49 @@ vintf_fragment {
     vendor: true,
 }
 
+// Qualcomm QMS and Mwqem declarations. These must be VINTF modules rather than
+// PRODUCT_COPY_FILES entries, which Android 16 rejects for manifest metadata.
+vintf_fragment {
+    name: "qms.metroid.xml",
+    src: "qms.metroid.xml",
+    vendor: true,
+}
+
+vintf_fragment {
+    name: "mwqem.metroid.xml",
+    src: "mwqem.metroid.xml",
+    vendor: true,
+}
+
+// Stock Bluetooth software audio module, registered by audiohalservice.qti via
+// android.hardware.bluetooth.audio_sw.so.
+vintf_fragment {
+    name: "audio_bluetooth.metroid.xml",
+    src: "audio_bluetooth.metroid.xml",
+    vendor: true,
+}
+
+// The proprietary provider implementation links stable AIDL v4.
+vintf_fragment {
+    name: "bluetooth_audio_provider.metroid.xml",
+    src: "bluetooth_audio_provider.metroid.xml",
+    vendor: true,
+}
+
+// Stock QTI video and audio Codec2 component stores.
+vintf_fragment {
+    name: "media_c2.metroid.xml",
+    src: "media_c2.metroid.xml",
+    vendor: true,
+}
+
+// Qualcomm performance HAL used by framework and fingerprint clients.
+vintf_fragment {
+    name: "perf2.metroid.xml",
+    src: "perf2.metroid.xml",
+    vendor: true,
+}
+
 // batch 4 (2026-07-10): radio AIDL HALs (qcrilNrd runs fine, was just undeclared -> telephony
 // dead), clearkey drm + qspa (both were crash-looping on undeclared registration). Fragments
 // copied verbatim from stock B4.0 vendor manifest. Verified live via overlay before adding.
@@ -99,5 +142,20 @@ vintf_fragment {
 vintf_fragment {
     name: "android.hardware.radio.voice.metroid4.xml",
     src: "android.hardware.radio.voice.xml",
+    vendor: true,
+}
+
+// Camera AON (always-on) service declaration (2026-08-02). All five AON libraries were
+// already shipped (com.qti.qseeaon.so, vendor.qti.hardware.camera.aon-{V1,V2}-ndk.so,
+// -service-impl.so, camera/components/com.qti.node.aon.so) but the VINTF manifest that
+// declares the service was never extracted, so servicemanager rejected the registration:
+//   "Could not find vendor.qti.hardware.camera.aon.IAONService/default in the VINTF manifest.
+//    No alternative instances declared in VINTF."
+// AON is the secure always-on camera path that face unlock authenticates through; without a
+// registered IAONService, face enrollment fails with "Face enrollment didn't work".
+// Content is stock's vendor.qti.camera.aon-impl.xml verbatim.
+vintf_fragment {
+    name: "camera_aon.metroid.xml",
+    src: "camera_aon.metroid.xml",
     vendor: true,
 }

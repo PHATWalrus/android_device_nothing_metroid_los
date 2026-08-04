@@ -4,8 +4,14 @@
         <fqname>IGatekeeper/default</fqname>
     </hal>
     <hal format="aidl">
-        <name>android.hardware.secure_element</name>
-        <fqname>ISecureElement/eSE1</fqname>
+        <name>android.hardware.wifi.hostapd</name>
+        <version>2</version>
+        <fqname>IHostapd/default</fqname>
+    </hal>
+    <hal format="aidl">
+        <name>android.hardware.biometrics.face</name>
+        <version>4</version>
+        <fqname>IFace/default</fqname>
     </hal>
     <!-- KeyMint (TEE) + RKP/secureclock/sharedsecret. keystore2 discovers keymint backends
          via VINTF; without these it aborts constructing the mandatory TEE level -> InitFatalReboot.
@@ -37,5 +43,10 @@
     <hal format="aidl">
         <name>vendor.qti.hardware.minkipcbinder</name>
         <fqname>IMinkServer/default</fqname>
+    </hal>
+    <hal format="aidl">
+        <name>vendor.qti.memory.pasrmanager</name>
+        <version>1</version>
+        <fqname>IPasrManager/default</fqname>
     </hal>
 </manifest>

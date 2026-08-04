@@ -1,0 +1,68 @@
+From 5e6ecd7d50e65ac38edf22245b929af61e5a9c0b Mon Sep 17 00:00:00 2001
+From: Your Name <your.email@example.com>
+Date: Tue, 4 Aug 2026 08:10:20 -0400
+Subject: [PATCH] SystemUI: suppress metroid fingerprint unlock ripple
+
+Change-Id: Ie065b5eceeb5714a6784122d44af4fcc3380a425
+---
+ .../biometrics/AuthRippleController.kt         | 18 +++++++++++-------
+ 1 file changed, 11 insertions(+), 7 deletions(-)
+
+diff --git a/packages/SystemUI/src/com/android/systemui/biometrics/AuthRippleController.kt b/packages/SystemUI/src/com/android/systemui/biometrics/AuthRippleController.kt
+index 87e9784dd..55752b6a1 100644
+--- a/packages/SystemUI/src/com/android/systemui/biometrics/AuthRippleController.kt
++++ b/packages/SystemUI/src/com/android/systemui/biometrics/AuthRippleController.kt
+@@ -168,9 +168,9 @@ constructor(
+                             Math.max(it.x, displayMetrics.widthPixels - it.x),
+                             Math.max(it.y, displayMetrics.heightPixels - it.y),
+                         ),
+-                    )
++                )
+                 logger.showingUnlockRippleAt(it.x, it.y, "FP sensor radius: $udfpsRadius")
+-                showUnlockedRipple()
++                showUnlockedRipple(showVisualRipple = false)
+             }
+         } else if (biometricSourceType == BiometricSourceType.FACE) {
+             faceSensorLocation?.let {
+@@ -186,14 +186,12 @@ constructor(
+                         ),
+                     )
+                 logger.showingUnlockRippleAt(it.x, it.y, "Face unlock ripple")
+-                showUnlockedRipple()
++                showUnlockedRipple(showVisualRipple = true)
+             }
+         }
+     }
+ 
+-    private fun showUnlockedRipple() {
+-        notificationShadeWindowController.setForcePluginOpen(true, this)
+-
++    private fun showUnlockedRipple(showVisualRipple: Boolean) {
+         // This code path is not used if the KeyguardTransitionRepository is managing the light
+         // reveal scrim.
+         if (!ambientAod()) {
+@@ -206,6 +204,12 @@ constructor(
+             }
+         }
+ 
++        // Nothing's stock SystemUI suppresses the full-screen fingerprint authentication ripple.
++        // Keeping it open through keyguard dismissal leaves black system-bar regions on metroid.
++        if (!showVisualRipple) return
++
++        notificationShadeWindowController.setForcePluginOpen(true, this)
++
+         mView.startUnlockedRipple(
+             /* end runnable */
+             Runnable { notificationShadeWindowController.setForcePluginOpen(false, this) }
+@@ -408,7 +412,7 @@ constructor(
+                         }
+                         pw.println("custom ripple sensorLocation=" + args[1] + ", " + args[2])
+                         mView.setSensorLocation(Point(args[1].toInt(), args[2].toInt()))
+-                        showUnlockedRipple()
++                        showUnlockedRipple(showVisualRipple = true)
+                     }
+                     else -> invalidCommand(pw)
+                 }
+-- 
+2.43.0
+

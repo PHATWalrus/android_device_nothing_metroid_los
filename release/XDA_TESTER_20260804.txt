@@ -1,0 +1,52 @@
+[ROM][UNOFFICIAL][TESTING][16] LineageOS 23 for Nothing Phone (3) [metroid]
+
+This is an unofficial tester build, not an official LineageOS release or a
+daily-driver claim. Back up your data and keep a complete stock restore path.
+
+DEVICE
+- Nothing Phone (3), codename metroid, SM8735
+- Android 16 / LineageOS 23
+- Linux 6.6
+
+DOWNLOAD
+- ROM: REPLACE_WITH_EXTERNAL_DOWNLOAD_URL
+- File: lineage-23.0-20260804-UNOFFICIAL-metroid.zip
+- SHA-256: 74c012f8ef5a5cce1a860442be06bc412c43e11881c2f5f004559cec9c6c4869
+
+INSTALL / UPDATE
+1. Use the matching Lineage Recovery/bootstrap for this release.
+2. In recovery choose Apply update -> Apply from ADB.
+3. Run:
+     adb sideload lineage-23.0-20260804-UNOFFICIAL-metroid.zip
+4. The host commonly stops near 47 percent for A/B OTAs; wait for recovery.
+5. Do not disable AVB/verity and do not manually force an OTA target slot.
+
+WORKING IN CONTROLLED TESTS
+- Recovery sideload, target-slot boot, Enforcing SELinux, encrypted userdata
+- Display, touch, Wi-Fi, Bluetooth, NFC, GNSS, audio, USB, sensors
+- Fingerprint enrollment and lockscreen UDFPS layout
+- Rear/front photo and video, front screen flash
+- 0.6x/1x/3x logical SAT and seamless zoom during normal video
+- FHD60 main-camera recording
+
+KNOWN ISSUES / TESTER FOCUS
+- Face unlock enrollment is not working
+- Camera zoom/lens behavior and UHD/4K need wider mode/app testing
+- Haptics remain weaker than Nothing OS despite the stock service/RichTap stack
+- Cellular calls/SMS/data/IMS/emergency calling need physical-SIM testing
+- Unlocked bootloader: no Widevine L1, strong Play Integrity, trusted HDCP
+
+BUG REPORTS
+Include the exact ZIP SHA-256, firmware, clean/upgrade install, reproduction
+steps, and:
+  adb logcat -b all -d > logcat.txt
+  adb shell dmesg > dmesg.txt
+
+SOURCES
+- Device: https://github.com/logix727/android_device_nothing_metroid
+- Kernel: https://github.com/logix727/android_kernel_msm-6.6_nothing_sm8735
+- LineageOS: https://github.com/LineageOS
+- Additional source patches and pinned revisions: device repo under patches/
+
+Do not report bugs after installing an unlisted kernel/root module/add-on unless
+you reproduce them on the clean tester build.

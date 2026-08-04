@@ -1,6 +1,7 @@
 type vendor_hal_fingerprint_service_nothing, hal_service_type, protected_service, service_manager_type;
 
 add_service(hal_fingerprint_default, vendor_hal_fingerprint_service_nothing)
+hal_client_domain(hal_fingerprint_default, vendor_hal_perf)
 
 set_prop(hal_fingerprint_default, vendor_fp_prop)
 

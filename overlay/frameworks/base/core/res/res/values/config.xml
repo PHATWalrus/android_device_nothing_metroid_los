@@ -17,6 +17,28 @@
 */
 -->
 <resources>
+    <!-- Stock NothingOS lux-to-backlight mapping. -->
+    <bool name="config_automatic_brightness_available">true</bool>
+    <integer-array name="config_autoBrightnessLevels">
+        <item>10</item>
+        <item>30</item>
+        <item>60</item>
+        <item>100</item>
+        <item>150</item>
+        <item>210</item>
+        <item>255</item>
+    </integer-array>
+    <integer-array name="config_autoBrightnessLcdBacklightValues">
+        <item>10</item>
+        <item>20</item>
+        <item>40</item>
+        <item>70</item>
+        <item>110</item>
+        <item>160</item>
+        <item>200</item>
+        <item>255</item>
+    </integer-array>
+
     <!-- Enable UDC sysfs USB state update so UsbDeviceManager can monitor
          /sys/class/udc/<udc>/state and trigger USB notification popups on configfs-only HAL devices -->
     <bool name="config_enableUdcSysfsUsbStateUpdate">true</bool>
@@ -38,14 +60,62 @@
     <string name="config_mainDisplayShape" translatable="false">M1113.2,2800.5h6.7c8.4,-0.1 17.4,-0.2 26.2,-1 10.4,-0.9 20.2,-2.8 29,-5.4 9.4,-2.8 18.3,-6.7 26.5,-11.6 8.4,-5 16.2,-11 23.1,-18 6.9,-6.9 12.9,-14.7 17.9,-23.1 4.9,-8.2 8.8,-17.1 11.6,-26.5 2.7,-8.8 4.5,-18.6 5.4,-29 0.8,-9 0.9,-18.2 1,-26.8V141.1c-0,-7.9 -0.2,-17.3 -1,-26.1 -0.9,-10.4 -2.8,-20.2 -5.4,-29 -2.8,-9.3 -6.7,-18.2 -11.6,-26.5 -5,-8.4 -11,-16.2 -17.9,-23.1 -6.9,-6.9 -14.7,-13 -23.1,-17.9 -8.2,-4.9 -17.1,-8.8 -26.5,-11.6 -8.8,-2.7 -18.6,-4.5 -29,-5.4 -9.1,-0.8 -18.3,-1 -26.8,-1H141c-7.9,0 -17.2,0.2 -26.1,1 -10.4,0.9 -20.2,2.8 -29,5.4 -9.3,2.8 -18.2,6.7 -26.4,11.6 -8.4,5 -16.2,11 -23.1,18 -6.9,6.9 -12.9,14.7 -17.9,23.1 -4.9,8.2 -8.8,17.1 -11.6,26.5 -2.7,8.8 -4.5,18.6 -5.4,29 -0.8,8.6 -0.9,17.3 -1,24.7l-0,5.5v2514.9c0.1,7.9 0.2,17.2 1,26.1 0.9,10.4 2.8,20.2 5.4,29 2.8,9.3 6.7,18.2 11.6,26.4 5,8.4 11,16.2 18,23.1 6.9,6.9 14.7,13 23.1,17.9 8.2,4.9 17.1,8.8 26.4,11.6 8.8,2.7 18.6,4.5 29,5.4 8.7,0.8 17.8,0.9 24.7,1l973.6,0Z @left</string>
     <bool name="config_fillMainBuiltInDisplayCutout">true</bool>
 
-    <!-- UDFPS sensor location (x, y, radius in native 1260x2800 px, from
-         persist.vendor.fingerprint.sensor_location=640|2518|105; HAL misreports 1080p-space
-         540,2176). Consumed for AIDL sensors via the metroid FingerprintProvider patch.
+    <!-- UDFPS sensor location (x, y, radius) in native 1260x2800 px.
+         Consumed for AIDL sensors via the metroid FingerprintProvider patch.
          Do NOT use config_sfps_sensor_props for this — SystemUI SideFps OverlapDetector
-         crash-loops on it (verified 2026-07-10). -->
+         crash-loops on it (verified 2026-07-10).
+
+         Derivation (re-verified 2026-08-01, replacing the previous 640|2518|105):
+         - The HAL really does report 1080x2400-space values. Read directly off
+           IFingerprint::getSensorProps() (binder txn 1) on the running device:
+           x=0x21c=540, y=0x880=2176, radius=0x5c=92.
+         - This panel has NO 1080p mode — dumpsys display lists all three modes as
+           1260x2800 — so the framework scale factor is always 1 and these coordinates
+           must be supplied in native space. The override is mandatory, not cosmetic.
+         - Native = HAL * 1260/1080 = HAL * 2800/2400 = HAL * 7/6:
+           540*7/6 = 630, 2176*7/6 = 2538.7 -> 2539, 92*7/6 = 107.3 -> 107.
+         - Corroboration for x=630: the HAL's 540 is exactly half of 1080, i.e. a
+           horizontally centred sensor, and the display cutout spec centres the camera
+           hole at x=630.5 on this panel. 630 is the true centre; 640 was 10 px right.
+         - The previous value 640|2518|105 was attributed to
+           persist.vendor.fingerprint.sensor_location, but that property is set nowhere:
+           not on the device, not in /vendor/build.prop, and nowhere in the stock dump.
+           Stock ships no config_udfps_sensor_props at all. So it had no traceable source.
+         If fingerprint recognition regresses, revert to 640|2518|105 and re-test. -->
     <integer-array name="config_udfps_sensor_props" translatable="false">
-        <item>640</item>
-        <item>2518</item>
-        <item>105</item>
+        <item>630</item>
+        <item>2539</item>
+        <item>107</item>
     </integer-array>
+
+    <!-- Default the panel to 120 Hz, matching stock Nothing OS.
+         This is NOT cosmetic - it is required for the under-display fingerprint sensor.
+         The panel driver refuses to enable local HBM (the bright flash that illuminates the
+         finger for the optical sensor) unless the panel is already at 120 Hz:
+
+           vendor/qcom/opensource/display-drivers/msm/sde/sde_connector.c
+             if (fp_status && display->panel->cur_mode->timing.refresh_rate != 120) {
+                     SDE_ERROR("fps not equal 120, wait!");
+                     return 0;   // refuses, and never retries
+             }
+
+         Measured on the 20260802 build: idling at 60 Hz produced 2389 kernel
+         "fps not equal 120" refusals, LHBM opening and closing again within 1-2 ms, and a
+         fingerprint sensor that could not read (acquire stuck at 1, no enrollment possible).
+         Forcing peak_refresh_rate=120 by hand made the panel run at 120.
+
+         AOSP does vote for max refresh rate while UDFPS is active
+         (DisplayModeDirector.UdfpsObserver -> Vote.PRIORITY_UDFPS, and
+         config_ignoreUdfpsVote is already false), but at a 60 Hz idle the LHBM request
+         races that vote and loses. Defaulting to 120 removes the race, as on stock. -->
+    <integer name="config_defaultPeakRefreshRate">120</integer>
+
+    <!-- config_defaultRefreshRate is deliberately NOT overridden here (AOSP default 60).
+         An earlier revision pinned it to 120 to keep UDFPS local-HBM working, but that made
+         120 Hz the *floor* and silently overrode Settings > Display > Smooth Display when a
+         user turned it off. Replaced by the proper fix: UdfpsControllerOverlay.show() now
+         requests the max refresh rate as soon as the fingerprint overlay appears (and hide()
+         already drops it), so the panel is at 120 Hz before a finger lands and returns to the
+         user's chosen rate afterwards. Peak stays 120 above so Smooth Display defaults on,
+         matching stock. -->
 </resources>

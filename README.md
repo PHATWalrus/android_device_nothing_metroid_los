@@ -3,11 +3,10 @@
 Unofficial early build of LineageOS 23 (Android 16) for the Nothing Phone (3) —
 codename `metroid`, Qualcomm **SM8735**.
 
-**Status: alpha / active bring-up.** A release-key full Virtual A/B OTA was
-built and offline-verified on 2026-07-31. Its recovery sideload transferred
-successfully, but post-install target-slot boot and hardware acceptance are not
-yet recorded. Do not describe that binary as device-tested until this gate is
-closed. See [`BRINGUP_GUIDE.md`](BRINGUP_GUIDE.md) for the technical history.
+**Status: alpha / active testing.** The 2026-08-04 release-key Virtual A/B OTA
+was recovery-sideloaded and booted on the target slot. See
+[`release/20260804-test1.md`](release/20260804-test1.md) for tested behavior and
+known issues, and [`BRINGUP_GUIDE.md`](BRINGUP_GUIDE.md) for technical history.
 
 ## Current release gate
 
@@ -17,9 +16,9 @@ closed. See [`BRINGUP_GUIDE.md`](BRINGUP_GUIDE.md) for the technical history.
 | Payload images match target-files | PASS |
 | Complete release-key AVB graph, root flags `0` | PASS |
 | Matching Lineage Recovery sideload transfer | PASS |
-| Post-install target-slot boot | PENDING |
-| Automated hardware sweep and second reboot | PENDING |
-| Public tester release | BLOCKED |
+| Post-install target-slot boot | PASS |
+| Core hardware/service sweep | PASS with disclosed gaps |
+| Public tester source | READY |
 
 The previous clean-install baseline reached the LineageOS UI with display,
 touch, ADB, Enforcing SELinux, file-based encryption, and a stable
@@ -64,12 +63,10 @@ See [`patches/README.md`](patches/README.md) for the exact source revisions.
 - `fastboot boot` hangs — always flash + reboot.
 
 ## Known issues
-- The exact 2026-07-31 candidate still needs post-install boot and hardware
-  acceptance. Current hardware claims intentionally remain unpublished.
-- The prior clean baseline failed audio/Bluetooth, camera, NFC, and fingerprint.
-  The current source packages the audio vendor extension, declares the served
-  Nothing camera interface in VINTF, and satisfies the clean-start NFC gate.
-- Fingerprint remains an open acceptance item.
+- Face unlock enrollment is not working.
+- Camera zoom/lens behavior and UHD/4K need wider testing.
+- Haptics remain weaker than Nothing OS despite loading the stock stack.
+- Cellular calls/SMS/data/IMS/emergency calling need physical-SIM testing.
 - **Slow first boot (~5-7 min)** — runtime is imageless (odsign/boot-level key);
   fixable with `WITH_DEXPREOPT`; subsequent boots are normal speed.
 - Minor cosmetic HAL noise: `memtrack`, `lights`, `power.stats` log

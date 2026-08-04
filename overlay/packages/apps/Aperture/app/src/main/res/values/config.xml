@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Expose auxiliary cameras so logical SAT camera ID 4 is discoverable. -->
+    <bool name="config_enableAuxCameras">true</bool>
+
+    <!-- Stock photo and ordinary video use logical SAT camera ID 4 to switch
+         between ultrawide, main and telephoto without recreating the session. -->
+    <bool name="config_ignoreLogicalAuxCameras">false</bool>
+
+    <string-array name="config_logicalZoomRatios">
+        <item>4</item> <item>0.6</item> <item>0.6</item>
+        <item>4</item> <item>1.0</item> <item>1.0</item>
+        <item>4</item> <item>3.0</item> <item>3.0</item>
+    </string-array>
+
+    <!-- Stock routes FHD60 and UHD30 to the physical main camera. Expose
+         FHD60 while ID 4 is active so Aperture can route it before rebinding. -->
+    <string-array name="config_additionalVideoConfigurations">
+        <item>0</item> <item>fhd</item> <item>60</item>
+        <item>4</item> <item>fhd</item> <item>60</item>
+    </string-array>
+</resources>

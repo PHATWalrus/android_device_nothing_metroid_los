@@ -12,8 +12,13 @@
 
 # Camera
 
+# Match Nothing's stock policy so the HAL inherits the standard face-data,
+# camera, graphics, logging and property grants.
+/(vendor|system/vendor)/bin/hw/android\.hardware\.biometrics\.face-service\.noth    u:object_r:hal_face_default_exec:s0
+
 # Diag
 /data/vendor/diag(/.*)? u:object_r:minidump_data_file:s0
+/data/vendor/diag_mdlog(/.*)? u:object_r:vendor_mdlog_vendor_data_file:s0
 /(vendor|system/vendor)/bin/diagcommd u:object_r:vendor_diagcommd_exec:s0
 
 # Fingerprint

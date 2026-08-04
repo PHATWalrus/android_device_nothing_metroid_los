@@ -1,0 +1,76 @@
+From e1521e76f588b94bb754101bf47a97c8df078747 Mon Sep 17 00:00:00 2001
+From: Your Name <your.email@example.com>
+Date: Tue, 4 Aug 2026 08:10:20 -0400
+Subject: [PATCH] Settings: avoid UDFPS enrollment footer overlap
+
+Change-Id: I188fa66dcc398a75f8b6070b1267b5af987003e5
+---
+ .../biometrics/fingerprint/FingerprintEnrollEnrolling.java  | 6 ++++--
+ .../biometrics/fingerprint/UdfpsEnrollEnrollingView.java    | 6 +++---
+ .../settings/biometrics/fingerprint/UdfpsEnrollView.java    | 6 +++++-
+ 3 files changed, 12 insertions(+), 6 deletions(-)
+
+diff --git a/src/com/android/settings/biometrics/fingerprint/FingerprintEnrollEnrolling.java b/src/com/android/settings/biometrics/fingerprint/FingerprintEnrollEnrolling.java
+index 91f0986..f41f09c 100644
+--- a/src/com/android/settings/biometrics/fingerprint/FingerprintEnrollEnrolling.java
++++ b/src/com/android/settings/biometrics/fingerprint/FingerprintEnrollEnrolling.java
+@@ -301,8 +301,10 @@ public class FingerprintEnrollEnrolling extends BiometricsEnrollEnrolling {
+         // If it's udfps, set the background color only for secondary button if necessary.
+         if (mCanAssumeUdfps) {
+             mShouldSetFooterBarBackground = false;
+-            ((UdfpsEnrollEnrollingView) getLayout()).setSecondaryButtonBackground(
+-                    getBackgroundColor());
++            final UdfpsEnrollEnrollingView layout = (UdfpsEnrollEnrollingView) getLayout();
++            layout.setSecondaryButtonBackground(getBackgroundColor());
++            // Keep the enrollment ring above the footer, as Nothing's stock enrollment UI does.
++            layout.post(layout::adjustUdfpsViewWithFooterBar);
+         }
+ 
+         final LayerDrawable fingerprintDrawable = mProgressBar != null
+diff --git a/src/com/android/settings/biometrics/fingerprint/UdfpsEnrollEnrollingView.java b/src/com/android/settings/biometrics/fingerprint/UdfpsEnrollEnrollingView.java
+index 931974e..1610ae2 100644
+--- a/src/com/android/settings/biometrics/fingerprint/UdfpsEnrollEnrollingView.java
++++ b/src/com/android/settings/biometrics/fingerprint/UdfpsEnrollEnrollingView.java
+@@ -162,7 +162,7 @@ public class UdfpsEnrollEnrollingView extends GlifLayout {
+         return metrics.scaledDensity;
+     }
+ 
+-    void adjustUdfpsVieWithFooterBar() {
++    void adjustUdfpsViewWithFooterBar() {
+         final FrameLayout allContent = findViewById(R.id.suc_layout_status);
+         final ImageView udfpsProgressView = findViewById(
+                 R.id.udfps_enroll_animation_fp_progress_view);
+@@ -177,8 +177,8 @@ public class UdfpsEnrollEnrollingView extends GlifLayout {
+                 - (footerBarHeight + navigationBarHeight);
+ 
+         if (udfpsProgressDrawableBottom > footerBarTop) {
+-            int adjustPadding = udfpsProgressDrawableBottom - footerBarTop;
+-            setDecreasePadding(adjustPadding);
++            final int overlap = udfpsProgressDrawableBottom - footerBarTop;
++            mUdfpsEnrollView.setProgressBarTranslationY(-overlap);
+         }
+     }
+ 
+diff --git a/src/com/android/settings/biometrics/fingerprint/UdfpsEnrollView.java b/src/com/android/settings/biometrics/fingerprint/UdfpsEnrollView.java
+index 0c80b48..f868695 100644
+--- a/src/com/android/settings/biometrics/fingerprint/UdfpsEnrollView.java
++++ b/src/com/android/settings/biometrics/fingerprint/UdfpsEnrollView.java
+@@ -138,10 +138,14 @@ public class UdfpsEnrollView extends FrameLayout implements UdfpsEnrollHelper.Li
+      * @param decreasePadding the decrease padding
+      */
+     void setDecreasePadding(int decreasePadding) {
+-        mProgressBarRadius -= decreasePadding;
++        mProgressBarRadius = Math.max(0, mProgressBarRadius - decreasePadding);
+         onSensorRectUpdated();
+     }
+ 
++    void setProgressBarTranslationY(float translationY) {
++        mFingerprintProgressView.setTranslationY(translationY);
++    }
++
+     private void onSensorRectUpdated() {
+         updateDimensions();
+ 
+-- 
+2.43.0
+

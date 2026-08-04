@@ -17,3 +17,7 @@ vendor_public_prop(vendor_thermal_normal_prop)
 # types — AOSP has a neverallow forbidding vendor domains from touching default_prop, so
 # set_prop(hal_fingerprint_default, default_prop) fails the build rather than the boot.
 vendor_internal_prop(vendor_fingerprint_prop)
+
+# Nothing face HAL configuration properties. Stock calls this
+# vendor_face_config_prop; keep a device-local name in rebuilt vendor policy.
+vendor_internal_prop(vendor_face_prop)

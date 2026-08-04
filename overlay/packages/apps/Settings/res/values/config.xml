@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Decorative enrollment padding; keep separate from the physical 107 px sensor radius. -->
+    <integer name="config_udfpsEnrollProgressBar" translatable="false">99</integer>
+</resources>

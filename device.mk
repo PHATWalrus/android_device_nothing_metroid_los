@@ -1,5 +1,23 @@
 LOCAL_PATH := device/nothing/metroid
 
+# The shipped Nothing Bluetooth audio provider is stable AIDL v4. Suppress the
+# source provider's v5 fragment and install the matching stock declaration.
+$(call soong_config_set_bool, metroid, stock_bluetooth_audio, true)
+$(call soong_config_set_bool, metroid, stock_vibrator, true)
+
+# Qualcomm vendor linker namespace and the stock modem RFS topology. Widevine
+# needs liboemcrypto exported, while MPSS expects these paths for TFTP-backed data.
+PRODUCT_VENDOR_LINKER_CONFIG_FRAGMENTS += \
+    hardware/qcom-caf/common/linker.config.json
+
+PRODUCT_PACKAGES += \
+    rfs_msm_mpss_hlos_symlink \
+    rfs_msm_mpss_ramdumps_symlink \
+    rfs_msm_mpss_readonly_firmware_symlink \
+    rfs_msm_mpss_readonly_vendor_firmware_symlink \
+    rfs_msm_mpss_readwrite_symlink \
+    rfs_msm_mpss_shared_symlink
+
 # A/B
 $(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota.mk)
 
@@ -158,8 +176,8 @@ PRODUCT_PACKAGES +=     android.hardware.thermal-service.qti
 # USB + USB gadget HAL (vendor/qcom/opensource/usb/hal, default namespace)
 PRODUCT_PACKAGES +=     android.hardware.usb-service.qti     android.hardware.usb.gadget-service.qti
 
-# Vibrator HAL (vendor/qcom/opensource/vibrator/aidl, default namespace)
-PRODUCT_PACKAGES +=     vendor.qti.hardware.vibrator.service
+# Nothing stock vibrator HAL with AW86938/RichTap support.
+PRODUCT_PACKAGES +=     vendor.qti.hardware.vibrator.service.stock
 
 # Vendor servicemanager (frameworks/native) - vndservice_contexts users need it
 PRODUCT_PACKAGES +=     vndservicemanager
@@ -245,7 +263,8 @@ PRODUCT_COPY_FILES += \
 # mapper.qti.xml dropped 2026-07-10: qcom-caf gralloc source (mapper.qti) now provides the
 # same fragment -> fsgen packaging conflict; the standalone-fragment fix was proven ineffective
 # anyway (see metroid-mapper-vintf-fix-attempt-20260706).
-PRODUCT_PACKAGES += hal_batch1.metroid.xml hal_batch2.metroid.xml hal_batch3.metroid.xml camera_provider.metroid.xml
+PRODUCT_PACKAGES += camera_aon.metroid.xml
+PRODUCT_PACKAGES += hal_batch1.metroid.xml hal_batch2.metroid.xml hal_batch3.metroid.xml camera_provider.metroid.xml qms.metroid.xml mwqem.metroid.xml audio_bluetooth.metroid.xml bluetooth_audio_provider.metroid.xml media_c2.metroid.xml perf2.metroid.xml
 # batch 4 (2026-07-10, live-verified): radio HALs + qspa VINTF declarations.
 # clearkey dropped 2026-07-29: AOSP's own clearkey service already installs this exact fragment
 # (frameworks/av/drm/mediadrm/plugins/clearkey/aidl), so ours was a duplicate installing to the
@@ -283,9 +302,7 @@ PRODUCT_COPY_FILES += \
 # boot_level_key.strategy: TEE keymint rejects EARLY_BOOT_ONLY (odsign Status(-8)); use MAX_USES_PER_BOOT.
 PRODUCT_SYSTEM_PROPERTIES += \
     ro.hw_timeout_multiplier=4 \
-    ro.keystore.boot_level_key.strategy=TRUSTED_ENVIRONMENT:MAX_USES_PER_BOOT \
-    persist.sys.disable_rescue=true \
-    rescueparty.disabled=true
+    ro.keystore.boot_level_key.strategy=TRUSTED_ENVIRONMENT:MAX_USES_PER_BOOT
 
 
 
@@ -300,6 +317,10 @@ PRODUCT_PACKAGES += \
     qtiaudiohalvendorextn
 
 DEVICE_PACKAGE_OVERLAYS += device/nothing/metroid/overlay
+
+PRODUCT_PACKAGES += \
+    MetroidWifiOverlay \
+    NTSystemUIResTarget
 
 # Essential Key (gpio-keys scancode 250): keylayout + system_server KeyHandler that
 # toggles the torch (config_deviceKeyHandlerLibs lineage-sdk overlay points at the jar).

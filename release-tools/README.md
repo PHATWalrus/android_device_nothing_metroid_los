@@ -1,6 +1,6 @@
 # Split ROM release assets
 
-GitHub limits each release asset to 2 GiB. The 2026-07-31 full OTA is larger,
+GitHub limits each release asset to 2 GiB. The full OTA is larger,
 so it is uploaded as exactly three ordered files: `.part-aa`, `.part-ab`, and
 `.part-ac`.
 

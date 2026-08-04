@@ -16,6 +16,7 @@ type vendor_sysfs_hardwareinfo, fs_type, sysfs_type;
 
 # Sensor
 type vendor_aon_vendor_data_file, data_file_type, file_type;
+type vendor_mdlog_vendor_data_file, data_file_type, file_type;
 
 # Thermal
 type sys_thermal_wifi_limit, fs_type, sysfs_type;

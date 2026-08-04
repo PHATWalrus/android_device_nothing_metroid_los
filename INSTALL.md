@@ -49,7 +49,7 @@ Unlocking and the required factory reset erase internal storage.
 7. On the computer run:
 
    ```bash
-   adb sideload lineage-23.0-20260731-UNOFFICIAL-metroid.zip
+   adb sideload lineage-23.0-20260804-UNOFFICIAL-metroid.zip
    ```
 
    The host progress can stop near 47% while the device continues verifying and

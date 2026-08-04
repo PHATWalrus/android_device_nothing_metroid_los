@@ -117,16 +117,8 @@ allow hal_fingerprint_default sysfs:file r_file_perms;
 add_service(hal_camera_default, vendor_nothing_ntcam_service)
 allow hal_camera_default proc:file write;
 
-# NOT FIXED HERE — system_suspend reading wakeup stats from sysfs (40 denials, the loudest
-# remaining set). Two reasons this is deferred rather than bodged:
-#   1. system_suspend is a PLATFORM domain; vendor policy cannot reference it at all
-#      ("unknown type system_suspend" from checkpolicy).
-#   2. The right fix is a genfs label, not an allow: these are wakeup-source stats
-#      (name, active_count, event_count, total_time_ms ...) that AOSP labels sysfs_wakeup, and
-#      system_suspend is already allowed to read that type. genfs_contexts here already labels
-#      ~10 specific wakeup nodes; the remaining ones just need enumerating from
-#      /sys/class/wakeup on a PERMISSIVE boot (shell cannot read them under enforcing).
-# Impact: read-only wakeup accounting only. Does not block boot or suspend.
+# system_suspend's wakeup-stat access is handled by the specific sysfs_wakeup labels in
+# genfs_contexts; platform policy already grants the domain read access to that type.
 
 # Small, specific grants
 allow hal_power_stats_default sysfs:file r_file_perms;
@@ -163,3 +155,7 @@ allow hal_camera_default proc:file rw_file_perms;
 
 # Audio HAL reads the boot-status property.
 get_prop(hal_audio_default, boot_status_prop)
+
+# Nothing's GNSS/modem diagnostic logger writes only to its dedicated data directory.
+allow vendor_qlogd vendor_mdlog_vendor_data_file:dir create_dir_perms;
+allow vendor_qlogd vendor_mdlog_vendor_data_file:file create_file_perms;

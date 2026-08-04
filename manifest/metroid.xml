@@ -5,5 +5,9 @@
            path="device/nothing/metroid"
            remote="github-logix727"
            revision="master" />
+  <project name="logix727/android_kernel_msm-6.6_nothing_sm8735"
+           path="kernel/nothing/sm8735"
+           remote="github-logix727"
+           revision="sm8735/v/mr" />
   <!-- Extract proprietary blobs from your own B4.1 stock dump. -->
 </manifest>

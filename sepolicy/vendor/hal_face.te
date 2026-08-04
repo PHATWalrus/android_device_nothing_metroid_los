@@ -1,0 +1,19 @@
+# Nothing's face service runs in the standard face HAL domain. Keep its vendor
+# property prefixes aligned with stock while using the locally declared type.
+set_prop(hal_face_default, vendor_face_prop)
+set_prop(hal_face_default, log_tag_prop)
+
+# The HAL creates its SDK database beneath /data/vendor_de/<user>/facedata.
+allow hal_face_default face_vendor_data_file:dir create_dir_perms;
+allow hal_face_default face_vendor_data_file:file create_file_perms;
+
+# Nothing stock face HAL uses Camera2 NDK and graphic buffers.
+get_prop(hal_face_default, camera_config_prop)
+allow hal_face_default hidl_token_hwservice:hwservice_manager find;
+allow hal_face_default hal_graphics_mapper_hwservice:hwservice_manager find;
+binder_call(hal_face_default, hal_graphics_allocator_default)
+allow hal_face_default hal_graphics_allocator_default:fd use;
+allow hal_face_default fwk_camera_hwservice:hwservice_manager find;
+allow hal_face_default fwk_camera_service:service_manager find;
+binder_call(hal_face_default, cameraserver)
+allow hal_face_default cameraserver:fd use;

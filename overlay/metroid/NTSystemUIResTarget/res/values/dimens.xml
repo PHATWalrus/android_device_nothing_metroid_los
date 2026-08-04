@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: The LineageOS Project
+     SPDX-License-Identifier: Apache-2.0
+-->
+<resources>
+    <!-- Microns per pixel; stock SystemUI uses this to size the UDFPS foreground icon. -->
+    <item name="pixel_pitch" format="float" type="dimen">50</item>
+
+    <!-- Keep the keyguard carrier label clear of the rounded-corner safe inset. -->
+    <dimen name="keyguard_carrier_text_margin">18dp</dimen>
+
+    <!-- Keep charging and biometric indications above the low-mounted UDFPS sensor. -->
+    <dimen name="keyguard_indication_margin_bottom">440px</dimen>
+</resources>

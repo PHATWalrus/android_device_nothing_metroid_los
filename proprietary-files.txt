@@ -1484,7 +1484,6 @@ vendor/etc/init/vendor.qti.hardware.c2pa-aidl-service-qti.rc
 vendor/etc/init/vendor.qti.hardware.capabilityconfigstore-service.rc
 vendor/etc/init/vendor.qti.hardware.display.allocator-service.rc
 vendor/etc/init/vendor.qti.hardware.display.color-service.rc
-vendor/etc/init/vendor.qti.hardware.display.composer-service.rc
 vendor/etc/init/vendor.qti.hardware.display.demura-service.rc
 vendor/etc/init/vendor.qti.hardware.dsp-service.rc
 vendor/etc/init/vendor.qti.hardware.lights.service.rc
@@ -1494,7 +1493,6 @@ vendor/etc/init/vendor.qti.hardware.qseecom@1.0-service.rc
 vendor/etc/init/vendor.qti.hardware.secureprocessor.rc
 vendor/etc/init/vendor.qti.hardware.sensorscalibrate-service.rc
 vendor/etc/init/vendor.qti.hardware.servicetrackeraidl-service.rc
-vendor/etc/init/vendor.qti.hardware.vibrator.service.rc
 vendor/etc/init/vendor.qti.hardware.wifi.wifilearner-service.rc
 vendor/etc/init/vendor.qti.media.c2@1.0-service.rc
 vendor/etc/init/vendor.qti.media.c2audio@1.0-service.rc
@@ -1576,6 +1574,8 @@ vendor/etc/media_codecs_tuna_v0.xml
 vendor/etc/media_codecs_tuna_v1.xml
 vendor/etc/media_codecs_vendor_audio.xml
 vendor/etc/media_kera_v0/video_system_specs.json
+vendor/etc/media_tuna_v0/video_system_specs.json
+vendor/etc/media_tuna_v1/video_system_specs.json
 vendor/etc/media_profiles.xml
 vendor/etc/media_profiles_V1_0.xml
 vendor/etc/media_profiles_kera_v0.xml
