@@ -1,0 +1,262 @@
+From ae44b2e037437d58ff82480da577443bf8eb11ad Mon Sep 17 00:00:00 2001
+From: Your Name <your.email@example.com>
+Date: Tue, 4 Aug 2026 08:34:13 -0400
+Subject: [PATCH] display: Add build compatibility shims
+
+Change-Id: Ibdf7a0b7dba44aac63332bba25dedaa2a14c9277
+---
+ gralloc/linux/msm_ion.h        | 96 ++++++++++++++++++++++++++++++++++
+ gralloc/linux/msm_ion_ids.h    | 38 ++++++++++++++
+ gralloc/linux/qti-smmu-proxy.h | 58 ++++++++++++++++++++
+ libvmmem/Android.bp            |  1 +
+ libvmmem/vmmem.cpp             | 15 ++++++
+ 5 files changed, 208 insertions(+)
+ create mode 100644 gralloc/linux/msm_ion.h
+ create mode 100644 gralloc/linux/msm_ion_ids.h
+ create mode 100644 gralloc/linux/qti-smmu-proxy.h
+ create mode 100644 libvmmem/vmmem.cpp
+
+diff --git a/gralloc/linux/msm_ion.h b/gralloc/linux/msm_ion.h
+new file mode 100644
+index 0000000..c1a75e6
+--- /dev/null
++++ b/gralloc/linux/msm_ion.h
+@@ -0,0 +1,96 @@
++/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
++/*
++ * Copyright (c) 2018-2021, The Linux Foundation. All rights reserved.
++ * Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
++ */
++#ifndef _UAPI_LINUX_MSM_ION_H
++#define _UAPI_LINUX_MSM_ION_H
++
++#include <linux/types.h>
++#include <linux/msm_ion_ids.h>
++
++/**
++ * TARGET_ION_ABI_VERSION can be used by user space clients to ensure that at
++ * compile time only their code which uses the appropriate ION APIs for
++ * this kernel is included.
++ */
++#define TARGET_ION_ABI_VERSION 3
++
++enum msm_ion_heap_types {
++	ION_HEAP_TYPE_MSM_START = 16,
++	ION_HEAP_TYPE_SECURE_DMA = ION_HEAP_TYPE_MSM_START,
++	ION_HEAP_TYPE_SYSTEM_SECURE,
++	ION_HEAP_TYPE_HYP_CMA,
++	ION_HEAP_TYPE_MSM_CARVEOUT,
++	ION_HEAP_TYPE_SECURE_CARVEOUT,
++	ION_HEAP_TYPE_MSM_SYSTEM,
++};
++
++/**
++ * Flags to be used when allocating from the secure heap for
++ * content protection
++ */
++#define ION_FLAG_CP_TRUSTED_VM		ION_BIT(15)
++/* ION_FLAG_POOL_FORCE_ALLOC uses ION_BIT(16) */
++#define ION_FLAG_CP_TOUCH		ION_BIT(17)
++#define ION_FLAG_CP_BITSTREAM		ION_BIT(18)
++#define ION_FLAG_CP_PIXEL		ION_BIT(19)
++#define ION_FLAG_CP_NON_PIXEL		ION_BIT(20)
++#define ION_FLAG_CP_CAMERA		ION_BIT(21)
++#define ION_FLAG_CP_HLOS		ION_BIT(22)
++#define ION_FLAG_CP_SPSS_SP		ION_BIT(23)
++#define ION_FLAG_CP_SPSS_SP_SHARED	ION_BIT(24)
++#define ION_FLAG_CP_SEC_DISPLAY		ION_BIT(25)
++#define ION_FLAG_CP_APP			ION_BIT(26)
++#define ION_FLAG_CP_CAMERA_PREVIEW	ION_BIT(27)
++/* ION_FLAG_ALLOW_NON_CONTIG uses ION_BIT(28) */
++#define ION_FLAG_CP_CDSP		ION_BIT(29)
++#define ION_FLAG_CP_SPSS_HLOS_SHARED	ION_BIT(30)
++
++#define ION_FLAGS_CP_MASK	0x6FFE8000
++
++/**
++ * Flag to allow non continguous allocation of memory from secure
++ * heap
++ */
++#define ION_FLAG_ALLOW_NON_CONTIG       ION_BIT(28)
++
++/**
++ * Flag to use when allocating to indicate that a heap is secure.
++ * Do NOT use BIT macro since it is defined in #ifdef __KERNEL__
++ */
++#define ION_FLAG_SECURE			ION_BIT(31)
++
++/*
++ * Used in conjunction with heap which pool memory to force an allocation
++ * to come from the page allocator directly instead of from the pool allocation
++ */
++#define ION_FLAG_POOL_FORCE_ALLOC	ION_BIT(16)
++
++/**
++ * Macro should be used with ion_heap_ids defined above.
++ */
++#define ION_HEAP(bit)			bit
++
++#define ION_IOC_MSM_MAGIC 'M'
++
++struct ion_prefetch_regions {
++	__u64 sizes;
++	__u32 vmid;
++	__u32 nr_sizes;
++};
++
++struct ion_prefetch_data {
++	__u64 len;
++	__u64 regions;
++	__u32 heap_id;
++	__u32 nr_regions;
++};
++
++#define ION_IOC_PREFETCH		_IOWR(ION_IOC_MSM_MAGIC, 3, \
++						struct ion_prefetch_data)
++
++#define ION_IOC_DRAIN			_IOWR(ION_IOC_MSM_MAGIC, 4, \
++						struct ion_prefetch_data)
++
++#endif /* _UAPI_LINUX_MSM_ION_H */
+diff --git a/gralloc/linux/msm_ion_ids.h b/gralloc/linux/msm_ion_ids.h
+new file mode 100644
+index 0000000..8003d9f
+--- /dev/null
++++ b/gralloc/linux/msm_ion_ids.h
+@@ -0,0 +1,38 @@
++/* SPDX-License-Identifier: GPL-2.0-only WITH Linux-syscall-note */
++/*
++ * Copyright (c) 2019-2021, The Linux Foundation. All rights reserved.
++ * Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved..
++ */
++#ifndef _MSM_ION_IDS_H
++#define _MSM_ION_IDS_H
++
++#define ION_BIT(nr) (1U << (nr))
++
++/**
++ * These are the only ids that should be used for Ion heap ids.
++ * The ids listed are the order in which allocation will be attempted
++ * if specified. Don't swap the order of heap ids unless you know what
++ * you are doing!
++ * Id's are spaced by purpose to allow new Id's to be inserted in-between (for
++ * possible fallbacks)
++ */
++
++/* ION_BIT(0) is reserved for the generic system heap. */
++#define ION_QSECOM_TA_HEAP_ID		ION_BIT(1)
++#define ION_CAMERA_HEAP_ID		ION_BIT(2)
++#define ION_DISPLAY_HEAP_ID		ION_BIT(3)
++#define ION_ADSP_HEAP_ID		ION_BIT(4)
++#define ION_AUDIO_ML_HEAP_ID		ION_BIT(5)
++#define ION_USER_CONTIG_HEAP_ID		ION_BIT(6)
++#define ION_QSECOM_HEAP_ID		ION_BIT(7)
++#define ION_AUDIO_HEAP_ID		ION_BIT(8)
++#define ION_CP_MM_HEAP_ID		ION_BIT(9)
++#define ION_SECURE_HEAP_ID		ION_BIT(10)
++#define ION_SECURE_DISPLAY_HEAP_ID	ION_BIT(11)
++#define ION_SPSS_HEAP_ID		ION_BIT(14)
++#define ION_SECURE_CARVEOUT_HEAP_ID	ION_BIT(15)
++#define ION_TUI_CARVEOUT_HEAP_ID	ION_BIT(16)
++#define ION_SYSTEM_HEAP_ID		ION_BIT(25)
++#define ION_HEAP_ID_RESERVED		ION_BIT(31)
++
++#endif /* _MSM_ION_IDS_H */
+diff --git a/gralloc/linux/qti-smmu-proxy.h b/gralloc/linux/qti-smmu-proxy.h
+new file mode 100644
+index 0000000..bad4608
+--- /dev/null
++++ b/gralloc/linux/qti-smmu-proxy.h
+@@ -0,0 +1,58 @@
++/* SPDX-License-Identifier: GPL-2.0-only WITH Linux-syscall-note */
++/*
++ * Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
++ */
++#ifndef __QTI_SMMU_PROXY_UAPI_H_
++#define __QTI_SMMU_PROXY_UAPI_H_
++
++#include <linux/types.h>
++
++#define QTI_SMMU_PROXY_CAMERA_CB 0
++#define QTI_SMMU_PROXY_DISPLAY_CB 1
++#define QTI_SMMU_PROXY_EVA_CB 2
++
++#define QTI_SMMU_PROXY_IOC_BASE 0x55
++
++struct csf_version {
++	__u32 arch_ver;
++	__u32 max_ver;
++	__u32 min_ver;
++	__u32 padding;
++};
++
++#define QTI_SMMU_PROXY_GET_VERSION_IOCTL	_IOR(QTI_SMMU_PROXY_IOC_BASE, 0, \
++						     struct csf_version)
++
++struct smmu_proxy_acl_ctl {
++	__u32 dma_buf_fd;
++	__u32 padding;
++};
++
++#define QTI_SMMU_PROXY_AC_LOCK_BUFFER	_IOW(QTI_SMMU_PROXY_IOC_BASE, 1, \
++					     struct smmu_proxy_acl_ctl)
++#define QTI_SMMU_PROXY_AC_UNLOCK_BUFFER	_IOW(QTI_SMMU_PROXY_IOC_BASE, 2, \
++					     struct smmu_proxy_acl_ctl)
++
++struct smmu_proxy_wipe_buf_ctl {
++	__u64 context_bank_id_array;
++	__u32 num_cb_ids;
++	__u32 padding;
++};
++
++#define QTI_SMMU_PROXY_WIPE_BUFFERS	_IOW(QTI_SMMU_PROXY_IOC_BASE, 3, \
++					     struct smmu_proxy_wipe_buf_ctl)
++
++struct smmu_proxy_get_dma_buf_ctl {
++	/*
++	 * memparcel_hdl only needs to be 32-bit for Gunyah, but a 64-bit value
++	 * is needed to remain forward compatible with FF-A .
++	 */
++	__u64 memparcel_hdl;
++	__u32 dma_buf_fd;
++	__u32 padding;
++};
++
++#define QTI_SMMU_PROXY_GET_DMA_BUF	_IOWR(QTI_SMMU_PROXY_IOC_BASE, 4, \
++					      struct smmu_proxy_get_dma_buf_ctl)
++
++#endif /* __QTI_SMMU_PROXY_UAPI_H_ */
+diff --git a/libvmmem/Android.bp b/libvmmem/Android.bp
+index 2318863..6e8143b 100644
+--- a/libvmmem/Android.bp
++++ b/libvmmem/Android.bp
+@@ -7,4 +7,5 @@ cc_library_headers {
+ cc_library_shared {
+     name: "libvmmem",
+     vendor: true,
++    srcs: ["vmmem.cpp"],
+ }
+diff --git a/libvmmem/vmmem.cpp b/libvmmem/vmmem.cpp
+new file mode 100644
+index 0000000..6d4acec
+--- /dev/null
++++ b/libvmmem/vmmem.cpp
+@@ -0,0 +1,15 @@
++#include "vmmem.h"
++#include <memory>
++
++class VmMemDummy : public VmMem {
++public:
++    ~VmMemDummy() override {}
++    int FindVmByName(const std::string& /*vm_name*/) override { return 0; }
++    int LendDmabuf(int /*fd*/, const VmPerm& /*vm_perms*/) override { return 0; }
++};
++
++VmMem::~VmMem() {}
++
++std::unique_ptr<VmMem> VmMem::CreateVmMem() {
++    return std::make_unique<VmMemDummy>();
++}
+-- 
+2.43.0
+

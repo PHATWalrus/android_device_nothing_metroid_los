@@ -1,0 +1,28 @@
+From bf83ccd8fc5ce4584355eac82f63ab2670b2c844 Mon Sep 17 00:00:00 2001
+From: Your Name <your.email@example.com>
+Date: Tue, 4 Aug 2026 08:34:03 -0400
+Subject: [PATCH] audio_bluetooth_hw: Add session include dependencies
+
+Change-Id: Iaa122af312fb772b95935b69377fdf5b747aaa02
+---
+ system/audio_bluetooth_hw/Android.bp | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/system/audio_bluetooth_hw/Android.bp b/system/audio_bluetooth_hw/Android.bp
+index 1b8e850..71587e8 100644
+--- a/system/audio_bluetooth_hw/Android.bp
++++ b/system/audio_bluetooth_hw/Android.bp
+@@ -35,6 +35,10 @@ cc_library_shared {
+         "utils.cc",
+     ],
+     header_libs: ["libhardware_headers"],
++    include_dirs: [
++        "hardware/interfaces/bluetooth/audio/utils/aidl_session",
++        "hardware/interfaces/bluetooth/audio/utils/session",
++    ],
+     shared_libs: [
+         "libaudioutils",
+         "libbase",
+-- 
+2.43.0
+

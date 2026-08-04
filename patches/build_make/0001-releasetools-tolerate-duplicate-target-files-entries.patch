@@ -1,0 +1,29 @@
+From 92ec4bbb70f37b709027a42a410964bab18fe010 Mon Sep 17 00:00:00 2001
+From: Your Name <your.email@example.com>
+Date: Tue, 4 Aug 2026 08:37:28 -0400
+Subject: [PATCH] releasetools: tolerate duplicate target-files entries
+
+Change-Id: I941d30e30ff52fced536c4f54561bd1adaca46dd
+---
+ tools/releasetools/build_image.py | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/tools/releasetools/build_image.py b/tools/releasetools/build_image.py
+index 736d355468..8c76cd1176 100755
+--- a/tools/releasetools/build_image.py
++++ b/tools/releasetools/build_image.py
+@@ -964,6 +964,11 @@ def CopyInputDirectory(src, dst, filter_file):
+         os.makedirs(full_dst, exist_ok=True)
+       else:
+         os.makedirs(os.path.dirname(full_dst), exist_ok=True)
++        if os.path.exists(full_dst):
++          # METROID: file_list.txt can list the same path twice (seen with
++          # aconfig flag.info); a duplicate hardlink of the same source is
++          # harmless, so skip instead of failing.
++          continue
+         os.link(full_src, full_dst, follow_symlinks=False)
+ 
+ 
+-- 
+2.43.0
+

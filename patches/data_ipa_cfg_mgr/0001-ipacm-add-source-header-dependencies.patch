@@ -1,0 +1,48 @@
+From 2af0c525f98a5cedf2e15376f32b4cde107606e8 Mon Sep 17 00:00:00 2001
+From: Your Name <your.email@example.com>
+Date: Tue, 4 Aug 2026 08:34:13 -0400
+Subject: [PATCH] ipacm: Add required build include paths
+
+Change-Id: I32ecc504bf918e6b32811269877530f4ffb8c27e
+---
+ ipacm/Android.bp | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
+
+diff --git a/ipacm/Android.bp b/ipacm/Android.bp
+index 3400790..3c215ca 100644
+--- a/ipacm/Android.bp
++++ b/ipacm/Android.bp
+@@ -3,6 +3,16 @@ cc_binary {
+     name: "ipacm",
+ 
+     local_include_dirs: ["src"] + ["inc"],
++    // METROID: dataipa uapi headers (ipa_qmi_service_v01.h etc.) — its own Android.bp is disabled (renamed Androidbp)
++    // METROID: libnetfilter_conntrack is overridden by a prebuilt in vendor/nothing/metroid
++    // that lacks export_include_dirs, so add the AOSP source headers explicitly.
++    include_dirs: [
++        "hardware/qcom-caf/sm8750/dataipa/drivers/platform/msm/include/uapi",
++        "hardware/qcom-caf/sm8750/dataipa/drivers/platform/msm/include",
++        "external/libnetfilter_conntrack/include",
++        "external/libnfnetlink/include",
++        "hardware/qcom-caf/sm8750/dataipa/ipanat/inc",
++    ],
+     header_libs: ["device_kernel_headers"]+["qti_kernel_headers",
+ 	"libutils_headers", "libcutils_headers"]+["qti_ipa_kernel_headers"],
+ 
+@@ -84,6 +94,13 @@ cc_fuzz {
+     local_include_dirs: ["src"] + ["inc"],
+     header_libs: ["device_kernel_headers"]+["qti_kernel_headers",
+ 	"libutils_headers", "libcutils_headers"]+["qti_ipa_kernel_headers"],
++    include_dirs: [
++        "hardware/qcom-caf/sm8750/dataipa/drivers/platform/msm/include/uapi",
++        "hardware/qcom-caf/sm8750/dataipa/drivers/platform/msm/include",
++        "external/libnetfilter_conntrack/include",
++        "external/libnfnetlink/include",
++        "hardware/qcom-caf/sm8750/dataipa/ipanat/inc",
++    ],
+ 
+     cflags: ["-v"] + ["-DFEATURE_IPA_ANDROID"] + ["-DFEATURE_IPACM_RESTART"] + [
+         "-DFEATURE_IPACM_AIDL",
+-- 
+2.43.0
+

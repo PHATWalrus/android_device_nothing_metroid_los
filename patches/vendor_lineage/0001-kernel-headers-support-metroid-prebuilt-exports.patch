@@ -1,0 +1,50 @@
+From 5581464971cc5af7e2bcc8119626b73712f78c70 Mon Sep 17 00:00:00 2001
+From: Your Name <your.email@example.com>
+Date: Tue, 4 Aug 2026 08:37:28 -0400
+Subject: [PATCH] kernel headers: support metroid prebuilt exports
+
+Change-Id: I79839510eb5c6feb672a5cea04377e0458b28318
+---
+ build/soong/Android.bp | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/build/soong/Android.bp b/build/soong/Android.bp
+index a36954b..72ad285 100644
+--- a/build/soong/Android.bp
++++ b/build/soong/Android.bp
+@@ -55,7 +55,7 @@ lineage_generator {
+     name: "prebuilt_kernel_includes",
+ 
+     // The headers extract command
+-    cmd: "mkdir -p $(KERNEL_BUILD_OUT_PREFIX)$(genDir) && gzip -d < $(TARGET_PREBUILT_KERNEL_HEADERS) | tar -x -C $(KERNEL_BUILD_OUT_PREFIX)$(genDir) && vendor/lineage/tools/clean_headers.sh $(KERNEL_BUILD_OUT_PREFIX)$(genDir)",
++    cmd: "mkdir -p $(genDir) && gzip -d < $(TARGET_PREBUILT_KERNEL_HEADERS) | tar -x -C $(genDir) && vendor/lineage/tools/clean_headers.sh $(genDir)",
+ 
+     // Directories that can be imported by a cc_* module generated_headers property
+     export_include_dirs: [
+@@ -64,6 +64,11 @@ lineage_generator {
+         "usr/include/audio",
+         "usr/include/audio/include/uapi",
+         "usr/techpack/audio/include",
++        "usr/techpack/display/include",
++        "usr/techpack/camera/include",
++        "usr/techpack/eva/include",
++        "usr/techpack/synx/include",
++        "usr/techpack/vidc/include",
+     ],
+ }
+ 
+@@ -85,8 +90,9 @@ bootstrap_go_package {
+ 
+ cc_defaults {
+     name: "generated_kernel_header_defaults",
+-    generated_headers: ["generated_kernel_includes"],
+-    export_generated_headers: ["generated_kernel_includes"],
++    // metroid: prebuilt kernel — serve UAPI/techpack headers from the prebuilt tarball
++    generated_headers: ["prebuilt_kernel_includes"],
++    export_generated_headers: ["prebuilt_kernel_includes"],
+     vendor_available: true,
+     recovery_available: true,
+ }
+-- 
+2.43.0
+

@@ -1,0 +1,92 @@
+From 544273b7e66ea16649d69dac65d9874c61d82202 Mon Sep 17 00:00:00 2001
+From: Your Name <your.email@example.com>
+Date: Tue, 4 Aug 2026 08:34:04 -0400
+Subject: [PATCH] Codec2: Export plugin headers to media swcodec APEX
+
+Change-Id: I60b960652e793e08175fb147faafef1af0a683ea
+---
+ media/codec2/hal/aidl/Android.bp           | 2 ++
+ media/codec2/hal/hidl/1.0/utils/Android.bp | 1 +
+ media/codec2/hal/hidl/1.1/utils/Android.bp | 1 +
+ media/codec2/hal/hidl/1.2/utils/Android.bp | 1 +
+ media/codec2/hal/plugin/Android.bp         | 6 ++++++
+ 5 files changed, 11 insertions(+)
+
+diff --git a/media/codec2/hal/aidl/Android.bp b/media/codec2/hal/aidl/Android.bp
+index c85df82..efc6526 100644
+--- a/media/codec2/hal/aidl/Android.bp
++++ b/media/codec2/hal/aidl/Android.bp
+@@ -81,6 +81,7 @@ cc_library {
+     ],
+ 
+     header_libs: [
++        "libcodec2_hidl_plugin_headers",
+         "libcodec2_internal", // private
+     ],
+ 
+@@ -168,6 +169,7 @@ cc_library {
+     ],
+ 
+     header_libs: [
++        "libcodec2_hidl_plugin_headers",
+         "libcodec2_internal", // private
+     ],
+ 
+diff --git a/media/codec2/hal/hidl/1.0/utils/Android.bp b/media/codec2/hal/hidl/1.0/utils/Android.bp
+index 9646a0b..b539c7e 100644
+--- a/media/codec2/hal/hidl/1.0/utils/Android.bp
++++ b/media/codec2/hal/hidl/1.0/utils/Android.bp
+@@ -78,6 +78,7 @@ cc_library {
+ 
+     header_libs: [
+         "libbinder_headers",
++        "libcodec2_hidl_plugin_headers",
+         "libcodec2_internal", // private
+         "libsystem_headers",
+     ],
+diff --git a/media/codec2/hal/hidl/1.1/utils/Android.bp b/media/codec2/hal/hidl/1.1/utils/Android.bp
+index d8b5db5..911f24b 100644
+--- a/media/codec2/hal/hidl/1.1/utils/Android.bp
++++ b/media/codec2/hal/hidl/1.1/utils/Android.bp
+@@ -80,6 +80,7 @@ cc_library {
+ 
+     header_libs: [
+         "libbinder_headers",
++        "libcodec2_hidl_plugin_headers",
+         "libsystem_headers",
+         "libcodec2_internal", // private
+     ],
+diff --git a/media/codec2/hal/hidl/1.2/utils/Android.bp b/media/codec2/hal/hidl/1.2/utils/Android.bp
+index a339946..414118b 100644
+--- a/media/codec2/hal/hidl/1.2/utils/Android.bp
++++ b/media/codec2/hal/hidl/1.2/utils/Android.bp
+@@ -85,6 +85,7 @@ cc_library {
+ 
+     header_libs: [
+         "libbinder_headers",
++        "libcodec2_hidl_plugin_headers",
+         "libsystem_headers",
+         "libcodec2_internal", // private
+     ],
+diff --git a/media/codec2/hal/plugin/Android.bp b/media/codec2/hal/plugin/Android.bp
+index 873bb02..5e6dea5 100644
+--- a/media/codec2/hal/plugin/Android.bp
++++ b/media/codec2/hal/plugin/Android.bp
+@@ -10,8 +10,14 @@ package {
+ cc_library_headers {
+     name: "libcodec2_hidl_plugin_headers",
+     vendor_available: true,
++    apex_available: [
++        "//apex_available:platform",
++        "com.android.media.swcodec",
++    ],
++    min_sdk_version: "29",
+     export_include_dirs: [
+         "include",
++        "internal",
+     ],
+ }
+ 
+-- 
+2.43.0
+

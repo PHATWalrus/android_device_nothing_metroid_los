@@ -1,0 +1,56 @@
+From a858ce57e59d9bcfdec948c6f2a817de9e045e66 Mon Sep 17 00:00:00 2001
+From: Your Name <your.email@example.com>
+Date: Tue, 4 Aug 2026 08:34:03 -0400
+Subject: [PATCH 2/3] wifi: aidl: Add legacy HAL build dependencies
+
+Change-Id: I5451feb594b17107f76b85614c15e0d14aa1e88d
+---
+ wifi/aidl/default/Android.bp | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+diff --git a/wifi/aidl/default/Android.bp b/wifi/aidl/default/Android.bp
+index c2e8541d..9f9c83ac 100644
+--- a/wifi/aidl/default/Android.bp
++++ b/wifi/aidl/default/Android.bp
+@@ -96,6 +96,12 @@ cc_library_static {
+         "wifi_status_util.cpp",
+     ],
+ 
++    header_libs: [
++        "wifi_legacy_headers",
++    ],
++    include_dirs: [
++        "frameworks/opt/net/wifi/libwifi_hal/include",
++    ],
+     shared_libs: [
+         "libbase",
+         "libbinder_ndk",
+@@ -128,6 +134,12 @@ cc_binary {
+         "-Wextra",
+     ],
+     srcs: ["service.cpp"],
++    header_libs: [
++        "wifi_legacy_headers",
++    ],
++    include_dirs: [
++        "frameworks/opt/net/wifi/libwifi_hal/include",
++    ],
+     shared_libs: [
+         "libbase",
+         "libbinder_ndk",
+@@ -157,6 +169,12 @@ cc_binary {
+         "-Wextra",
+     ],
+     srcs: ["service.cpp"],
++    header_libs: [
++        "wifi_legacy_headers",
++    ],
++    include_dirs: [
++        "frameworks/opt/net/wifi/libwifi_hal/include",
++    ],
+     shared_libs: [
+         "libbase",
+         "libbinder_ndk",
+-- 
+2.43.0
+

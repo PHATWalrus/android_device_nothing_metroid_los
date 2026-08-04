@@ -1,0 +1,29 @@
+From 9218ce5c94032ca225102175614d5f8b09bf39d9 Mon Sep 17 00:00:00 2001
+From: Your Name <your.email@example.com>
+Date: Tue, 4 Aug 2026 08:34:03 -0400
+Subject: [PATCH 3/3] bluetooth: audio: Select stock VINTF declaration
+
+Change-Id: I2cb5bb373d4fe5cede0a4383462365af6d4e02ca
+---
+ bluetooth/audio/aidl/default/Android.bp | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/bluetooth/audio/aidl/default/Android.bp b/bluetooth/audio/aidl/default/Android.bp
+index af6bf86d..3ae4a0aa 100644
+--- a/bluetooth/audio/aidl/default/Android.bp
++++ b/bluetooth/audio/aidl/default/Android.bp
+@@ -10,7 +10,10 @@ package {
+ cc_library_shared {
+     name: "android.hardware.bluetooth.audio-impl",
+     vendor: true,
+-    vintf_fragments: ["bluetooth_audio.xml"],
++    vintf_fragments: select(soong_config_variable("metroid", "stock_bluetooth_audio"), {
++        true: [],
++        default: ["bluetooth_audio.xml"],
++    }),
+     defaults: [
+         "latest_android_hardware_bluetooth_audio_ndk_shared",
+     ],
+-- 
+2.43.0
+

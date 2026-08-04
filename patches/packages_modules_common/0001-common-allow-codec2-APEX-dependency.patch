@@ -1,0 +1,25 @@
+From 9c5eaa20534c698e89cde75490225ee73ed7ff4a Mon Sep 17 00:00:00 2001
+From: Your Name <your.email@example.com>
+Date: Tue, 4 Aug 2026 08:34:04 -0400
+Subject: [PATCH] Add Codec2 plugin headers to allowed dependencies
+
+Change-Id: I9d7bc95429cf4445a5017078f7bfd50e5720d3ed
+---
+ build/allowed_deps.txt | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/build/allowed_deps.txt b/build/allowed_deps.txt
+index 3d944da..328b478 100644
+--- a/build/allowed_deps.txt
++++ b/build/allowed_deps.txt
+@@ -544,6 +544,7 @@ libcodec2_headers(minSdkVersion:29)
+ libcodec2_hidl@1.0(minSdkVersion:29)
+ libcodec2_hidl@1.1(minSdkVersion:29)
+ libcodec2_hidl@1.2(minSdkVersion:29)
++libcodec2_hidl_plugin_headers(minSdkVersion:29)
+ libcodec2_internal(minSdkVersion:29)
+ libcodec2_soft_aacdec(minSdkVersion:29)
+ libcodec2_soft_aacenc(minSdkVersion:29)
+-- 
+2.43.0
+

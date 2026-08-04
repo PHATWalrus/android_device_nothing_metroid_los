@@ -1,0 +1,29 @@
+From 863eb159ab7d8bc64da6c2e20c1b34b31e6be65e Mon Sep 17 00:00:00 2001
+From: Your Name <your.email@example.com>
+Date: Tue, 4 Aug 2026 08:34:12 -0400
+Subject: [PATCH] primary-hal: Make optional audio services non-mandatory
+
+Change-Id: Ia9a052e1bcd9d0bc0ab6d30276d4225cfdaaca04
+---
+ configs/sun/vendor_audio_interfaces.xml | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/configs/sun/vendor_audio_interfaces.xml b/configs/sun/vendor_audio_interfaces.xml
+index cdbb603..46c8954 100644
+--- a/configs/sun/vendor_audio_interfaces.xml
++++ b/configs/sun/vendor_audio_interfaces.xml
+@@ -21,9 +21,9 @@ SPDX-License-Identifier: BSD-3-Clause-Clear
+     <library name = "listenSoundModel" libraryName="liblistensoundmodelaidl.so"
+             method="registerService" mandatory="false"/>
+     <library name = "audioeffecthal" libraryName="libaudioeffecthal.qti.so"
+-            method="registerService" mandatory="true"/>
++            method="registerService" mandatory="false"/>
+     <library name = "sthal" libraryName="libsoundtriggerhal.qti.so"
+-            method="createISoundTriggerFactory" mandatory="true" />
++            method="createISoundTriggerFactory" mandatory="false" />
+     <library name="btaudio_sw" libraryName="android.hardware.bluetooth.audio_sw.so"
+             method="registerIModuleBluetoothSWQti" mandatory="false" />
+     <library name = "asr" libraryName="libqasr.so"
+-- 
+2.43.0
+

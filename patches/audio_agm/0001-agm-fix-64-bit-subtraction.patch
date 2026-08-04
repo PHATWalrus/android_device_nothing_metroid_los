@@ -1,0 +1,26 @@
+From 56f674fe80108eedb6a088996c9aa552645241da Mon Sep 17 00:00:00 2001
+From: Your Name <your.email@example.com>
+Date: Tue, 4 Aug 2026 08:34:12 -0400
+Subject: [PATCH] agm: Fix 64-bit wall clock subtraction
+
+Change-Id: I7f1fd6df1cec21821bed93e1d82227817a57377f
+---
+ plugins/tinyalsa/src/agm_pcm_plugin.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/plugins/tinyalsa/src/agm_pcm_plugin.c b/plugins/tinyalsa/src/agm_pcm_plugin.c
+index bbe0824..f3c87fe 100644
+--- a/plugins/tinyalsa/src/agm_pcm_plugin.c
++++ b/plugins/tinyalsa/src/agm_pcm_plugin.c
+@@ -358,7 +358,7 @@ static int agm_pcm_plugin_update_hw_ptr(struct agm_pcm_priv *priv)
+                                          priv->pos_buf->wall_clk_lsw);
+             // Compute delta only if diff is greater than zero
+             if (dsp_wall_clk > cached_wall_clk) {
+-                __builtin_usubl_overflow(dsp_wall_clk,cached_wall_clk,&sub_res);
++                __builtin_usubll_overflow(dsp_wall_clk,cached_wall_clk,&sub_res);
+                 delta_wall_clk_us = (int64_t)sub_res;
+             }
+         }
+-- 
+2.43.0
+
